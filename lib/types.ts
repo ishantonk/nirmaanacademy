@@ -83,19 +83,19 @@ export type CourseType = Course & {
 };
 
 export type BlogPostType = Post & {
-    author: {
-        name: string;
-        bio: string;
-        image: string;
+    author?: {
+        name: string | null;
+        bio: string | null;
+        image: string | null;
     };
-    category: {
-        name: string;
-        slug: string;
-        description: string;
+    category?: {
+        name: string | null;
+        slug: string | null;
+        description: string | null;
     };
-    tags: Array<{
-        id: string;
-        name: string;
-        slug: string;
+    tags?: Array<{
+        id: string | null;
+        name: string | null;
+        slug: string | null;
     }>;
 };

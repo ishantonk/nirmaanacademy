@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getBlogBySlug } from "@/lib/blog-service";
 
 export async function GET(
     request: NextRequest,
@@ -7,35 +7,7 @@ export async function GET(
 ) {
     try {
         const { slug } = context.params;
-        const post = await prisma.post.findUnique({
-            where: {
-                slug,
-                status: "PUBLISHED",
-            },
-            include: {
-                author: {
-                    select: {
-                        name: true,
-                        bio: true,
-                        image: true,
-                    },
-                },
-                category: {
-                    select: {
-                        name: true,
-                        slug: true,
-                        description: true,
-                    },
-                },
-                tags: {
-                    select: {
-                        id: true,
-                        name: true,
-                        slug: true,
-                    },
-                },
-            },
-        });
+        const post = await getBlogBySlug(slug ? slug : "");
 
         if (!post) {
             return NextResponse.json(
@@ -44,7 +16,7 @@ export async function GET(
             );
         }
 
-        return NextResponse.json(post);
+        return NextResponse.json(post, { status: 200 });
     } catch (error) {
         console.error("Error fetching blog:", error);
         return NextResponse.json(

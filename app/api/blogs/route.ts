@@ -1,35 +1,15 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getAllBlogs } from "@/lib/blog-service";
 
 export async function GET() {
     try {
-        const posts = await prisma.post.findMany({
-            where: {
-                status: "PUBLISHED",
-            },
-            include: {
-                author: {
-                    select: {
-                        name: true,
-                    },
-                },
-                category: {
-                    select: {
-                        name: true,
-                        slug: true,
-                    },
-                },
-            },
-            orderBy: {
-                publishedAt: "desc",
-            },
-        });
+        const posts = await getAllBlogs();
 
         if (!posts) {
             return NextResponse.json({ error: "Not found" }, { status: 404 });
         }
 
-        return NextResponse.json(posts);
+        return NextResponse.json(posts, { status: 200 });
     } catch (error) {
         console.error("Error fetching blog posts:", error);
         return NextResponse.json(
