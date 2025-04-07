@@ -6,7 +6,7 @@ export async function GET(
     { params }: { params: { slug: string } }
 ) {
     try {
-        const { slug } = await params;
+        const { slug } = params;
         const post = await prisma.post.findUnique({
             where: {
                 slug,
@@ -38,9 +38,10 @@ export async function GET(
         });
 
         if (!post) {
-            return new Response(JSON.stringify({ error: "Not found" }), {
-                status: 404,
-            });
+            return NextResponse.json(
+                { error: "Blog not found" },
+                { status: 404 }
+            );
         }
 
         return NextResponse.json(post);

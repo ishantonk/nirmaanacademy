@@ -5,7 +5,7 @@ export async function GET(
     request: NextRequest,
     { params }: { params: { slug: string } }
 ) {
-    const { slug } = await params;
+    const { slug } = params;
 
     try {
         const course = await getCourseBySlug(slug ? slug : "");
