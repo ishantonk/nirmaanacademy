@@ -12,9 +12,7 @@ import { isValidUrl } from "@/lib/utils";
 import { BlogPostType } from "@/lib/types";
 
 async function getBlogPost(slug: string) {
-    const response = await fetch(
-        process.env.DOMAIN + "/api/blogs/" + slug
-    );
+    const response = await fetch(process.env.DOMAIN + "/api/blogs/" + slug);
     if (!response.ok) {
         // throw new Error("Failed to fetch blog");
         return null;
@@ -26,7 +24,7 @@ async function getBlogPost(slug: string) {
 export async function generateMetadata({
     params,
 }: {
-    params: { slug: string };
+    params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
     const { slug } = await params;
     const post = await getBlogPost(slug);
@@ -46,7 +44,7 @@ export async function generateMetadata({
             description: post.excerpt || "",
             type: "article",
             publishedTime: post.publishedAt?.toString(),
-            authors: post.author.name ? [post.author.name] : undefined,
+            authors: post.author?.name ? [post.author.name] : undefined,
             images: [
                 {
                     url: post.featuredImage || "/placeholder.svg",
@@ -68,7 +66,7 @@ export async function generateMetadata({
 export default async function BlogPost({
     params,
 }: {
-    params: { slug: string };
+    params: Promise<{ slug: string }>;
 }) {
     const { slug } = await params;
     const post = await getBlogPost(slug);
@@ -106,7 +104,7 @@ export default async function BlogPost({
                 <div className="absolute bottom-0 left-0 right-0 p-8">
                     <div className="container mx-auto max-w-4xl">
                         <Badge variant="secondary" className="mb-4">
-                            {post.category.name}
+                            {post.category?.name}
                         </Badge>
                         <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
                             {post.title}
@@ -115,24 +113,22 @@ export default async function BlogPost({
                             <div className="flex items-center gap-2">
                                 <Avatar className="h-8 w-8">
                                     <AvatarImage
-                                        src={post.author.image || undefined}
+                                        src={post.author?.image || undefined}
                                     />
                                     <AvatarFallback>
-                                        {post.author.name?.[0]}
+                                        {post.author?.name?.[0]}
                                     </AvatarFallback>
                                 </Avatar>
                                 <div className="text-sm">
                                     <p className="font-medium text-foreground">
-                                        {post.author.name}
+                                        {post.author?.name}
                                     </p>
-                                    <p className="text-xs">{post.author.bio}</p>
+                                    <p className="text-xs">{post.author?.bio}</p>
                                 </div>
                             </div>
                             <div className="flex items-center gap-2">
                                 <Calendar className="h-4 w-4" />
-                                <time
-                                    dateTime={post.publishedAt?.toString()}
-                                >
+                                <time dateTime={post.publishedAt?.toString()}>
                                     {post.publishedAt &&
                                         formatDate(post.publishedAt)}
                                 </time>
@@ -157,7 +153,7 @@ export default async function BlogPost({
                         />
 
                         {/* Tags */}
-                        {post.tags.length > 0 && (
+                        {post.tags && post.tags.length > 0 && (
                             <div className="pt-8">
                                 <h2 className="text-lg font-semibold mb-4">
                                     Related Topics
@@ -177,18 +173,18 @@ export default async function BlogPost({
                             <div className="flex items-start gap-4">
                                 <Avatar className="h-12 w-12">
                                     <AvatarImage
-                                        src={post.author.image || undefined}
+                                        src={post.author?.image || undefined}
                                     />
                                     <AvatarFallback>
-                                        {post.author.name?.[0]}
+                                        {post.author?.name?.[0]}
                                     </AvatarFallback>
                                 </Avatar>
                                 <div>
                                     <h3 className="font-semibold">
-                                        {post.author.name}
+                                        {post.author?.name}
                                     </h3>
                                     <p className="text-sm text-muted-foreground mt-1">
-                                        {post.author.bio}
+                                        {post.author?.bio}
                                     </p>
                                 </div>
                             </div>
@@ -217,9 +213,9 @@ export default async function BlogPost({
                                 <div className="text-sm text-muted-foreground">
                                     <p>Published in</p>
                                     <p className="font-medium text-foreground mt-1">
-                                        {post.category.name}
+                                        {post.category?.name}
                                     </p>
-                                    {post.category.description && (
+                                    {post.category?.description && (
                                         <p className="mt-2 text-xs">
                                             {post.category.description}
                                         </p>

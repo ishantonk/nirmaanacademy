@@ -22,7 +22,7 @@ import { notFound } from "next/navigation";
 export default async function CoursePage({
     params,
 }: {
-    params: { slug: string };
+    params: Promise<{ slug: string }>;
 }) {
     const session = await getAuthSession();
     const { slug } = await params;
@@ -72,7 +72,7 @@ export default async function CoursePage({
     }
 
     return (
-        <div className="container py-8 mx-auto px-4">
+        <>
             <div className="grid gap-8 md:grid-cols-2">
                 <div>
                     {/* Thumbnail */}
@@ -156,11 +156,11 @@ export default async function CoursePage({
                             price &&
                             discountPrice < price ? (
                                 <span className="flex items-center gap-2">
-                                    <span className="text-lg text-muted-foreground line-through">
-                                        {formatPrice(price)}
-                                    </span>
                                     <span className="text-3xl font-bold text-green-500">
                                         {formatPrice(discountPrice)}
+                                    </span>
+                                    <span className="text-lg text-muted-foreground line-through">
+                                        {formatPrice(price)}
                                     </span>
                                 </span>
                             ) : (
@@ -329,6 +329,6 @@ export default async function CoursePage({
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 }

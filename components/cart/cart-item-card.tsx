@@ -5,30 +5,14 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { Loader2, Trash } from "lucide-react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
 import { formatPrice } from "@/lib/format";
-import { Decimal } from "@prisma/client/runtime/library";
 import { serializeDecimal } from "@/lib/utils";
+import { CartItemType } from "@/lib/types";
 
-interface CartItemCardProps {
-    item: {
-        id: string;
-        course: {
-            title: string;
-            thumbnail: string | null;
-            slug: string;
-            instructor: {
-                name: string | null;
-            };
-            price: Decimal;
-            discountPrice?: Decimal | null;
-        };
-    };
-}
-
-export function CartItemCard({ item }: CartItemCardProps) {
+export function CartItemCard({ item }: { item: CartItemType }) {
     const price = serializeDecimal(item.course.price);
     const discountPrice =
         item.course.discountPrice &&
@@ -89,24 +73,23 @@ export function CartItemCard({ item }: CartItemCardProps) {
                         </Link>
                     </h3>
                     <p className="text-sm text-muted-foreground">
-                        By {item.course.instructor.name}
+                        By {item.course.faculties?.[0].name}
                     </p>
                 </div>
                 <div className="flex items-center justify-between">
                     <div className="font-medium">
-                        {item.course.discountPrice ? (
-                            <div className="flex items-center gap-2">
-                                <span>
-                                    {formatPrice(
-                                        discountPrice ? discountPrice : 0
-                                    )}
-                                </span>
+                        {item.course.onSale &&
+                        discountPrice &&
+                        price &&
+                        discountPrice < price ? (
+                            <span className="flex items-center gap-2">
+                                <span>{formatPrice(discountPrice)}</span>
                                 <span className="text-sm text-muted-foreground line-through">
-                                    {formatPrice(price ? price : 0)}
+                                    {formatPrice(price)}
                                 </span>
-                            </div>
+                            </span>
                         ) : (
-                            formatPrice(price ? price : 0)
+                            <span>{formatPrice(price ? price : 0)}</span>
                         )}
                     </div>
                     <Button

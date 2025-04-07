@@ -8,9 +8,9 @@ import {
     CardFooter,
     CardHeader,
 } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getInitials, isValidUrl, serializeDecimal } from "@/lib/utils";
+import { isValidUrl, serializeDecimal } from "@/lib/utils";
 import { CourseType } from "@/lib/types";
+import { CourseFacultyInfoCard } from "./course-faculty-info-card";
 
 interface CourseCardProps {
     course: CourseType;
@@ -58,7 +58,7 @@ export function CourseCard({ course, href, actions }: CourseCardProps) {
 
             <CardHeader className="space-y-1">
                 <div className="flex items-center col-span-2">
-                    {course.category.name && (
+                    {course.category && (
                         <Badge variant="secondary">
                             {course.category.name}
                         </Badge>
@@ -89,21 +89,12 @@ export function CourseCard({ course, href, actions }: CourseCardProps) {
             </CardHeader>
 
             <CardContent>
-                <div className="flex items-center gap-2">
-                    <Avatar className="h-8 w-8">
-                        <AvatarImage
-                            src={course.faculties?.[0].image || undefined}
-                        />
-                        <AvatarFallback>
-                            {course.faculties?.[0].name
-                                ? getInitials(course.faculties?.[0].name)
-                                : "NA"}
-                        </AvatarFallback>
-                    </Avatar>
-                    <span className="text-sm text-muted-foreground">
-                        {course.faculties?.[0].name || "NA"}
-                    </span>
-                </div>
+                {course.faculties && (
+                    <CourseFacultyInfoCard
+                        faculty={course.faculties?.[0]}
+                        size="sm"
+                    />
+                )}
                 {course.description && (
                     <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
                         {course.description}

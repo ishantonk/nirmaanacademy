@@ -1,9 +1,8 @@
-// app/course/[slug]/loading.tsx
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Loading() {
     return (
-        <div className="container mx-auto px-4 py-8">
+        <>
             <div className="animate-pulse grid gap-8 md:grid-cols-2">
                 {/* Thumbnail skeleton */}
                 <div>
@@ -107,6 +106,6 @@ export default function Loading() {
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 }

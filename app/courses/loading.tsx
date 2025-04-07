@@ -5,7 +5,7 @@ import { CourseGrid } from "@/components/course/course-grid";
 
 export default function Loading() {
     return (
-        <div className="container py-8 mx-auto px-4">
+        <>
             <h1 className="text-3xl font-bold mb-6">Browse Courses</h1>
 
             <div className="flex flex-col md:flex-row gap-6">
@@ -34,6 +34,6 @@ export default function Loading() {
                     />
                 </div>
             </div>
-        </div>
+        </>
     );
 }

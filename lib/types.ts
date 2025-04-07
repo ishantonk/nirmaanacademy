@@ -10,6 +10,7 @@ import {
     Prisma,
     Review,
 } from "@prisma/client";
+import { Decimal } from "@prisma/client/runtime/library";
 
 export type CourseWhereType = Prisma.CourseWhereInput & {
     status: string;
@@ -62,11 +63,24 @@ export type ReviewType = Review & {
     createdAt: Date;
 };
 
-export type cartItem = CartItem & {
+export type CartItemType = CartItem & {
     id: string;
     userId: string;
     courseId: string;
-}
+    course: {
+        id: string;
+        title: string;
+        slug: string;
+        price: Decimal | null;
+        discountPrice: Decimal | null;
+        thumbnail: string | null;
+        onSale: boolean;
+        faculties: Array<{
+            name: string | null;
+            image: string | null;
+        }>;
+    };
+};
 
 export type CourseType = Course & {
     category?: {
@@ -79,7 +93,11 @@ export type CourseType = Course & {
     availableAttempts?: Array<AttemptType>;
     faculties?: Array<FacultyType>;
     reviews?: Array<ReviewType>;
-    cartItems?: Array<cartItem>;
+    cartItems?: Array<{
+        id: string;
+        userId: string;
+        courseId: string;
+    }>;
 };
 
 export type BlogPostType = Post & {
