@@ -10,9 +10,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { isValidUrl } from "@/lib/utils";
-import { BlogPost } from "@/lib/types";
+import { BlogPostType } from "@/lib/types";
 
-export function PostCard(post: BlogPost) {
+export function PostCard(post: BlogPostType) {
     const featuredImage = isValidUrl(
         post.featuredImage ? post.featuredImage : ""
     )
@@ -39,7 +39,7 @@ export function PostCard(post: BlogPost) {
             </div>
             <CardHeader>
                 <Badge className="text-sm text-muted-foreground mb-2">
-                    {post.category.name}
+                    {post.category?.name}
                 </Badge>
                 <Link href={`/blogs/${post.slug}`} className="group">
                     <h2 className="text-2xl font-semibold group-hover:text-primary transition-colors">
@@ -55,7 +55,7 @@ export function PostCard(post: BlogPost) {
                     <div className="flex items-center justify-between text-sm text-muted-foreground">
                         <div className="flex items-center gap-2">
                             <User className="w-4 h-4" />
-                            {post.author.name}
+                            {post.author?.name}
                         </div>
                         <div className="flex items-center gap-2">
                             <Clock className="w-4 h-4" />
