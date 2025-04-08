@@ -37,7 +37,7 @@ export function CategoriesCarousel({categories} : {categories : CategoryType[]})
                 {categories.map((category, i) => (
                     <CarouselItem
                         key={category.id}
-                        className="md:basis-1/2 lg:basis-1/4"
+                        className="basis-1/2 lg:basis-1/4"
                     >
                         <CategoryCard
                             category={category}

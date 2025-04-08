@@ -14,7 +14,7 @@ export async function CategoriesSection() {
                 {/* Heading */}
                 <div className="flex items-center justify-between mb-8">
                     <div>
-                        <h2 className="text-3xl font-bold">
+                        <h2 className="text-xl lg:text-3xl font-bold">
                             Browse Categories
                         </h2>
                         <p className="mt-2 text-muted-foreground">

@@ -52,18 +52,20 @@ export function SiteHeader() {
                     }
                     <Logo size={isMobile ? "sm" : isScrolled ? "sm" : "md"} />
                 </div>
-                <div className="flex flex-1 items-center justify-center space-x-4">
-                    <div className="relative w-10/12">
-                        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                        <Input
-                            type="search"
-                            name="search"
-                            placeholder="Search courses..."
-                            className="pl-10"
-                            defaultValue={""}
-                        />
+                {!isMobile && (
+                    <div className="hidden md:flex flex-1 items-center justify-center space-x-4">
+                        <div className="relative w-10/12">
+                            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                            <Input
+                                type="search"
+                                name="search"
+                                placeholder="Search courses..."
+                                className="pl-10"
+                                defaultValue={""}
+                            />
+                        </div>
                     </div>
-                </div>
+                )}
                 <div className="flex items-center justify-end space-x-4">
                     <Link href="/cart">
                         <Button variant="ghost" size="icon">
