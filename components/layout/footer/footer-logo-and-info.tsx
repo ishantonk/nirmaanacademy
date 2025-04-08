@@ -14,7 +14,7 @@ export function FooterLogoAndInfo() {
                     className="object-cover"
                 />
             </div>
-            <div className="space-y-2 text-sm font-medium text-muted-foreground">
+            <div className="space-y-3 text-sm font-medium text-muted-foreground">
                 <div className="flex items-start space-x-3">
                     <MapPin className="h-5 w-5 mt-0.5 flex-shrink-0" />
                     <span>{contactInfo.address}</span>
