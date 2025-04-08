@@ -224,7 +224,7 @@ export default async function CoursePage({
                     <div className="mt-4 flex gap-2">
                         <div className="mt-6 w-full">
                             <CourseAddCartButton
-                                courseId={"1"}
+                                courseId={course.id}
                                 isInCart={isInCart}
                                 className="w-full"
                             />
@@ -321,7 +321,7 @@ export default async function CoursePage({
 
                         <div className="mt-6">
                             <CourseAddCartButton
-                                courseId={"2"}
+                                courseId={course.id}
                                 isInCart={isInCart}
                                 className="w-full"
                             />

@@ -12,6 +12,7 @@ import { isValidUrl, serializeDecimal } from "@/lib/utils";
 import { CourseType } from "@/lib/types";
 import { formatPrice } from "@/lib/format";
 import { CourseAddCartButton } from "./course-add-cart";
+import { getAuthSession } from "@/lib/auth";
 
 interface CourseCardProps {
     course: CourseType;
@@ -20,9 +21,8 @@ interface CourseCardProps {
     color?: string;
 }
 
-
-export function CourseCard({ course, href, color }: CourseCardProps) {
-
+export async function CourseCard({ course, href, color }: CourseCardProps) {
+    const session = await getAuthSession();
     // Serialize the price and discountPrice to a number
     const price = serializeDecimal(course.price ?? null);
     const discountPrice = serializeDecimal(course.discountPrice ?? null);
@@ -30,6 +30,19 @@ export function CourseCard({ course, href, color }: CourseCardProps) {
     const thumbnail = isValidUrl(course.thumbnail ?? "")
         ? course.thumbnail
         : null;
+
+    // Check if user has this course in cart
+    let isInCart = false;
+
+    if (session) {
+        const cartItem = course.cartItems?.find(
+            (cartItem) =>
+                cartItem.userId === session.user.id &&
+                cartItem.courseId === course.id
+        );
+
+        isInCart = !!cartItem;
+    }
 
     return (
         <Card
@@ -109,14 +122,7 @@ export function CourseCard({ course, href, color }: CourseCardProps) {
             </CardContent>
 
             <CardFooter className="flex justify-end gap-2 mt-auto">
-                <CourseAddCartButton
-                    courseId={course.id}
-                    isInCart={
-                        !!course.cartItems?.find(
-                            (item) => item.courseId === course.id
-                        )
-                    }
-                />
+                <CourseAddCartButton courseId={course.id} isInCart={isInCart} />
             </CardFooter>
         </Card>
     );
