@@ -60,7 +60,7 @@ export function SiteHeader() {
                                 type="search"
                                 name="search"
                                 placeholder="Search courses..."
-                                className="pl-10"
+                                className="pl-10 border border-neutral-300"
                                 defaultValue={""}
                             />
                         </div>

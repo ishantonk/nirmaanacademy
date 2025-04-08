@@ -15,7 +15,7 @@ export function DesktopNav({ items }: { items: NavItems[] }) {
     const pathname = usePathname();
 
     return (
-        <div className="bg-primary/75">
+        <div className="bg-primary/65">
             <div className="mx-auto px-4 max-w-7xl hidden md:flex container items-center justify-between py-2">
                 <nav className="flex gap-6 w-full justify-center">
                     {items?.map((item) => (
@@ -23,10 +23,10 @@ export function DesktopNav({ items }: { items: NavItems[] }) {
                             key={item.title}
                             href={item.href}
                             className={cn(
-                                "flex items-center text-sm font-medium transition-colors hover:text-muted",
+                                "flex items-center text-sm font-medium transition-colors hover:text-white",
                                 pathname === item.href
-                                    ? "text-muted"
-                                    : "text-neutral-200",
+                                    ? "text-white"
+                                    : "text-neutral-300",
                                 item.icon && "group"
                             )}
                         >
@@ -34,8 +34,8 @@ export function DesktopNav({ items }: { items: NavItems[] }) {
                                 <item.icon
                                     className={cn(
                                         pathname === item.href
-                                            ? "text-muted"
-                                            : "text-neutral-200",
+                                            ? "text-white"
+                                            : "text-neutral-300",
                                         "w-4 h-4 mr-2 group-hover:text-muted"
                                     )}
                                 />

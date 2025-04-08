@@ -58,7 +58,7 @@ export function CourseCard({ course, href, actions, color }: CourseCardProps) {
             </Link>
 
             <CardHeader className="space-y-1">
-                <div className="flex items-center col-span-2">
+                <div className="flex items-center col-span-2 justify-between">
                     {course.category && (
                         <Badge variant="secondary">
                             {course.category.name}

@@ -43,9 +43,9 @@ export function CategoriesCarousel({categories} : {categories : CategoryType[]})
                             category={category}
                             courseCount={category._count.courses}
                             color={
-                                i % 2 === 0
+                                i % 3 === 0
                                     ? "bg-blue-200"
-                                    : i % 3 === 0
+                                    : i % 2 === 0
                                     ? "bg-green-200"
                                     : i % 4 === 0
                                     ? "bg-red-200"

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Mail, MapPin, Phone } from "lucide-react";
 import { contactInfo } from "@/data/contact-info";
+import { FooterSocialLink } from "@/components/layout/footer/footer-social-link";
 
 export function FooterLogoAndInfo() {
     return (
@@ -28,6 +29,7 @@ export function FooterLogoAndInfo() {
                     <span>{contactInfo.email}</span>
                 </div>
             </div>
+            <FooterSocialLink />
         </div>
     );
 }
