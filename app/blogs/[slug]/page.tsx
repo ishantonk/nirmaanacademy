@@ -12,7 +12,7 @@ import { isValidUrl } from "@/lib/utils";
 import { BlogPostType } from "@/lib/types";
 
 async function getBlogPost(slug: string) {
-    const response = await fetch(process.env.DOMAIN + "/api/blogs/" + slug);
+    const response = await fetch(process.env.NEXT_PUBLIC_DOMAIN + "/api/blogs/" + slug);
     if (!response.ok) {
         // throw new Error("Failed to fetch blog");
         return null;

@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 };
 
 async function getBlogPosts(): Promise<BlogPostType[]> {
-    const response = await fetch(process.env.DOMAIN + "/api/blogs");
+    const response = await fetch(process.env.NEXT_PUBLIC_DOMAIN + "/api/blogs");
     if (response.ok) {
         const posts: BlogPostType[] = await response.json();
         return posts;

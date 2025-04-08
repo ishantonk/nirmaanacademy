@@ -27,7 +27,7 @@ export default async function CoursePage({
     const session = await getAuthSession();
     const { slug } = await params;
     const course: CourseType = await fetch(
-        `${process.env.DOMAIN}/api/courses/${slug}`
+        `${process.env.NEXT_PUBLIC_DOMAIN}/api/courses/${slug}`
     ).then((res) => res.json());
 
     // Serialize the price and discountPrice to a number

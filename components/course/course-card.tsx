@@ -1,25 +1,28 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
-import { formatPrice } from "@/lib/format";
 import {
     Card,
     CardContent,
     CardFooter,
     CardHeader,
 } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { CourseFacultyInfoCard } from "./course-faculty-info-card";
 import { isValidUrl, serializeDecimal } from "@/lib/utils";
 import { CourseType } from "@/lib/types";
-import { CourseFacultyInfoCard } from "./course-faculty-info-card";
+import { formatPrice } from "@/lib/format";
+import { CourseAddCartButton } from "./course-add-cart";
 
 interface CourseCardProps {
     course: CourseType;
     href: string;
     actions?: React.ReactNode;
-    color?: string
+    color?: string;
 }
 
-export function CourseCard({ course, href, actions, color }: CourseCardProps) {
+
+export function CourseCard({ course, href, color }: CourseCardProps) {
+
     // Serialize the price and discountPrice to a number
     const price = serializeDecimal(course.price ?? null);
     const discountPrice = serializeDecimal(course.discountPrice ?? null);
@@ -29,7 +32,9 @@ export function CourseCard({ course, href, actions, color }: CourseCardProps) {
         : null;
 
     return (
-        <Card className={"group relative overflow-hidden p-0 pb-4" + " " + color}>
+        <Card
+            className={"group relative overflow-hidden p-0 pb-4" + " " + color}
+        >
             <Link href={href} className="block">
                 <div className="relative aspect-video overflow-hidden">
                     {course.onSale && (
@@ -103,11 +108,16 @@ export function CourseCard({ course, href, actions, color }: CourseCardProps) {
                 )}
             </CardContent>
 
-            {actions && (
-                <CardFooter className="flex justify-end gap-2 mt-auto">
-                    {actions}
-                </CardFooter>
-            )}
+            <CardFooter className="flex justify-end gap-2 mt-auto">
+                <CourseAddCartButton
+                    courseId={course.id}
+                    isInCart={
+                        !!course.cartItems?.find(
+                            (item) => item.courseId === course.id
+                        )
+                    }
+                />
+            </CardFooter>
         </Card>
     );
 }

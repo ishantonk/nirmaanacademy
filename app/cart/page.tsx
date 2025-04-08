@@ -6,7 +6,7 @@ import { CartOrderSummary } from "@/components/cart/cart-order-summary";
 import { CartItemList } from "@/components/cart/cart-item-list";
 
 async function getCartItems(): Promise<CartItemType[]> {
-    const response = await fetch(`${process.env.DOMAIN}/api/cart`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_DOMAIN}/api/cart`, {
         // Get the request cookies from the server
         headers: {
             cookie: (await headers()).get("cookie") || "",
