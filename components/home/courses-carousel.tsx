@@ -33,21 +33,15 @@ export function CoursesCarousel({ courses }: { courses: CourseType[] }) {
             className="w-full"
         >
             <CarouselContent>
-                {courses.map((course, i) => (
+                {courses.map((course) => (
                     <CarouselItem
                         key={course.id}
                         className="md:basis-1/2 lg:basis-1/4"
                     >
                         <CourseCard
-                            color={
-                                i % 3 === 0
-                                    ? "bg-red-200"
-                                    : i % 2 === 0
-                                    ? "bg-green-200"
-                                    : "bg-amber-200"
-                            }
+                            color="h-full"
                             course={course}
-                            href={course.slug}
+                            href={ "/courses/" + course.slug}
                         />
                     </CarouselItem>
                 ))}
