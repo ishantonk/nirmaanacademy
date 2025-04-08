@@ -9,15 +9,9 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/format";
-import { serializeDecimal } from "@/lib/utils";
 import { CartItemType } from "@/lib/types";
 
 export function CartItemCard({ item }: { item: CartItemType }) {
-    const price = serializeDecimal(item.course.price);
-    const discountPrice =
-        item.course.discountPrice &&
-        serializeDecimal(item.course.discountPrice);
-
     const router = useRouter();
 
     const { mutate: removeFromCart, isPending } = useMutation({
@@ -79,17 +73,23 @@ export function CartItemCard({ item }: { item: CartItemType }) {
                 <div className="flex items-center justify-between">
                     <div className="font-medium">
                         {item.course.onSale &&
-                        discountPrice &&
-                        price &&
-                        discountPrice < price ? (
+                        item.course.discountPrice &&
+                        item.course.price &&
+                        item.course.discountPrice < item.course.price ? (
                             <span className="flex items-center gap-2">
-                                <span>{formatPrice(discountPrice)}</span>
+                                <span>
+                                    {formatPrice(item.course.discountPrice)}
+                                </span>
                                 <span className="text-sm text-muted-foreground line-through">
-                                    {formatPrice(price)}
+                                    {formatPrice(item.course.price)}
                                 </span>
                             </span>
                         ) : (
-                            <span>{formatPrice(price ? price : 0)}</span>
+                            <span>
+                                {formatPrice(
+                                    item.course.price ? item.course.price : 0
+                                )}
+                            </span>
                         )}
                     </div>
                     <Button

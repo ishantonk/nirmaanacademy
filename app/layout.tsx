@@ -9,6 +9,7 @@ import { SiteFooter } from "@/components/layout/footer/site-footer";
 import { BottomNavBar } from "@/components/layout/bottom/bottom-navbar";
 import { brandName } from "@/data/contact-info";
 import { aboutUsData } from "@/data/about-us";
+import { Whatsapp } from "@/components/layout/whatsapp/whatsapp";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -49,6 +50,7 @@ export default function RootLayout({
                             <SiteHeader />
                             <main className="flex-1">{children}</main>
                             <SiteFooter />
+                            <Whatsapp />
                             <BottomNavBar />
                         </ThemeProvider>
                     </QueryProvider>

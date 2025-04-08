@@ -16,9 +16,10 @@ interface CourseCardProps {
     course: CourseType;
     href: string;
     actions?: React.ReactNode;
+    color?: string
 }
 
-export function CourseCard({ course, href, actions }: CourseCardProps) {
+export function CourseCard({ course, href, actions, color }: CourseCardProps) {
     // Serialize the price and discountPrice to a number
     const price = serializeDecimal(course.price ?? null);
     const discountPrice = serializeDecimal(course.discountPrice ?? null);
@@ -28,7 +29,7 @@ export function CourseCard({ course, href, actions }: CourseCardProps) {
         : null;
 
     return (
-        <Card className="group relative overflow-hidden p-0 pb-4">
+        <Card className={"group relative overflow-hidden p-0 pb-4" + " " + color}>
             <Link href={href} className="block">
                 <div className="relative aspect-video overflow-hidden">
                     {course.onSale && (

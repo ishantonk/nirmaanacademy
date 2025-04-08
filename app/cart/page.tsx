@@ -43,7 +43,16 @@ export default async function CartPage() {
         orderBy: {
             createdAt: "desc",
         },
-    });
+    }).then((items) =>
+        items.map((item) => ({
+            ...item,
+            course: {
+                ...item.course,
+                price: item.course.price?.toNumber() ?? null,
+                discountPrice: item.course.discountPrice?.toNumber() ?? null,
+            },
+        }))
+    );
 
     return (
         <div className="mt-8 grid gap-8 md:grid-cols-3">

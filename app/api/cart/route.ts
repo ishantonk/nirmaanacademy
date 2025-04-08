@@ -106,7 +106,7 @@ export async function GET() {
             );
         }
 
-        const cartItems: CartItemType[] = await prisma.cartItem.findMany({
+        const response = await prisma.cartItem.findMany({
             where: {
                 userId: session?.user.id,
             },
@@ -138,6 +138,15 @@ export async function GET() {
                 createdAt: "desc",
             },
         });
+
+        const cartItems: CartItemType[] = response.map((item) => ({
+            ...item,
+            course: {
+                ...item.course,
+                price: Number(item.course.price),
+                discountPrice: Number(item.course.discountPrice),
+            },
+        }));
 
         return NextResponse.json(cartItems || [], { status: 200 });
     } catch {

@@ -15,34 +15,36 @@ export function DesktopNav({ items }: { items: NavItems[] }) {
     const pathname = usePathname();
 
     return (
-        <div className="hidden md:flex container items-center justify-between py-2 border-t border-primary/10">
-            <nav className="flex gap-6 w-full justify-center">
-                {items?.map((item) => (
-                    <Link
-                        key={item.title}
-                        href={item.href}
-                        className={cn(
-                            "flex items-center text-sm font-medium transition-colors hover:text-primary",
-                            pathname === item.href
-                                ? "text-primary"
-                                : "text-muted-foreground",
-                            item.icon && "group"
-                        )}
-                    >
-                        {item.icon && (
-                            <item.icon
-                                className={cn(
-                                    pathname === item.href
-                                        ? "text-primary"
-                                        : "text-muted-foreground",
-                                    "w-4 h-4 mr-2 group-hover:text-primary"
-                                )}
-                            />
-                        )}
-                        {item.title}
-                    </Link>
-                ))}
-            </nav>
+        <div className="bg-primary">
+            <div className="mx-auto px-4 max-w-7xl hidden md:flex container items-center justify-between py-2">
+                <nav className="flex gap-6 w-full justify-center">
+                    {items?.map((item) => (
+                        <Link
+                            key={item.title}
+                            href={item.href}
+                            className={cn(
+                                "flex items-center text-sm font-medium transition-colors hover:text-muted",
+                                pathname === item.href
+                                    ? "text-muted"
+                                    : "text-muted-foreground",
+                                item.icon && "group"
+                            )}
+                        >
+                            {item.icon && (
+                                <item.icon
+                                    className={cn(
+                                        pathname === item.href
+                                            ? "text-muted"
+                                            : "text-muted-foreground",
+                                        "w-4 h-4 mr-2 group-hover:text-muted"
+                                    )}
+                                />
+                            )}
+                            {item.title}
+                        </Link>
+                    ))}
+                </nav>
+            </div>
         </div>
     );
 }
