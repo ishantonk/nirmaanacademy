@@ -41,7 +41,7 @@ export function CoursesCarousel({ courses }: { courses: CourseType[] }) {
                         <CourseCard
                             color="h-full"
                             course={course}
-                            href={ "/courses/" + course.slug}
+                            href={"/courses/" + course.slug}
                         />
                     </CarouselItem>
                 ))}
