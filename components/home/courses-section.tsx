@@ -9,7 +9,7 @@ export async function CoursesSection() {
     const courses: CourseType[] = await getFeaturedCourses();
 
     return (
-        <section className="bg-muted/30 py-2">
+        <section className="bg-emerald-200/30 py-8">
             <div className="container mx-auto px-4">
                 {/* Heading */}
                 <div className="flex items-center justify-between mb-8">
