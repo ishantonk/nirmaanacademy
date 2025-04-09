@@ -5,9 +5,10 @@ import { useDebounce } from "use-debounce";
 import { useQuery } from "@tanstack/react-query";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { EmptyState } from "@/components/ui/empty-state";
 import { CourseGrid } from "@/components/course/course-grid";
 import { CourseCard } from "@/components/course/course-card";
-import { EmptyState } from "@/components/ui/empty-state";
+import { CourseCardSkeleton } from "@/components/course/course-card-skeleton";
 import { CourseType } from "@/lib/types";
 
 interface LiveCoursesProps {
@@ -71,7 +72,11 @@ export function CoursesLive({
 
             {/* Course Results */}
             {isLoading ? (
-                <div className="p-4">Loading...</div>
+                <CourseGrid
+                    courses={Array.from({ length: 6 }).map((_, i) => (
+                        <CourseCardSkeleton key={i} />
+                    ))}
+                />
             ) : error ? (
                 <div className="p-4 text-center">
                     <p>Error loading courses.</p>
@@ -85,11 +90,11 @@ export function CoursesLive({
             ) : (
                 <CourseGrid
                     courses={(data ?? []).map((course) => (
-                            <CourseCard
-                                key={course.id}
-                                href={`/courses/${course.slug}`}
-                                course={course}
-                            />
+                        <CourseCard
+                            key={course.id}
+                            href={`/courses/${course.slug}`}
+                            course={course}
+                        />
                     ))}
                 />
             )}
