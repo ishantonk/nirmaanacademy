@@ -41,8 +41,8 @@ export function CourseCard({ course, href, color }: CourseCardProps) {
     //             cartItem.courseId === course.id
     //     );
 
-    //     isInCart = !!cartItem;
-    // }
+    // //     isInCart = !!cartItem;
+    // // }
 
     return (
         <Card
