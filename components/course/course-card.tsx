@@ -22,7 +22,7 @@ interface CourseCardProps {
 }
 
 export async function CourseCard({ course, href, color }: CourseCardProps) {
-    const session = await getAuthSession();
+    // const session = await getAuthSession();
     // Serialize the price and discountPrice to a number
     const price = serializeDecimal(course.price ?? null);
     const discountPrice = serializeDecimal(course.discountPrice ?? null);
