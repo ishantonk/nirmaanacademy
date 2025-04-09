@@ -34,7 +34,7 @@ export async function CourseCard({ course, href, color }: CourseCardProps) {
     // Check if user has this course in cart
     let isInCart = false;
 
-    if (session) {
+    /*if (session) {
         const cartItem = course.cartItems?.find(
             (cartItem) =>
                 cartItem.userId === session.user.id &&
@@ -42,7 +42,7 @@ export async function CourseCard({ course, href, color }: CourseCardProps) {
         );
 
         isInCart = !!cartItem;
-    }
+    }*/
 
     return (
         <Card
