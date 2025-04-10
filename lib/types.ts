@@ -13,6 +13,7 @@ import {
 
 export type CourseWhereType = Prisma.CourseWhereInput & {
     status: string;
+    count?: number;
     category?: { slug: string };
     OR?: Array<{
         title?: { contains: string; mode: string };
@@ -22,7 +23,7 @@ export type CourseWhereType = Prisma.CourseWhereInput & {
 };
 
 export type CategoryType = Category & {
-    _count: {
+    _count?: {
         courses: number;
     };
 };

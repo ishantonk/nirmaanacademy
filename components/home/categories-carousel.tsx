@@ -41,14 +41,14 @@ export function CategoriesCarousel({categories} : {categories : CategoryType[]})
                     >
                         <CategoryCard
                             category={category}
-                            courseCount={category._count.courses}
+                            courseCount={category._count?.courses ?? 0}
                             color={
                                 i % 3 === 0
-                                    ? "bg-blue-200"
+                                    ? "bg-blue-100/80"
                                     : i % 2 === 0
-                                    ? "bg-green-200"
+                                    ? "bg-green-100/80"
                                     : i % 4 === 0
-                                    ? "bg-red-200"
+                                    ? "bg-red-100/80"
                                     : ""
                             }
                         />

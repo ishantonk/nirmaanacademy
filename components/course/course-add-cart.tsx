@@ -60,7 +60,7 @@ export function CourseAddCartButton({
     };
 
     const handleGoToCart = () => {
-        router.push("/checkout");
+        router.push("/cart");
     };
 
     return isInCart ? (

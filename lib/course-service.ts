@@ -6,12 +6,19 @@ export async function getCourses(
     category?: string | null,
     search?: string | null,
     price?: string | null,
-    sort?: string | null
+    sort?: string | null,
+    count?: number | null,
+    featured?: boolean
 ): Promise<CourseType[]> {
     // Build the where clause for filtering
     const where: CourseWhereType = {
         status: "PUBLISHED",
     };
+
+    // For featured courses
+    if (featured === true) {
+        where.featured = featured;
+    }
 
     // Category filter
     if (category) {
@@ -55,7 +62,21 @@ export async function getCourses(
     else if (sort === "title-asc") orderBy = { title: "asc" };
     else if (sort === "title-desc") orderBy = { title: "desc" };
 
-    // Fetch courses from the database
+    if (count) {
+        // Fetch number of count courses from the database
+        const courses = await prisma.course.findMany({
+            where,
+            include: {
+                category: true,
+                faculties: true,
+            },
+            take: count,
+            orderBy,
+        });
+        return courses;
+    }
+
+    // Fetch all courses from the database
     const courses = await prisma.course.findMany({
         where,
         include: {
@@ -64,8 +85,7 @@ export async function getCourses(
         },
         orderBy,
     });
-
-    return courses
+    return courses;
 }
 
 // Get course by slug

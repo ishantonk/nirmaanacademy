@@ -26,13 +26,10 @@ import {
     SheetTrigger,
 } from "../ui/sheet";
 import { Filter } from "lucide-react";
-import { ScrollArea } from "@radix-ui/react-scroll-area";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { CategoryType } from "@/lib/types";
 
-interface CourseFiltersProps {
-    categories: { id: string; slug: string; name: string }[];
-}
-
-export function CourseFilters({ categories }: CourseFiltersProps) {
+export function CourseFilters({ categories }: { categories: CategoryType[] }) {
     const router = useRouter();
     const searchParams = useSearchParams();
     const isMobile = useIsMobile();
@@ -140,7 +137,8 @@ export function CourseFilters({ categories }: CourseFiltersProps) {
     );
 }
 
-interface MobileFiltersProps extends CourseFiltersProps {
+interface MobileFiltersProps {
+    categories: CategoryType[],
     currentCategory: string;
     handleCategoryChange: (value: string) => void;
     handleResetFilters: () => void;

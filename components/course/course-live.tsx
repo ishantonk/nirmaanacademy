@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { useDebounce } from "use-debounce";
 import { useQuery } from "@tanstack/react-query";
 import { Search } from "lucide-react";
@@ -9,49 +10,45 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { CourseGrid } from "@/components/course/course-grid";
 import { CourseCard } from "@/components/course/course-card";
 import { CourseCardSkeleton } from "@/components/course/course-card-skeleton";
-import { CourseType } from "@/lib/types";
+import { CourseAddCartButton } from "@/components/course/course-add-cart";
+import { fetchCourses } from "@/lib/fetch";
+import { useSession } from "next-auth/react";
 
-interface LiveCoursesProps {
-    initialCategory?: string;
-    initialSearch?: string;
-    initialPrice?: string;
-    initialSort?: string;
-}
+export function CoursesLive() {
+    const { data: session } = useSession();
+    const searchParams = useSearchParams();
 
-// Fetch function which uses the current query parameters.
-async function fetchCourses(queryParams: string): Promise<CourseType[]> {
-    const res = await fetch(
-        `${process.env.NEXT_PUBLIC_DOMAIN}/api/courses?${queryParams}`
-    );
-    if (!res.ok) throw new Error("Error fetching courses");
-    return res.json();
-}
+    // Get filter values from URL parameters directly.
+    const categoryFromUrl = searchParams.get("category") || "";
+    const priceFromUrl = searchParams.get("price") || "";
+    const sortFromUrl = searchParams.get("sort") || "";
+    const searchFromUrl = searchParams.get("search") || "";
 
-export function CoursesLive({
-    initialCategory,
-    initialSearch,
-    initialPrice,
-    initialSort,
-}: LiveCoursesProps) {
-    // Local state for the search input (initial value passed from server).
-    const [search, setSearch] = useState(initialSearch || "");
-    // Use debounce so that API calls are limited while the user types.
+    // We use state for the text input and debouncing.
+    // This makes sure that if the user types in a new search term,
+    // we debounce before making another API call.
+    const [search, setSearch] = useState(searchFromUrl);
     const [debouncedSearch] = useDebounce(search, 500);
 
-    // Build query parameters based on the current live search and initial filter values.
+    // When the URL search param changes (for example via the filter UI),
+    // update the search state accordingly.
+    useEffect(() => {
+        setSearch(searchFromUrl);
+    }, [searchFromUrl]);
+
+    // Build query parameters based on the current URL and debounced input.
     const params = new URLSearchParams();
-    if (initialCategory) params.append("category", initialCategory);
-    if (initialPrice) params.append("price", initialPrice);
-    if (initialSort) params.append("sort", initialSort);
+    if (categoryFromUrl) params.append("category", categoryFromUrl);
+    if (priceFromUrl) params.append("price", priceFromUrl);
+    if (sortFromUrl) params.append("sort", sortFromUrl);
     if (debouncedSearch) params.append("search", debouncedSearch);
 
     const queryString = params.toString();
 
-    // Use React Query to fetch courses based on the query string.
+    // React Query triggers a refetch whenever the query key (queryString) changes.
     const { data, isLoading, error } = useQuery({
-        queryKey: ["live-courses", queryString],
+        queryKey: [queryString],
         queryFn: () => fetchCourses(queryString),
-        // You may add options here such as refetchOnWindowFocus if needed.
     });
 
     return (
@@ -61,7 +58,7 @@ export function CoursesLive({
                 <div className="relative">
                     <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
-                        type="search"
+                        name="search"
                         placeholder="Search courses..."
                         className="pl-10"
                         value={search}
@@ -93,6 +90,22 @@ export function CoursesLive({
                         <CourseCard
                             key={course.id}
                             href={`/courses/${course.slug}`}
+                            actions={
+                                <CourseAddCartButton
+                                    courseId={course.id}
+                                    isInCart={
+                                        session
+                                            ? (course.cartItems ?? []).some(
+                                                  (item) =>
+                                                      item.courseId ===
+                                                          course.id &&
+                                                      item.userId ===
+                                                          session?.user?.id
+                                              )
+                                            : false
+                                    }
+                                />
+                            }
                             course={course}
                         />
                     ))}

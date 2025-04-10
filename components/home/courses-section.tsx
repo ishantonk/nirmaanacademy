@@ -2,11 +2,15 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CoursesCarousel } from "@/components/home/courses-carousel";
-import { CourseType } from "@/lib/types";
-import { prisma } from "@/lib/prisma";
+import { fetchCourses } from "@/lib/fetch";
 
 export async function CoursesSection() {
-    const courses: CourseType[] = await getFeaturedCourses();
+    const params = new URLSearchParams();
+    params.append("count", "8");
+    params.append("featured", "true");
+    const queryString = params.toString();
+
+    const courses = await fetchCourses(queryString);
 
     return (
         <section className="bg-amber-100/50 py-8">
@@ -14,10 +18,10 @@ export async function CoursesSection() {
                 {/* Heading */}
                 <div className="flex items-center justify-between mb-8">
                     <div>
-                        <h2 className="text-3xl font-bold tracking-tight">
+                        <h2 className="text-xl lg:text-3xl font-bold tracking-tight">
                             Featured Courses
                         </h2>
-                        <p className="mt-2 text-muted-foreground">
+                        <p className="text-sm lg:text-base mt-2 text-muted-foreground">
                             Explore our most popular and highly-rated courses
                         </p>
                     </div>
@@ -34,18 +38,4 @@ export async function CoursesSection() {
             </div>
         </section>
     );
-}
-
-async function getFeaturedCourses(): Promise<CourseType[]> {
-    return await prisma.course.findMany({
-        where: {
-            featured: true,
-            status: "PUBLISHED",
-        },
-        include: {
-            category: true,
-            faculties: true,
-        },
-        take: 8,
-    });
 }

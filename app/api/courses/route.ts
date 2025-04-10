@@ -8,9 +8,18 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get("search");
     const price = searchParams.get("price");
     const sort = searchParams.get("sort");
+    const featured = searchParams.get("featured") === "true";
+    const count = Number(searchParams.get("count"));
 
     try {
-        const courses = await getCourses(category, search, price, sort);
+        const courses = await getCourses(
+            category,
+            search,
+            price,
+            sort,
+            count,
+            featured
+        );
 
         return NextResponse.json(courses, { status: 200 });
     } catch (error) {

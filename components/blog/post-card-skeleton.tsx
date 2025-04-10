@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 export function PostCardSkeleton() {
     return (
         <Card className="flex flex-col overflow-hidden py-0 pb-6">
-            <div className="bg-gray-100 relative h-48 w-full">
+            <div className="bg-gray-100 relative aspect-video rounded-lg">
                 <Skeleton className="w-full h-full" />
             </div>
             <CardHeader>

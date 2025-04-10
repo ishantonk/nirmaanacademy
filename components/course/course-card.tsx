@@ -1,78 +1,44 @@
-import Image from "next/image";
 import Link from "next/link";
 import {
     Card,
     CardContent,
     CardFooter,
     CardHeader,
+    CardImage,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CourseFacultyInfoCard } from "./course-faculty-info-card";
-import { isValidUrl, serializeDecimal } from "@/lib/utils";
+import { CourseFacultyInfoCard } from "@/components/course/course-faculty-info-card";
+import { serializeDecimal } from "@/lib/utils";
 import { CourseType } from "@/lib/types";
 import { formatPrice } from "@/lib/format";
-import { CourseAddCartButton } from "./course-add-cart";
-// import { getAuthSession } from "@/lib/auth";
 
 interface CourseCardProps {
     course: CourseType;
     href: string;
     actions?: React.ReactNode;
-    color?: string;
 }
 
-export function CourseCard({ course, href, color }: CourseCardProps) {
-    // const session = await getAuthSession();
+export function CourseCard({ course, href, actions }: CourseCardProps) {
     // Serialize the price and discountPrice to a number
     const price = serializeDecimal(course.price ?? null);
     const discountPrice = serializeDecimal(course.discountPrice ?? null);
-    // Check if the course has a thumbnail URL
-    const thumbnail = isValidUrl(course.thumbnail ?? "")
-        ? course.thumbnail
-        : null;
-
-    // // Check if user has this course in cart
-    // let isInCart = false;
-
-    // if (session) {
-    //     const cartItem = course.cartItems?.find(
-    //         (cartItem) =>
-    //             cartItem.userId === session.user.id &&
-    //             cartItem.courseId === course.id
-    //     );
-
-    // //     isInCart = !!cartItem;
-    // // }
-
     return (
-        <Card
-            className={"group relative overflow-hidden p-0 pb-4" + " " + color}
-        >
+        <Card className="pt-0">
             <Link href={href} className="block">
-                <div className="relative aspect-video overflow-hidden">
-                    {course.onSale && (
-                        <Badge
-                            variant="destructive"
-                            className="absolute z-10 top-2 right-2 opacity-65"
-                        >
-                            On Sale
-                        </Badge>
-                    )}
-                    {thumbnail ? (
-                        <Image
-                            src={thumbnail}
-                            alt={course.title}
-                            fill
-                            className="object-cover transition-transform group-hover:scale-105"
-                        />
-                    ) : (
-                        <div className="flex h-full items-center justify-center bg-muted">
-                            <span className="text-muted-foreground">
-                                No thumbnail
-                            </span>
-                        </div>
-                    )}
-                </div>
+                <CardImage
+                    thumbnail={course.thumbnail ?? ""}
+                    title={course.title}
+                    overlay={
+                        course.onSale && (
+                            <Badge
+                                variant="destructive"
+                                className="absolute top-2 right-2 opacity-65"
+                            >
+                                On Sale
+                            </Badge>
+                        )
+                    }
+                />
             </Link>
 
             <CardHeader className="space-y-1">
@@ -87,15 +53,15 @@ export function CourseCard({ course, href, color }: CourseCardProps) {
                     price &&
                     discountPrice < price ? (
                         <span className="flex items-center gap-2">
-                            <span className="text-xs text-red-500 line-through">
+                            <span className="text-sm md:text-xs text-red-500 line-through">
                                 {formatPrice(price)}
                             </span>
-                            <span className="font-semibold text-sm ml-auto text-green-500">
+                            <span className="font-semibold text-base md:text-sm text-green-500">
                                 {formatPrice(discountPrice)}
                             </span>
                         </span>
                     ) : (
-                        <span className="font-semibold text-sm ml-auto text-green-500">
+                        <span className="font-semibold text-base md:text-sm text-green-500">
                             {formatPrice(price ? price : 0)}
                         </span>
                     )}
@@ -107,7 +73,7 @@ export function CourseCard({ course, href, color }: CourseCardProps) {
                 </Link>
             </CardHeader>
 
-            <CardContent>
+            <CardContent className="mb-auto">
                 {course.faculties && (
                     <CourseFacultyInfoCard
                         faculty={course.faculties?.[0]}
@@ -120,10 +86,11 @@ export function CourseCard({ course, href, color }: CourseCardProps) {
                     </p>
                 )}
             </CardContent>
-
-            <CardFooter className="flex justify-end gap-2 mt-auto">
-                <CourseAddCartButton courseId={course.id} isInCart={false} />
-            </CardFooter>
+            {actions && (
+                <CardFooter className="flex justify-end gap-2">
+                    {actions}
+                </CardFooter>
+            )}
         </Card>
     );
 }

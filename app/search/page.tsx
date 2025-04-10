@@ -1,4 +1,4 @@
-import { LiveSearch } from "@/components/search/search-live";
+import { SearchLive } from "@/components/search/search-live";
 
 interface SearchPageProps {
     searchParams: Promise<{
@@ -9,7 +9,5 @@ interface SearchPageProps {
 export default async function SearchPage({ searchParams }: SearchPageProps) {
     const query = await Promise.resolve(searchParams);
 
-    return (
-        <LiveSearch initialQuery={query.search} />
-    );
+    return <SearchLive initialQuery={query.search} />;
 }

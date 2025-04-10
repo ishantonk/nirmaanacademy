@@ -1,14 +1,21 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET() {
+import {
+    getAllCategories,
+    getCategoriesWithCount,
+} from "@/lib/category-service";
+
+export async function GET(request: NextRequest) {
+    const searchParams = request.nextUrl.searchParams;
+    const count = Number(searchParams.get("count"));
+
     try {
-        const categories = await prisma.category.findMany({
-            orderBy: {
-                name: "asc",
-            },
-        });
+        if (count) {
+            const categories = await getCategoriesWithCount(count);
+            return NextResponse.json(categories, { status: 200 });
+        }
 
+        const categories = await getAllCategories();
         return NextResponse.json(categories, { status: 200 });
     } catch {
         return NextResponse.json(

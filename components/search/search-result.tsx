@@ -8,44 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
 import { CourseCard } from "@/components/course/course-card";
 import { CourseCardSkeleton } from "@/components/course/course-card-skeleton";
-import { CategoryType, CourseType } from "@/lib/types";
-
-// -----------------------------------------------------------------------------
-// FETCH FUNCTIONS
-// -----------------------------------------------------------------------------
-const fetchCategories = async (): Promise<CategoryType[]> => {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_DOMAIN}/api/categories`);
-    if (!res.ok) {
-        throw new Error("Error fetching categories");
-    }
-    return res.json();
-};
-
-const fetchCourses = async (query: string): Promise<CourseType[]> => {
-    const res = await fetch(
-        `${
-            process.env.NEXT_PUBLIC_DOMAIN
-        }/api/courses?search=${encodeURIComponent(query)}`
-    );
-    if (!res.ok) {
-        throw new Error("Error fetching courses");
-    }
-    return res.json();
-};
-
-const fetchCoursesByCategory = async (
-    category: string
-): Promise<CourseType[]> => {
-    const res = await fetch(
-        `${
-            process.env.NEXT_PUBLIC_DOMAIN
-        }/api/courses?category=${encodeURIComponent(category)}`
-    );
-    if (!res.ok) {
-        throw new Error("Error fetching courses by category");
-    }
-    return res.json();
-};
+import { fetchCategories, fetchCourses } from "@/lib/fetch";
 
 // -----------------------------------------------------------------------------
 // MAIN COMPONENT
@@ -68,7 +31,7 @@ export function SearchResult({ query }: { query: string }) {
 function ShowCategories() {
     const { data, isLoading, error } = useQuery({
         queryKey: ["categories"],
-        queryFn: fetchCategories,
+        queryFn: () => fetchCategories(),
     });
 
     if (isLoading) return <CategoryLoadingSkeleton />;
@@ -130,17 +93,17 @@ function ShowCourses({
     query?: string;
     category?: string;
 }) {
-    // Decide which fetch function and query key to use.
-    const queryKey = category
-        ? ["courses", "category", category]
-        : ["courses", query];
-    const queryFn = category
-        ? () => fetchCoursesByCategory(category)
-        : () => fetchCourses(query!);
+    // Build query parameters based on the search and filter values.
+    const params = new URLSearchParams();
+    if (category) params.append("category", category);
+    if (query) params.append("search", query);
 
+    const queryString = params.toString();
+
+    // Use React Query to fetch courses based on the query string.
     const { data, isLoading, error } = useQuery({
-        queryKey,
-        queryFn,
+        queryKey: [queryString],
+        queryFn: () => fetchCourses(queryString),
         enabled: !!(query || category),
     });
 

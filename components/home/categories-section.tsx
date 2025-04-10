@@ -2,11 +2,10 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CategoriesCarousel } from "@/components/home/categories-carousel";
-import { prisma } from "@/lib/prisma";
-import { CategoryType } from "@/lib/types";
+import { fetchCategories } from "@/lib/fetch";
 
 export async function CategoriesSection() {
-    const categories = await getCategories();
+    const categories = await fetchCategories(8);
 
     return (
         <section className="bg-muted/70 pt-12 pb-8">
@@ -17,7 +16,7 @@ export async function CategoriesSection() {
                         <h2 className="text-xl lg:text-3xl font-bold">
                             Browse Categories
                         </h2>
-                        <p className="mt-2 text-muted-foreground">
+                        <p className="text-sm lg:text-base mt-2 text-muted-foreground">
                             Find the perfect course by exploring our categories
                         </p>
                     </div>
@@ -34,26 +33,4 @@ export async function CategoriesSection() {
             </div>
         </section>
     );
-}
-
-async function getCategories(): Promise<CategoryType[]> {
-    return await prisma.category.findMany({
-        include: {
-            _count: {
-                select: {
-                    courses: {
-                        where: {
-                            status: "PUBLISHED",
-                        },
-                    },
-                },
-            },
-        },
-        orderBy: {
-            courses: {
-                _count: "desc",
-            },
-        },
-        take: 8,
-    });
 }

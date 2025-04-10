@@ -6,7 +6,7 @@ import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { SearchResult } from "@/components/search/search-result";
 
-export function LiveSearch({ initialQuery = "" }: { initialQuery?: string }) {
+export function SearchLive({ initialQuery = "" }: { initialQuery?: string }) {
     const [query, setQuery] = useState(initialQuery);
     // Debounce the query value for 500ms to reduce API calls on every keystroke.
     const [debouncedQuery] = useDebounce(query, 500);

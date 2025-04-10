@@ -1,20 +1,9 @@
 import { CourseFilters } from "@/components/course/course-filters";
 import { CoursesLive } from "@/components/course/course-live";
-import { CategoryType } from "@/lib/types";
-
-async function getCategories() {
-    const response = await fetch(
-        `${process.env.NEXT_PUBLIC_DOMAIN}/api/categories`
-    );
-    if (response.ok) {
-        const categories: CategoryType[] = await response.json();
-        return categories;
-    }
-    return [];
-}
+import { fetchCategories } from "@/lib/fetch";
 
 export default async function CoursesPage() {
-    const categories = await getCategories();
+    const categories = await fetchCategories();
 
     return (
         <>
