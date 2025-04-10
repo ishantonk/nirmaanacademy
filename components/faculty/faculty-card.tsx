@@ -28,7 +28,7 @@ export function FacultyCard({ faculty }: { faculty: FacultyType }) {
                     {faculty.bio}
                 </p>
                 <div className="flex flex-row gap-2 justify-center items-center mx-auto">
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-sm text-muted-foreground line-clamp-1">
                         {faculty.designation}
                     </div>
                     <div className="w-1 h-1 rounded-full bg-muted-foreground" />
