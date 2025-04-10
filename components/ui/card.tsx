@@ -89,7 +89,7 @@ function CardImage({
             {thumbnail ? (
                 <Image
                     src={thumbnailUrl ?? "/placeholder.svg"}
-                    alt={title ?? ""}
+                    alt={title ?? "No thumbnail available"}
                     fill
                     className="object-cover transition-transform group-hover:scale-105"
                 />

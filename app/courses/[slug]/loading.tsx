@@ -100,9 +100,6 @@ export default function Loading() {
                                 <Skeleton className="w-32 h-4 rounded" />
                             </div>
                         </div>
-                        <div className="mt-6">
-                            <Skeleton className="w-full h-10 rounded" />
-                        </div>
                     </div>
                 </div>
             </div>

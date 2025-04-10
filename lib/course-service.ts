@@ -82,6 +82,7 @@ export async function getCourses(
         include: {
             category: true,
             faculties: true,
+            cartItems: true,
         },
         orderBy,
     });

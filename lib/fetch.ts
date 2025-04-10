@@ -23,3 +23,27 @@ export async function fetchCourses(
     if (response.ok) return await response.json();
     return [];
 }
+
+// Fetch course function which uses the slug parameters.
+export async function fetchCourseBySlug(slug: string): Promise<CourseType> {
+    const response = await fetch(
+        `${process.env.NEXT_PUBLIC_DOMAIN}/api/courses/${slug}`
+    );
+    if (response.ok) return await response.json();
+    throw new Error(`Failed to fetch course with slug: ${slug}`);
+}
+
+// Fetch function for checking course is in cart which uses the course id parameters.
+export async function fetchIsInCart(courseId: string): Promise<boolean> {
+    // Use a proper query parameter key for courseId
+    const response = await fetch(
+        `${process.env.NEXT_PUBLIC_DOMAIN}/api/cart/check?courseId=${courseId}`
+    );
+
+    if (response.ok) {
+        // Assuming the API returns a JSON object like { isInCart: true }
+        const data = await response.json();
+        return data.isInCart ?? false;
+    }
+    return false;
+}

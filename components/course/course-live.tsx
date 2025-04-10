@@ -10,12 +10,10 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { CourseGrid } from "@/components/course/course-grid";
 import { CourseCard } from "@/components/course/course-card";
 import { CourseCardSkeleton } from "@/components/course/course-card-skeleton";
-import { CourseAddCartButton } from "@/components/course/course-add-cart";
 import { fetchCourses } from "@/lib/fetch";
-import { useSession } from "next-auth/react";
 
-export function CoursesLive() {
-    const { data: session } = useSession();
+export function CoursesLive({ userId }: { userId?: string }) {
+    console.log(userId);
     const searchParams = useSearchParams();
 
     // Get filter values from URL parameters directly.
@@ -89,23 +87,6 @@ export function CoursesLive() {
                     courses={(data ?? []).map((course) => (
                         <CourseCard
                             key={course.id}
-                            href={`/courses/${course.slug}`}
-                            actions={
-                                <CourseAddCartButton
-                                    courseId={course.id}
-                                    isInCart={
-                                        session
-                                            ? (course.cartItems ?? []).some(
-                                                  (item) =>
-                                                      item.courseId ===
-                                                          course.id &&
-                                                      item.userId ===
-                                                          session?.user?.id
-                                              )
-                                            : false
-                                    }
-                                />
-                            }
                             course={course}
                         />
                     ))}

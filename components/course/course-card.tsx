@@ -1,4 +1,6 @@
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import {
     Card,
     CardContent,
@@ -7,24 +9,43 @@ import {
     CardImage,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { CourseAddCartButton } from "@/components/course/course-add-cart";
 import { CourseFacultyInfoCard } from "@/components/course/course-faculty-info-card";
-import { serializeDecimal } from "@/lib/utils";
 import { CourseType } from "@/lib/types";
 import { formatPrice } from "@/lib/format";
+import { serializeDecimal } from "@/lib/utils";
 
 interface CourseCardProps {
     course: CourseType;
-    href: string;
     actions?: React.ReactNode;
 }
 
-export function CourseCard({ course, href, actions }: CourseCardProps) {
+export function CourseCard({ course, actions }: CourseCardProps) {
+    // Retrieve session from useSession.
+    const { data: session } = useSession();
+    // Initialize cart status state.
+    const [isInCart, setIsInCart] = useState<boolean>(false);
+
     // Serialize the price and discountPrice to a number
     const price = serializeDecimal(course.price ?? null);
     const discountPrice = serializeDecimal(course.discountPrice ?? null);
+
+    useEffect(() => {
+        // If there's an active session, check for cart items.
+        if (session && course.cartItems) {
+            // Determine if the course is in the user's cart.
+            const cartStatus = course.cartItems.find(
+                (cartItem) =>
+                    cartItem.courseId === course.id &&
+                    cartItem.userId === session.user.id
+            );
+            setIsInCart(!!cartStatus);
+        }
+    }, [session, course]);
+
     return (
         <Card className="pt-0">
-            <Link href={href} className="block">
+            <Link href={`/courses/${course.slug}`} className="block">
                 <CardImage
                     thumbnail={course.thumbnail ?? ""}
                     title={course.title}
@@ -66,7 +87,7 @@ export function CourseCard({ course, href, actions }: CourseCardProps) {
                         </span>
                     )}
                 </div>
-                <Link href={href} className="block">
+                <Link href={`/courses/${course.slug}`} className="block">
                     <h3 className="line-clamp-2 text-lg font-semibold group-hover:text-primary">
                         {course.title}
                     </h3>
@@ -86,11 +107,10 @@ export function CourseCard({ course, href, actions }: CourseCardProps) {
                     </p>
                 )}
             </CardContent>
-            {actions && (
-                <CardFooter className="flex justify-end gap-2">
-                    {actions}
-                </CardFooter>
-            )}
+            <CardFooter className="flex justify-end gap-2">
+                <CourseAddCartButton courseId={course.id} isInCart={isInCart} />
+                {actions && actions}
+            </CardFooter>
         </Card>
     );
 }
