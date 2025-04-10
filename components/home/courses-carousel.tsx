@@ -38,10 +38,7 @@ export function CoursesCarousel({ courses }: { courses: CourseType[] }) {
                         key={course.id}
                         className="md:basis-1/2 lg:basis-1/4"
                     >
-                        <CourseCard
-                            course={course}
-                            href={"/courses/" + course.slug}
-                        />
+                        <CourseCard course={course} />
                     </CarouselItem>
                 ))}
             </CarouselContent>
