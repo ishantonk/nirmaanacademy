@@ -23,11 +23,11 @@ import { fetchCourseBySlug } from "@/lib/fetch";
 export default async function CoursePage({
     params,
 }: {
-    params: { slug: string };
+    params: Promise<{ slug: string }>;
 }) {
     // Get the current authenticated session, if any.
     const session = await getAuthSession();
-    const { slug } = params;
+    const { slug } = await params;
 
     // Fetch course data by its slug.
     const course: CourseType = await fetchCourseBySlug(slug);
