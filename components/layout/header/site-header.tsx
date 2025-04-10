@@ -16,7 +16,6 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { APP_ROUTES } from "@/data/routes-names";
 import { Logo } from "@/components/ui/logo";
 import { Button } from "@/components/ui/button";
 import { DesktopNav } from "@/components/layout/header/desktop-nav";
@@ -94,12 +93,12 @@ const navItems: {
 }[] = [
     {
         title: "Home",
-        href: APP_ROUTES.home,
+        href: "/",
         icon: Home,
     },
     {
         title: "Video Courses",
-        href: APP_ROUTES.courses,
+        href: "/courses",
         icon: BookOpen,
     },
     {
@@ -114,22 +113,22 @@ const navItems: {
     },
     {
         title: "Faculties",
-        href: APP_ROUTES.instructors,
+        href: "/faculty",
         icon: GraduationCap,
     },
     {
         title: "Blog",
-        href: APP_ROUTES.blogs,
+        href: "/blogs",
         icon: Newspaper,
     },
     {
         title: "About",
-        href: APP_ROUTES.aboutUs,
+        href: "/about",
         icon: MessageSquareWarning,
     },
     {
         title: "Contact",
-        href: APP_ROUTES.contact,
+        href: "/contact",
         icon: LifeBuoy,
     },
 ];

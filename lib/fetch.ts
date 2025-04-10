@@ -1,4 +1,4 @@
-import { CategoryType, CourseType } from "@/lib/types";
+import { CategoryType, CourseType, FacultyType } from "@/lib/types";
 
 // Fetch category function which uses the current count parameters.
 export async function fetchCategories(count?: number): Promise<CategoryType[]> {
@@ -31,6 +31,15 @@ export async function fetchCourseBySlug(slug: string): Promise<CourseType> {
     );
     if (response.ok) return await response.json();
     throw new Error(`Failed to fetch course with slug: ${slug}`);
+}
+
+// Fetch faculties function
+export async function fetchFaculties(): Promise<FacultyType[]> {
+    const response = await fetch(
+        `${process.env.NEXT_PUBLIC_DOMAIN}/api/faculty`
+    );
+    if (response.ok) return await response.json();
+    throw new Error(`Failed to fetch faculties`);
 }
 
 // Fetch function for checking course is in cart which uses the course id parameters.

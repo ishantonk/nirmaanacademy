@@ -35,6 +35,9 @@ export type FacultyType = Faculty & {
     email: string | null;
     phone: string | null;
     designation: string | null;
+    _count?: {
+        courses: number;
+    };
 };
 
 export type ModeType = Mode & {
