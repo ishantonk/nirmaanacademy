@@ -25,6 +25,7 @@ export function CourseCard({ course, actions }: CourseCardProps) {
     const { data: session } = useSession();
     // Initialize cart status state.
     const [isInCart, setIsInCart] = useState<boolean>(false);
+    const [isEnroll, setIsEnroll] = useState<boolean>(false);
 
     // Serialize the price and discountPrice to a number
     const price = serializeDecimal(course.price ?? null);
@@ -40,6 +41,19 @@ export function CourseCard({ course, actions }: CourseCardProps) {
                     cartItem.userId === session.user.id
             );
             setIsInCart(!!cartStatus);
+        }
+    }, [session, course]);
+
+    useEffect(() => {
+        // If there's an active session, check for enrollment.
+        if (session && course.enrollments) {
+            // Determine if the course is enroll by the user.
+            const enrollmentStatus = course.enrollments.find(
+                (enroll) =>
+                    enroll.courseId === course.id &&
+                    enroll.userId === session.user.id
+            );
+            setIsEnroll(!!enrollmentStatus);
         }
     }, [session, course]);
 
@@ -108,7 +122,12 @@ export function CourseCard({ course, actions }: CourseCardProps) {
                 )}
             </CardContent>
             <CardFooter className="flex justify-end gap-2">
-                <CourseAddCartButton courseId={course.id} isInCart={isInCart} />
+                {!isEnroll && (
+                    <CourseAddCartButton
+                        courseId={course.id}
+                        isInCart={isInCart}
+                    />
+                )}
                 {actions && actions}
             </CardFooter>
         </Card>

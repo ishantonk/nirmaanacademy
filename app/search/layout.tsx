@@ -13,7 +13,14 @@ export default function SearchLayout({
 }) {
     return (
         <div className="container py-8 mx-auto px-4">
-            <h1 className="text-3xl font-bold mb-8">Search Courses</h1>
+            <div className="mb-10">
+                <h1 className="text-3xl font-bold tracking-tight">
+                    Search Courses
+                </h1>
+                <p className="text-sm lg:text-base mt-2 text-muted-foreground">
+                    Find courses by name, category, description.
+                </p>
+            </div>
 
             <div className="flex flex-col gap-6">{children}</div>
         </div>

@@ -6,7 +6,6 @@ export const metadata: Metadata = {
     description: "Your shopping cart",
 };
 
-
 export default function CartLayout({
     children,
 }: {
@@ -14,7 +13,14 @@ export default function CartLayout({
 }) {
     return (
         <div className="container py-8 mx-auto px-4">
-            <h1 className="text-3xl font-bold">Shopping Cart</h1>
+            <div className="mb-10">
+                <h1 className="text-3xl font-bold tracking-tight">
+                    Shopping Cart
+                </h1>
+                <p className="text-sm lg:text-base mt-2 text-muted-foreground">
+                    View your courses in cart.
+                </p>
+            </div>
             {children}
         </div>
     );

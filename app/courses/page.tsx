@@ -7,8 +7,14 @@ export default async function CoursesPage() {
 
     return (
         <>
-            <h1 className="text-3xl font-bold mb-6">Browse Courses</h1>
-
+            <div className="mb-10">
+                <h1 className="text-3xl font-bold tracking-tight">
+                    Browse Courses
+                </h1>
+                <p className="text-sm lg:text-base mt-2 text-muted-foreground">
+                    View all courses we provide.
+                </p>
+            </div>
             <div className="flex flex-col md:flex-row gap-6">
                 {/* Sidebar with filters */}
                 <div className="w-full md:w-64 shrink-0">

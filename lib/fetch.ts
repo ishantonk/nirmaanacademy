@@ -39,7 +39,7 @@ export async function fetchFaculties(): Promise<FacultyType[]> {
         `${process.env.NEXT_PUBLIC_DOMAIN}/api/faculty`
     );
     if (response.ok) return await response.json();
-    throw new Error(`Failed to fetch faculties`);
+    return [];
 }
 
 // Fetch function for checking course is in cart which uses the course id parameters.

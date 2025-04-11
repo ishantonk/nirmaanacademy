@@ -25,9 +25,9 @@ export default async function BlogsPage() {
     return (
         <div className="container mx-auto py-10 px-4">
             {/* Header */}
-            <div className="text-center space-y-4 mb-12">
-                <h1 className="text-4xl font-bold tracking-tight">Our Blog</h1>
-                <p className="text-xl text-muted-foreground max-w-[800px] mx-auto">
+            <div className="mb-10">
+                <h1 className="text-3xl font-bold tracking-tight">Our Blog</h1>
+                <p className="text-sm lg:text-base mt-2 text-muted-foreground">
                     Stay updated with the latest insights, tutorials, and news
                     in Business Law, Company Law, and more.
                 </p>
