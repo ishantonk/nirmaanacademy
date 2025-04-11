@@ -69,6 +69,7 @@ export async function getCourses(
             include: {
                 category: true,
                 faculties: true,
+                cartItems: true,
             },
             take: count,
             orderBy,
@@ -87,6 +88,21 @@ export async function getCourses(
         orderBy,
     });
     return courses;
+}
+
+// Get course by id
+export async function getCourseById(id: string): Promise<CourseType | null> {
+    return await prisma.course.findUnique({
+        where: {
+            id: id,
+            status: "PUBLISHED",
+        },
+        include: {
+            category: true,
+            faculties: true,
+            cartItems: true,
+        },
+    });
 }
 
 // Get course by slug

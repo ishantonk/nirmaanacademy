@@ -1,4 +1,9 @@
-import { CategoryType, CourseType, FacultyType } from "@/lib/types";
+import {
+    CategoryType,
+    CourseType,
+    EnrollmentType,
+    FacultyType,
+} from "@/lib/types";
 
 // Fetch category function which uses the current count parameters.
 export async function fetchCategories(count?: number): Promise<CategoryType[]> {
@@ -24,6 +29,15 @@ export async function fetchCourses(
     return [];
 }
 
+// Fetch course function which uses the id parameters.
+export async function fetchCourseById(id: string): Promise<CourseType> {
+    const response = await fetch(
+        `${process.env.NEXT_PUBLIC_DOMAIN}/api/courses/${id}`
+    );
+    if (response.ok) return await response.json();
+    throw new Error(`Failed to fetch course with id: ${id}`);
+}
+
 // Fetch course function which uses the slug parameters.
 export async function fetchCourseBySlug(slug: string): Promise<CourseType> {
     const response = await fetch(
@@ -37,6 +51,15 @@ export async function fetchCourseBySlug(slug: string): Promise<CourseType> {
 export async function fetchFaculties(): Promise<FacultyType[]> {
     const response = await fetch(
         `${process.env.NEXT_PUBLIC_DOMAIN}/api/faculty`
+    );
+    if (response.ok) return await response.json();
+    return [];
+}
+
+// Fetch enrollments function
+export async function fetchEnrollments(): Promise<EnrollmentType[]> {
+    const response = await fetch(
+        `${process.env.NEXT_PUBLIC_DOMAIN}/api/enrollments`
     );
     if (response.ok) return await response.json();
     return [];

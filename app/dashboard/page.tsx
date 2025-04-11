@@ -1,6 +1,9 @@
+import { CourseCard } from "@/components/course/course-card";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { getAuthSession } from "@/lib/auth";
+import { fetchCourseById, fetchEnrollments } from "@/lib/fetch";
+import { CourseType } from "@/lib/types";
 import { BookOpen } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -11,6 +14,11 @@ export default async function DashboardPage() {
     if (!session) {
         redirect("/login");
     }
+
+    const enrollments = await fetchEnrollments();
+    const enrolledCourses: CourseType[] = await Promise.all(
+        enrollments.map((enrollment) => fetchCourseById(enrollment.courseId))
+    );
 
     return (
         <div className="container py-8 mx-auto px-4">
@@ -28,7 +36,7 @@ export default async function DashboardPage() {
             </div>
 
             {/* Course grid */}
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {enrolledCourses.length === 0 ? (
                 <EmptyState
                     icon={BookOpen}
                     title="No courses found"
@@ -39,7 +47,13 @@ export default async function DashboardPage() {
                         </Button>
                     }
                 />
-            </div>
+            ) : (
+                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {enrolledCourses.map((course) => (
+                        <CourseCard key={course.id} course={course} />
+                    ))}
+                </div>
+            )}
         </div>
     );
 }
