@@ -27,10 +27,7 @@ export default async function FacultyPage() {
             {/* Faculty Grid */}
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {faculties.map((faculty) => (
-                    <>
-                        console.log(faculty)
-                        <FacultyCard key={faculty.id} faculty={faculty} />
-                    </>
+                    <FacultyCard key={faculty.id} faculty={faculty} />
                 ))}
             </div>
         </div>
