@@ -56,6 +56,7 @@ export type EnrollmentType = Enrollment & {
     id: string;
     userId: string;
     courseId: string;
+    course?: CourseType;
 };
 
 export type ReviewType = Review & {

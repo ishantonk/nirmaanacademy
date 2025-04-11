@@ -8,6 +8,14 @@ export async function getEnrollments(
         where: {
             userId: userId,
         },
+        include: {
+            course: {
+                include: {
+                    category: true,
+                    faculties: true,
+                },
+            },
+        },
         orderBy: {
             createdAt: "desc",
         },

@@ -1,12 +1,20 @@
 import { CourseCard } from "@/components/course/course-card";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
+import { brandName } from "@/data/contact-info";
 import { getAuthSession } from "@/lib/auth";
-import { fetchCourseById, fetchEnrollments } from "@/lib/fetch";
-import { CourseType } from "@/lib/types";
+import { fetchEnrollments } from "@/lib/fetch";
 import { BookOpen } from "lucide-react";
+import { Metadata } from "next";
+import { headers } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+
+export const metadata: Metadata = {
+    title: "Dashboard | " + brandName,
+    description:
+        "Access all the courses you've enrolled in, track your learning progress, and manage your educational journey with ease on your personal dashboard.",
+};
 
 export default async function DashboardPage() {
     const session = await getAuthSession();
@@ -15,10 +23,10 @@ export default async function DashboardPage() {
         redirect("/login");
     }
 
-    const enrollments = await fetchEnrollments();
-    const enrolledCourses: CourseType[] = await Promise.all(
-        enrollments.map((enrollment) => fetchCourseById(enrollment.courseId))
-    );
+    const enrollments = await fetchEnrollments({
+        server: true,
+        headers: headers,
+    });
 
     return (
         <div className="container py-8 mx-auto px-4">
@@ -36,7 +44,7 @@ export default async function DashboardPage() {
             </div>
 
             {/* Course grid */}
-            {enrolledCourses.length === 0 ? (
+            {enrollments.length === 0 ? (
                 <EmptyState
                     icon={BookOpen}
                     title="No courses found"
@@ -49,9 +57,16 @@ export default async function DashboardPage() {
                 />
             ) : (
                 <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {enrolledCourses.map((course) => (
-                        <CourseCard key={course.id} course={course} />
-                    ))}
+                    {enrollments.map((enroll) => {
+                        if (enroll.course)
+                            return (
+                                // Todo: change or create new for dashboard
+                                <CourseCard
+                                    key={enroll.course?.id}
+                                    course={enroll.course}
+                                />
+                            );
+                    })}
                 </div>
             )}
         </div>

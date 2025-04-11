@@ -1,9 +1,10 @@
-import { getCourses } from "@/lib/course-service";
+import { getCourseById, getCourses } from "@/lib/course-service";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
 
+    const id = searchParams.get("id");
     const category = searchParams.get("category");
     const search = searchParams.get("search");
     const price = searchParams.get("price");
@@ -12,6 +13,10 @@ export async function GET(request: NextRequest) {
     const count = Number(searchParams.get("count"));
 
     try {
+        if (id) {
+            const course = getCourseById(id);
+            return NextResponse.json(course, { status: 200 });
+        }
         const courses = await getCourses(
             category,
             search,

@@ -20,7 +20,7 @@ export function Logo({ className, size }: { className?: string, size?: "sm" | "m
                     className="object-contain absolute inset-0"
                 />
             </div>
-            <span className={cn(size === "sm" ? "hidden sm:inline-block text-sm font-semibold" : size === "md" ? "hidden sm:inline-block text-normal font-semibold" : "hidden sm:inline-block text-lg font-semibold")}>Nirmaan academy</span>
+            <span className={cn(size === "sm" ? "hidden sm:inline-block text-sm font-semibold" : size === "md" ? "hidden sm:inline-block text-normal font-semibold" : "hidden sm:inline-block text-lg font-semibold")}>Nirmaan Academy</span>
         </Link>
     )
 }

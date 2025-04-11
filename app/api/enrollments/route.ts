@@ -17,7 +17,7 @@ export async function GET() {
             if (!enrollments) {
                 return NextResponse.json(
                     { error: "Enrollments not found" },
-                    { status: 404 }
+                    { status: 402 }
                 );
             }
             return NextResponse.json(enrollments, { status: 200 });

@@ -11,13 +11,13 @@ const prisma = new PrismaClient();
 async function main() {
     // Create admin user if not exists
     const adminEmail = "admin@nirmaanacademy.com";
-    const existingAdmin = await prisma.user.findUnique({
+    let adminUser = await prisma.user.findUnique({
         where: { email: adminEmail },
     });
 
-    if (!existingAdmin) {
+    if (!adminUser) {
         const hashedPassword = await hash("admin123", 12);
-        await prisma.user.create({
+        adminUser = await prisma.user.create({
             data: {
                 name: "Admin User",
                 email: adminEmail,
@@ -152,7 +152,7 @@ async function main() {
         }),
     ]);
 
-    // Create courses
+    // Define courses to be seeded
     const courses = [
         {
             title: "Business Law Fundamentals",
@@ -172,7 +172,6 @@ async function main() {
             categoryId: courseCategories[0].id,
             selectedModeId: standardMode.id,
             selectedAttemptId: regularAttempt.id,
-            // We connect the available mode and attempt as well.
             availableModes: { connect: [{ id: standardMode.id }] },
             availableAttempts: { connect: [{ id: regularAttempt.id }] },
             faculties: { connect: [{ id: facultyMember.id }] },
@@ -218,11 +217,37 @@ async function main() {
         },
     ];
 
+    // Upsert courses
     for (const course of courses) {
         await prisma.course.upsert({
             where: { slug: course.slug },
             update: {},
             create: course,
+        });
+    }
+
+    // Add dummy enrollment data:
+    // Enroll the admin user in the "Business Law Fundamentals" course.
+    const businessLawCourse = await prisma.course.findUnique({
+        where: { slug: "business-law-fundamentals" },
+    });
+
+    if (adminUser && businessLawCourse) {
+        await prisma.enrollment.upsert({
+            // Use a compound unique constraint identifier.
+            // Ensure your schema has @@unique([userId, courseId]) in Enrollment model.
+            where: {
+                // Replace this with the proper composite unique field if defined.
+                userId_courseId: {
+                    userId: adminUser.id,
+                    courseId: businessLawCourse.id,
+                },
+            },
+            update: {},
+            create: {
+                userId: adminUser.id,
+                courseId: businessLawCourse.id,
+            },
         });
     }
 
@@ -245,7 +270,6 @@ async function main() {
             metaDescription:
                 "A comprehensive guide to business law principles.",
             categoryId: courseCategories[0].id,
-            // Tags will be connected later
             tagIds: [blogTags[0].id, blogTags[1].id], // Business Law, Company Law
         },
         {
@@ -269,7 +293,7 @@ async function main() {
     ];
 
     for (const post of posts) {
-        // Separate out tagIds for later connection
+        // Separate out tagIds for later connection.
         const { tagIds, ...postData } = post;
         const createdPost = await prisma.post.upsert({
             where: { slug: post.slug },
@@ -280,7 +304,7 @@ async function main() {
             },
         });
 
-        // Connect tags to the post
+        // Connect tags to the post.
         await prisma.post.update({
             where: { id: createdPost.id },
             data: {
