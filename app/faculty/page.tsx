@@ -1,5 +1,4 @@
 import { Metadata } from "next";
-import Link from "next/link";
 import { fetchFaculties } from "@/lib/fetch";
 import { FacultyCard } from "@/components/faculty/faculty-card";
 
@@ -28,9 +27,10 @@ export default async function FacultyPage() {
             {/* Faculty Grid */}
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {faculties.map((faculty) => (
-                    <Link key={faculty.id} href={`/faculty/`}>
-                        <FacultyCard faculty={faculty} />
-                    </Link>
+                    <>
+                        console.log(faculty)
+                        <FacultyCard key={faculty.id} faculty={faculty} />
+                    </>
                 ))}
             </div>
         </div>

@@ -12,7 +12,7 @@ export default function AboutPage() {
     return (
         <div className="container mx-auto py-10 space-y-16 px-4">
             {/* Hero Section */}
-            <div className="mb-10">
+            <div className="lg:text-center mb-10">
                 <h1 className="text-3xl font-bold tracking-tight">
                     {aboutUsData.title}
                 </h1>
@@ -22,7 +22,7 @@ export default function AboutPage() {
             </div>
 
             {/* Description */}
-            <div className="max-w-3xl mx-auto text-center">
+            <div className="max-w-3xl mx-auto lg:text-center">
                 <p className="text-lg text-muted-foreground">
                     {aboutUsData.description}
                 </p>

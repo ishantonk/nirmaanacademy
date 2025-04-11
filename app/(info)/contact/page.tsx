@@ -11,7 +11,7 @@ export default function ContactPage() {
     return (
         <div className="container mx-auto py-10 px-4">
             <div className="flex flex-col items-center justify-center space-y-8">
-                <div className="mb-10">
+                <div className="lg:text-center mb-10">
                     <h1 className="text-3xl font-bold tracking-tight">
                         Contact Us
                     </h1>

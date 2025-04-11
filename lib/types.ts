@@ -30,10 +30,10 @@ export type CategoryType = Category & {
 
 export type FacultyType = Faculty & {
     name: string;
-    image: string | null;
-    bio: string | null;
     email: string | null;
     phone: string | null;
+    bio: string | null;
+    image: string | null;
     designation: string | null;
     _count?: {
         courses: number;
