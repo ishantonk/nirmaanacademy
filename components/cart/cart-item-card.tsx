@@ -43,6 +43,10 @@ export function CartItemCard({ item }: { item: CartItemType }) {
         },
     });
 
+    if (!item.course) {
+        return null;
+    }
+
     return (
         <div className="flex gap-4 rounded-lg border p-4">
             <div className="relative aspect-video h-24 overflow-hidden rounded-md">
@@ -78,16 +82,22 @@ export function CartItemCard({ item }: { item: CartItemType }) {
                         item.course.discountPrice < item.course.price ? (
                             <span className="flex items-center gap-2">
                                 <span>
-                                    {formatPrice(item.course.discountPrice)}
+                                    {formatPrice(
+                                        Number(item.course.discountPrice)
+                                    )}
                                 </span>
                                 <span className="text-sm text-muted-foreground line-through">
-                                    {formatPrice(item.course.price)}
+                                    {formatPrice(Number(item.course.price))}
                                 </span>
                             </span>
                         ) : (
                             <span>
                                 {formatPrice(
-                                    item.course.price ? item.course.price : 0
+                                    Number(
+                                        item.course.price
+                                            ? item.course.price
+                                            : 0
+                                    )
                                 )}
                             </span>
                         )}
