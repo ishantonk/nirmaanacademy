@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
@@ -10,6 +9,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/format";
 import { CartItemType } from "@/lib/types";
+import { Card, CardImage } from "@/components/ui/card";
 
 export function CartItemCard({ item }: { item: CartItemType }) {
     const router = useRouter();
@@ -43,30 +43,25 @@ export function CartItemCard({ item }: { item: CartItemType }) {
         },
     });
 
-    if (!item.course) {
-        return null;
-    }
+    if (!item.course) return null;
+
+    // Extract and normalize prices
+    const price = Number(item.course.price);
+    const discountPrice = Number(item.course.discountPrice);
+    const isOnSale =
+        item.course.onSale && discountPrice && price && discountPrice < price;
 
     return (
-        <div className="flex gap-4 rounded-lg border p-4">
-            <div className="relative aspect-video h-24 overflow-hidden rounded-md">
-                <Image
-                    src={
-                        item.course.thumbnail ||
-                        "/placeholder.svg?height=96&width=170"
-                    }
-                    alt={item.course.title}
-                    fill
-                    className="object-cover"
-                />
-            </div>
+        <Card className="flex-row gap-4 p-4">
+            <CardImage
+                className="h-24 rounded-md"
+                thumbnail={item.course.thumbnail ?? ""}
+                title={item.course.title}
+            />
             <div className="flex flex-1 flex-col justify-between">
                 <div>
                     <h3 className="font-medium">
-                        <Link
-                            href={`/courses/${item.course.slug}`}
-                            className="hover:underline"
-                        >
+                        <Link href={`/courses/${item.course.slug}`}>
                             {item.course.title}
                         </Link>
                     </h3>
@@ -76,30 +71,15 @@ export function CartItemCard({ item }: { item: CartItemType }) {
                 </div>
                 <div className="flex items-center justify-between">
                     <div className="font-medium">
-                        {item.course.onSale &&
-                        item.course.discountPrice &&
-                        item.course.price &&
-                        item.course.discountPrice < item.course.price ? (
+                        {isOnSale ? (
                             <span className="flex items-center gap-2">
-                                <span>
-                                    {formatPrice(
-                                        Number(item.course.discountPrice)
-                                    )}
-                                </span>
+                                <span>{formatPrice(discountPrice)}</span>
                                 <span className="text-sm text-muted-foreground line-through">
-                                    {formatPrice(Number(item.course.price))}
+                                    {formatPrice(price)}
                                 </span>
                             </span>
                         ) : (
-                            <span>
-                                {formatPrice(
-                                    Number(
-                                        item.course.price
-                                            ? item.course.price
-                                            : 0
-                                    )
-                                )}
-                            </span>
+                            <span>{formatPrice(Number(price))}</span>
                         )}
                     </div>
                     <Button
@@ -117,6 +97,6 @@ export function CartItemCard({ item }: { item: CartItemType }) {
                     </Button>
                 </div>
             </div>
-        </div>
+        </Card>
     );
 }

@@ -1,5 +1,5 @@
-import { brandName } from "@/data/contact-info";
 import { Metadata } from "next";
+import { brandName } from "@/data/contact-info";
 
 export const metadata: Metadata = {
     title: "Shopping Cart | " + brandName,

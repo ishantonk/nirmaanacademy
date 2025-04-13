@@ -1,26 +1,10 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { CartItemList } from "@/components/cart/cart-item-list";
+import { CartOrderSummary } from "@/components/cart/cart-order-summary";
 import { getAuthSession } from "@/lib/auth";
 import { CartItemType } from "@/lib/types";
-import { CartOrderSummary } from "@/components/cart/cart-order-summary";
-import { CartItemList } from "@/components/cart/cart-item-list";
-
-async function getCartItems(): Promise<CartItemType[]> {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_DOMAIN}/api/cart`, {
-        // Get the request cookies from the server
-        headers: {
-            cookie: (await headers()).get("cookie") || "",
-        },
-        // Always disable caching for protected fetches
-        cache: "no-store",
-    });
-
-    if (!response.ok) {
-        throw new Error("Failed to fetch cart items");
-    }
-
-    return response.json();
-}
+import { fetchCartItems } from "@/lib/fetch";
 
 export default async function CartPage() {
     const session = await getAuthSession();
@@ -29,7 +13,10 @@ export default async function CartPage() {
         redirect("/login");
     }
 
-    const cartItems: CartItemType[] = await getCartItems();
+    const cartItems: CartItemType[] = await fetchCartItems({
+        server: true,
+        headers: headers,
+    });
 
     return (
         <div className="mt-8 grid gap-8 md:grid-cols-3">

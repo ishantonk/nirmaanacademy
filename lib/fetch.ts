@@ -1,10 +1,12 @@
 import {
+    CartItemType,
     CategoryType,
     CourseType,
     EnrollmentType,
     FacultyType,
 } from "@/lib/types";
 import { ReadonlyHeaders } from "next/dist/server/web/spec-extension/adapters/headers";
+import { toast } from "sonner";
 
 interface AuthFetchProps {
     server?: boolean;
@@ -12,23 +14,24 @@ interface AuthFetchProps {
 }
 
 /**
- * A utility type that enforces the presence of a `headers` function 
+ * A utility type that enforces the presence of a `headers` function
  * when the `server` property in `AuthFetchProps` is `true`.
  *
  * @template T - A type extending `AuthFetchProps`.
  * @remarks
- * - If `T["server"]` is `true`, the resulting type will include a `headers` method 
+ * - If `T["server"]` is `true`, the resulting type will include a `headers` method
  *   that returns a `Promise` resolving to `ReadonlyHeaders`.
  * - If `T["server"]` is not `true`, the type remains unchanged.
  *
- * This is useful for ensuring that server-side fetch operations 
+ * This is useful for ensuring that server-side fetch operations
  * always include the necessary headers for authentication or other purposes.
  */
 type RequireHeadersIfServer<T extends AuthFetchProps> = T["server"] extends true
     ? T & { headers: () => Promise<ReadonlyHeaders> }
     : T;
 
-export type AuthFetchPropsWithValidation = RequireHeadersIfServer<AuthFetchProps>;
+export type AuthFetchPropsWithValidation =
+    RequireHeadersIfServer<AuthFetchProps>;
 
 /**
  * Fetches categories with an optional limit.
@@ -129,19 +132,53 @@ export async function fetchEnrollments({
     return [];
 }
 
+export async function fetchCartItems({
+    server = false,
+    headers,
+}: AuthFetchProps): Promise<CartItemType[]> {
+    try {
+        const response = await fetch(
+            `${process.env.NEXT_PUBLIC_DOMAIN}/api/cart`,
+            {
+                credentials: server ? "omit" : "include",
+                // Get the request cookies from the server
+                headers: {
+                    cookie:
+                        server && headers
+                            ? (await headers()).get("cookie") ?? ""
+                            : "",
+                    "Content-Type": "application/json",
+                },
+                // Always disable caching for protected fetches
+                cache: "no-store",
+            }
+        );
+        if (!response.ok) {
+            // Failed to fetch cart items.
+            return [];
+        }
+        return response.json();
+    } catch (error) {
+        console.error("Error:", error);
+        toast.error("fail to fetch cart items.");
+        return [];
+    }
+}
+
+interface AuthCartByCourseProps extends AuthFetchProps {
+    courseId: string;
+}
+
 /**
  * Checks whether a given course is in the cart.
  * @param courseId - The ID of the course to check.
  * @returns A promise that resolves to a boolean indicating the cart status.
  */
-interface AuthIsInCartFetchProps extends AuthFetchProps {
-    courseId: string;
-}
 export async function fetchIsInCart({
     courseId,
     server,
     headers,
-}: AuthIsInCartFetchProps): Promise<boolean> {
+}: AuthCartByCourseProps): Promise<boolean> {
     const response = await fetch(
         `${process.env.NEXT_PUBLIC_DOMAIN}/api/cart?courseId=${courseId}`,
         {

@@ -26,33 +26,42 @@ export function CartOrderSummary({ cartItems }: { cartItems: CartItemType[] }) {
                 <h2 className="text-lg font-semibold">Order Summary</h2>
             </CardHeader>
             <CardContent>
-  {cartItems
-    .filter((item) => item.course)
-    .map((item) => (
-      <div className="flex justify-between mb-4" key={item.course.id}>
-        <span className="line-clamp-1 text-muted-foreground">
-          {item.course.title}
-        </span>
-        <span>
-          {formatPrice(
-            Number(
-              item.course.onSale
-                ? item.course.discountPrice ?? item.course.price
-                : item.course.price
-            )
-          )}
-        </span>
-      </div>
-    ))}
-  <Separator />
-</CardContent>
+                {cartItems.map((item) => {
+                    if (item.course)
+                        return (
+                            <div
+                                className="flex justify-between mb-4"
+                                key={item.course.id}
+                            >
+                                <span className="line-clamp-1 text-muted-foreground">
+                                    {item.course.title}
+                                </span>
+                                <span>
+                                    {formatPrice(
+                                        Number(
+                                            item.course.onSale
+                                                ? item.course.discountPrice ??
+                                                      item.course.price
+                                                : item.course.price
+                                        )
+                                    )}
+                                </span>
+                            </div>
+                        );
+                })}
+                <Separator />
+            </CardContent>
             <CardFooter className="flex flex-col gap-4">
                 <div className="flex justify-between w-full font-semibold">
                     <span>Total</span>
                     <span>{formatPrice(total)}</span>
                 </div>
-                <Button disabled={!!cartItems} asChild className="w-full">
-                    <Link href={"/checkout"}>Checkout</Link>
+                <Button asChild={!!total} disabled className="w-full">
+                    {total ? (
+                        <Link href={"/checkout"}>Checkout</Link>
+                    ) : (
+                        "Checkout"
+                    )}
                 </Button>
             </CardFooter>
         </Card>

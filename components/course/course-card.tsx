@@ -15,7 +15,6 @@ import { CourseAddCartButton } from "@/components/course/course-add-cart";
 import { CourseFacultyInfoCard } from "@/components/course/course-faculty-info-card";
 import { CourseType } from "@/lib/types";
 import { formatPrice } from "@/lib/format";
-import { serializeDecimal } from "@/lib/utils";
 import { fetchEnrollments } from "@/lib/fetch";
 
 interface CourseCardProps {
@@ -28,9 +27,10 @@ export function CourseCard({ course, actions }: CourseCardProps) {
     const [isEnrolled, setIsEnrolled] = useState(false);
 
     // Extract and normalize prices
-    const price = serializeDecimal(course.price ?? null);
-    const discountPrice = serializeDecimal(course.discountPrice ?? null);
-    const isOnSale = course.onSale && discountPrice && price !== null && discountPrice < price;
+    const price = Number(course.price);
+    const discountPrice = Number(course.discountPrice);
+    const isOnSale =
+        course.onSale && discountPrice && price && discountPrice < price;
 
     // Check if the user is enrolled in the course
     useEffect(() => {

@@ -17,7 +17,7 @@ export async function DELETE(
     const { cartItemId } = await context.params;
 
     try {
-        // Step 1: Validate user session (authentication)
+        // Validate user session (authentication)
         const session = await getAuthSession();
         if (!session) {
             return NextResponse.json(
@@ -28,7 +28,7 @@ export async function DELETE(
 
         const userId = session.user.id;
 
-        // Step 2: Validate the cart item exists and belongs to the user
+        // Validate the cart item exists and belongs to the user
         const cartItem = await findCartItemById(userId, cartItemId);
         if (!cartItem) {
             return NextResponse.json(
@@ -37,7 +37,7 @@ export async function DELETE(
             );
         }
 
-        // Step 3: Authorization check – ensure the cart item belongs to the user
+        // Authorization check – ensure the cart item belongs to the user
         if (cartItem.userId !== userId) {
             return NextResponse.json(
                 {
@@ -48,14 +48,14 @@ export async function DELETE(
             );
         }
 
-        // Step 4: Remove the cart item using its courseId
+        // Remove the cart item using its courseId
         const courseId = cartItem.courseId;
         const removedCartItem = await removeCourseFromCartByCourseId(
             userId,
             courseId
         );
 
-        // Step 5: Return a success response
+        // Return a success response
         return NextResponse.json(
             {
                 removedCartItem,
@@ -67,7 +67,7 @@ export async function DELETE(
         // Log unexpected errors for debugging
         console.error("Error while deleting cart item:", error);
 
-        // Optional: Handle known errors (e.g., DB connection failure)
+        // Handle known errors (e.g., DB connection failure)
         if ((error as { code?: string }).code === "ECONNREFUSED") {
             return NextResponse.json(
                 { error: "Database connection failed." },

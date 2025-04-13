@@ -63,32 +63,36 @@ function CardAction({ className, ...props }: React.ComponentProps<"div">) {
 }
 
 interface CardImageProps extends React.ComponentProps<"div"> {
-    thumbnail?: string;
-    title?: string;
+    thumbnail: string;
+    title: string;
     overlay?: React.ReactNode;
 }
 
 function CardImage({
-    className,
     thumbnail,
     title,
     overlay,
+    className,
     ...props
 }: CardImageProps) {
-    const thumbnailUrl = isValidUrl(thumbnail ?? "") ? thumbnail : null;
+    const thumbnailUrl =
+        thumbnail && isValidUrl(thumbnail ?? "") ? thumbnail : null;
 
     return (
         <div
             data-slot="card-image"
-            className={cn("relative aspect-video overflow-hidden rounded-lg", className)}
+            className={cn(
+                "relative aspect-video overflow-hidden bg-muted",
+                className
+            )}
             {...props}
         >
             {overlay && (
                 <div className={"absolute z-10 inset-0"}>{overlay}</div>
             )}
-            {thumbnail ? (
+            {thumbnailUrl ? (
                 <Image
-                    src={thumbnailUrl ?? "/placeholder.svg"}
+                    src={thumbnailUrl}
                     alt={title ?? "No thumbnail available"}
                     fill
                     className="object-cover transition-transform group-hover:scale-105"
