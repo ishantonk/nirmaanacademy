@@ -1,49 +1,83 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getAuthSession } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import {
+    findCartItemById,
+    removeCourseFromCartByCourseId,
+} from "@/lib/services/cart";
 
+/**
+ * DELETE /api/cart/:cartItemId
+ * Removes a specific cart item by its ID for the authenticated user.
+ */
 export async function DELETE(
-    req: Request,
-    { params }: { params: Promise<{ cartItemId: string }> }
+    request: NextRequest,
+    context: { params: Promise<{ cartItemId: string }> }
 ) {
-    const { cartItemId } = await params;
-    try {
-        const session = await getAuthSession();
+    // Extract the cartItemId from dynamic route params
+    const { cartItemId } = await context.params;
 
+    try {
+        // Step 1: Validate user session (authentication)
+        const session = await getAuthSession();
         if (!session) {
             return NextResponse.json(
-                { message: "Unauthorized" },
+                { message: "Unauthorized. Please log in." },
                 { status: 401 }
             );
         }
 
-        const cartItem = await prisma.cartItem.findUnique({
-            where: {
-                id: cartItemId,
-            },
-        });
+        const userId = session.user.id;
 
+        // Step 2: Validate the cart item exists and belongs to the user
+        const cartItem = await findCartItemById(userId, cartItemId);
         if (!cartItem) {
             return NextResponse.json(
-                { message: "Cart item not found" },
+                { message: "Cart item not found." },
                 { status: 404 }
             );
         }
 
-        if (cartItem.userId !== session.user.id) {
-            return NextResponse.json({ message: "Forbidden" }, { status: 403 });
+        // Step 3: Authorization check – ensure the cart item belongs to the user
+        if (cartItem.userId !== userId) {
+            return NextResponse.json(
+                {
+                    message:
+                        "Forbidden. You are not allowed to delete this item.",
+                },
+                { status: 403 }
+            );
         }
 
-        await prisma.cartItem.delete({
-            where: {
-                id: cartItemId,
-            },
-        });
+        // Step 4: Remove the cart item using its courseId
+        const courseId = cartItem.courseId;
+        const removedCartItem = await removeCourseFromCartByCourseId(
+            userId,
+            courseId
+        );
 
-        return NextResponse.json({ message: "Cart item removed" });
-    } catch {
+        // Step 5: Return a success response
         return NextResponse.json(
-            { message: "Something went wrong" },
+            {
+                removedCartItem,
+                message: "Cart item successfully removed.",
+            },
+            { status: 200 }
+        );
+    } catch (error) {
+        // Log unexpected errors for debugging
+        console.error("Error while deleting cart item:", error);
+
+        // Optional: Handle known errors (e.g., DB connection failure)
+        if ((error as { code?: string }).code === "ECONNREFUSED") {
+            return NextResponse.json(
+                { error: "Database connection failed." },
+                { status: 503 } // Service Unavailable
+            );
+        }
+
+        // Generic server error response
+        return NextResponse.json(
+            { message: "Internal server error. Could not delete cart item." },
             { status: 500 }
         );
     }

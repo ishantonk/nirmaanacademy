@@ -10,7 +10,7 @@ export function HeroSection() {
     const isMobile = useIsMobile();
 
     return (
-        <section className="relative w-full overflow-hidden py-12">
+        <section className="relative w-full overflow-hidden py-4 lg:py-12">
             {/* Background Image */}
             <div className="absolute inset-0 z-[-1]">
                 <Image

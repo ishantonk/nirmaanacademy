@@ -16,6 +16,7 @@ import { CourseFacultyInfoCard } from "@/components/course/course-faculty-info-c
 import { CourseType } from "@/lib/types";
 import { formatPrice } from "@/lib/format";
 import { serializeDecimal } from "@/lib/utils";
+import { fetchEnrollments } from "@/lib/fetch";
 
 interface CourseCardProps {
     course: CourseType;
@@ -23,50 +24,43 @@ interface CourseCardProps {
 }
 
 export function CourseCard({ course, actions }: CourseCardProps) {
-    // Retrieve session from useSession.
     const { data: session } = useSession();
-    // Initialize cart status state.
-    const [isInCart, setIsInCart] = useState<boolean>(false);
-    const [isEnroll, setIsEnroll] = useState<boolean>(false);
+    const [isEnrolled, setIsEnrolled] = useState(false);
 
-    // Serialize the price and discountPrice to a number
+    // Extract and normalize prices
     const price = serializeDecimal(course.price ?? null);
     const discountPrice = serializeDecimal(course.discountPrice ?? null);
+    const isOnSale = course.onSale && discountPrice && price !== null && discountPrice < price;
 
+    // Check if the user is enrolled in the course
     useEffect(() => {
-        // If there's an active session, check for cart items.
-        if (session && course.cartItems) {
-            // Determine if the course is in the user's cart.
-            const cartStatus = course.cartItems.find(
-                (cartItem) =>
-                    cartItem.courseId === course.id &&
-                    cartItem.userId === session.user.id
-            );
-            setIsInCart(!!cartStatus);
-        }
-    }, [session, course]);
+        const checkEnrollment = async () => {
+            if (!session) return;
 
-    useEffect(() => {
-        // If there's an active session, check for enrollment.
-        if (session && course.enrollments) {
-            // Determine if the course is enroll by the user.
-            const enrollmentStatus = course.enrollments.find(
-                (enroll) =>
-                    enroll.courseId === course.id &&
-                    enroll.userId === session.user.id
-            );
-            setIsEnroll(!!enrollmentStatus);
-        }
-    }, [session, course]);
+            try {
+                const enrollments = await fetchEnrollments({ server: false });
+                const enrolled = enrollments?.some(
+                    (e) =>
+                        e.courseId === course.id && e.userId === session.user.id
+                );
+                setIsEnrolled(!!enrolled);
+            } catch (error) {
+                console.error("Failed to fetch enrollments:", error);
+            }
+        };
+
+        checkEnrollment();
+    }, [session, course.id]);
 
     return (
         <Card className="pt-0">
+            {/* Course Thumbnail with Sale Badge */}
             <Link href={`/courses/${course.slug}`} className="block">
                 <CardImage
                     thumbnail={course.thumbnail ?? ""}
                     title={course.title}
                     overlay={
-                        course.onSale && (
+                        isOnSale && (
                             <Badge
                                 variant="destructive"
                                 className="absolute top-2 right-2 opacity-65"
@@ -78,31 +72,35 @@ export function CourseCard({ course, actions }: CourseCardProps) {
                 />
             </Link>
 
+            {/* Course Info Header */}
             <CardHeader className="space-y-1">
-                <div className="flex items-center col-span-2 justify-between">
+                <div className="flex items-center justify-between">
                     {course.category && (
                         <Badge variant="secondary">
                             {course.category.name}
                         </Badge>
                     )}
-                    {course.onSale &&
-                    discountPrice &&
-                    price &&
-                    discountPrice < price ? (
-                        <span className="flex items-center gap-2">
-                            <span className="text-sm md:text-xs text-red-500 line-through">
-                                {formatPrice(price)}
-                            </span>
+
+                    {/* Price Display (with discount logic) */}
+                    <span className="flex items-center gap-2">
+                        {isOnSale ? (
+                            <>
+                                <span className="text-sm md:text-xs text-red-500 line-through">
+                                    {formatPrice(price)}
+                                </span>
+                                <span className="font-semibold text-base md:text-sm text-green-500">
+                                    {formatPrice(discountPrice)}
+                                </span>
+                            </>
+                        ) : (
                             <span className="font-semibold text-base md:text-sm text-green-500">
-                                {formatPrice(discountPrice)}
+                                {formatPrice(price || 0)}
                             </span>
-                        </span>
-                    ) : (
-                        <span className="font-semibold text-base md:text-sm text-green-500">
-                            {formatPrice(price ? price : 0)}
-                        </span>
-                    )}
+                        )}
+                    </span>
                 </div>
+
+                {/* Course Title */}
                 <Link href={`/courses/${course.slug}`} className="block">
                     <h3 className="line-clamp-2 text-lg font-semibold group-hover:text-primary">
                         {course.title}
@@ -110,10 +108,11 @@ export function CourseCard({ course, actions }: CourseCardProps) {
                 </Link>
             </CardHeader>
 
-            <CardContent className="mb-auto">
-                {course.faculties && (
+            {/* Faculty Info & Description */}
+            <CardContent>
+                {course.faculties?.[0] && (
                     <CourseFacultyInfoCard
-                        faculty={course.faculties?.[0]}
+                        faculty={course.faculties[0]}
                         size="sm"
                     />
                 )}
@@ -123,14 +122,11 @@ export function CourseCard({ course, actions }: CourseCardProps) {
                     </p>
                 )}
             </CardContent>
-            <CardFooter className="flex justify-end gap-2">
-                {!isEnroll && (
-                    <CourseAddCartButton
-                        courseId={course.id}
-                        isInCart={isInCart}
-                    />
-                )}
-                {actions && actions}
+
+            {/* Add to Cart / Custom Actions */}
+            <CardFooter className="flex justify-end gap-2 mt-auto">
+                {!isEnrolled && <CourseAddCartButton courseId={course.id} />}
+                {actions}
             </CardFooter>
         </Card>
     );

@@ -9,6 +9,8 @@ import {
     Post,
     Prisma,
     Review,
+    Tag,
+    User,
 } from "@prisma/client";
 
 export type CourseWhereType = Prisma.CourseWhereInput & {
@@ -20,6 +22,13 @@ export type CourseWhereType = Prisma.CourseWhereInput & {
         description?: { contains: string; mode: string };
     }>;
     price?: number | { gt: number };
+};
+
+export type UserType = User & {
+    account?: {
+        type: string;
+        provider: string;
+    };
 };
 
 export type CategoryType = Category & {
@@ -75,19 +84,7 @@ export type CartItemType = CartItem & {
     id: string;
     userId: string;
     courseId: string;
-    course: {
-        id: string;
-        title: string;
-        slug: string;
-        price: number | null;
-        discountPrice: number | null;
-        thumbnail: string | null;
-        onSale: boolean;
-        faculties: Array<{
-            name: string | null;
-            image: string | null;
-        }>;
-    };
+    course?: CourseType;
 };
 
 export type CourseType = Course & {
@@ -111,17 +108,10 @@ export type CourseType = Course & {
 export type BlogPostType = Post & {
     author?: {
         name: string | null;
+        email: string | null;
         bio: string | null;
         image: string | null;
     };
-    category?: {
-        name: string | null;
-        slug: string | null;
-        description: string | null;
-    };
-    tags?: Array<{
-        id: string | null;
-        name: string | null;
-        slug: string | null;
-    }>;
+    category?: CategoryType;
+    tags?: Tag[];
 };

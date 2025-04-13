@@ -22,7 +22,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-    title: brandName,
+    title: "Home | " + brandName,
     description: aboutUsData.tagline,
     icons: {
         icon: "/logo.png",

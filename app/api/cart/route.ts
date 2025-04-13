@@ -1,157 +1,159 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import * as z from "zod";
 import { getAuthSession } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { CartItemType } from "@/lib/types";
+import { findEnrollment } from "@/lib/services/enrollment";
+import { findCourseById } from "@/lib/services/course";
+import {
+    AddItemToCart,
+    findCartItemByCourseId,
+    getCartItems,
+} from "@/lib/services/cart";
 
+// Schema to validate incoming cart item data
 const cartItemSchema = z.object({
-    courseId: z.string(),
+    courseId: z.string().min(1, "Course ID is required"),
 });
 
-export async function POST(req: Request) {
+/**
+ * POST /api/cart
+ * Adds a course to the user's cart after validation.
+ */
+export async function POST(request: NextRequest) {
     try {
+        // Check for authenticated session
         const session = await getAuthSession();
-
         if (!session) {
             return NextResponse.json(
-                { message: "Unauthorized" },
+                { message: "Unauthorized access. Please log in." },
                 { status: 401 }
             );
         }
 
-        const body = await req.json();
+        const userId = session.user.id;
+
+        // Validate request body
+        const body = await request.json();
         const { courseId } = cartItemSchema.parse(body);
 
-        // Check if course exists and is published
-        const course = await prisma.course.findUnique({
-            where: {
-                id: courseId,
-                status: "PUBLISHED",
-            },
-        });
-
+        // Check if the course exists
+        const course = await findCourseById(courseId);
         if (!course) {
             return NextResponse.json(
-                { message: "Course not found" },
+                { message: "Course not found." },
                 { status: 404 }
             );
         }
 
-        // Check if user is already enrolled in the course
-        const enrollment = await prisma.enrollment.findUnique({
-            where: {
-                userId_courseId: {
-                    userId: session.user.id,
-                    courseId,
-                },
-            },
-        });
-
+        // Prevent adding if user is already enrolled
+        const enrollment = await findEnrollment(userId, courseId);
         if (enrollment) {
             return NextResponse.json(
-                { message: "You are already enrolled in this course" },
+                { message: "You are already enrolled in this course." },
                 { status: 400 }
             );
         }
 
-        // Check if course is already in cart
-        const existingCartItem = await prisma.cartItem.findUnique({
-            where: {
-                userId_courseId: {
-                    userId: session.user.id,
-                    courseId,
-                },
-            },
-        });
-
+        // Prevent duplicates in the cart
+        const existingCartItem = await findCartItemByCourseId(userId, courseId);
         if (existingCartItem) {
             return NextResponse.json(
-                { message: "Course is already in your cart" },
+                { message: "Course is already in your cart." },
                 { status: 400 }
             );
         }
 
-        // Add course to cart
-        const cartItem = await prisma.cartItem.create({
-            data: {
-                userId: session.user.id,
-                courseId,
-            },
-        });
+        // Add the course to cart
+        const cartItem = await AddItemToCart(userId, courseId);
 
+        // Return success with 201 Created
         return NextResponse.json(cartItem, { status: 201 });
     } catch (error) {
+        // Log the error for debugging purposes
+        console.error("Error adding to cart:", error);
+
+        // Handle schema validation errors
         if (error instanceof z.ZodError) {
             return NextResponse.json(
-                { message: "Invalid request data", errors: error.errors },
+                { message: "Invalid request data.", errors: error.errors },
                 { status: 400 }
             );
         }
 
+        // Handle known specific error types here (e.g., database issues)
+        if ((error as { code?: string }).code === "ECONNREFUSED") {
+            return NextResponse.json(
+                { error: "Database connection failed." },
+                { status: 503 } // Service Unavailable
+            );
+        }
+
+        // Return generic server error
         return NextResponse.json(
-            { message: "Something went wrong" },
+            { message: "Internal server error. Failed to add to cart." },
             { status: 500 }
         );
     }
 }
 
-export async function GET() {
+/**
+ * GET /api/cart
+ * Fetches cart items or checks if a specific course is in the user's cart.
+ * Optional query param:
+ * - courseId: if provided, checks if this course is already in the cart.
+ */
+export async function GET(request: NextRequest) {
     try {
+        // Check for user session
         const session = await getAuthSession();
-
         if (!session) {
             return NextResponse.json(
-                { message: "Unauthorized" },
+                { message: "Unauthorized access." },
                 { status: 401 }
             );
         }
 
-        const response = await prisma.cartItem.findMany({
-            where: {
-                userId: session?.user.id,
-            },
-            select: {
-                id: true,
-                courseId: true,
-                userId: true,
-                createdAt: true,
-                updatedAt: true,
-                course: {
-                    select: {
-                        id: true,
-                        title: true,
-                        slug: true,
-                        price: true,
-                        discountPrice: true,
-                        thumbnail: true,
-                        onSale: true,
-                        faculties: {
-                            select: {
-                                name: true,
-                                image: true,
-                            },
-                        },
-                    },
-                },
-            },
-            orderBy: {
-                createdAt: "desc",
-            },
-        });
+        const userId = session.user.id;
+        const searchParams = request.nextUrl.searchParams;
+        const courseId = searchParams.get("courseId");
 
-        const cartItems: CartItemType[] = response.map((item) => ({
-            ...item,
-            course: {
-                ...item.course,
-                price: Number(item.course.price),
-                discountPrice: Number(item.course.discountPrice),
-            },
-        }));
+        // If courseId is provided, check if it's in the cart
+        if (courseId) {
+            const isInCart = await findCartItemByCourseId(userId, courseId);
+            if (isInCart) {
+                return NextResponse.json(isInCart, { status: 200 });
+            } else {
+                return NextResponse.json(
+                    { message: "Course not in cart." },
+                    { status: 404 }
+                );
+            }
+        }
 
-        return NextResponse.json(cartItems || [], { status: 200 });
-    } catch {
+        // If no courseId, fetch all cart items
+        const cartItems = await getCartItems(userId);
+        if (!cartItems || cartItems.length === 0) {
+            return NextResponse.json(
+                { message: "Your cart is empty." },
+                { status: 204 } // No Content
+            );
+        }
+
+        return NextResponse.json(cartItems, { status: 200 });
+    } catch (error) {
+        // Log the error for debugging purposes
+        console.error("Error fetching cart items:", error);
+
+        // Handle known specific error types here (e.g., database issues)
+        if ((error as { code?: string }).code === "ECONNREFUSED") {
+            return NextResponse.json(
+                { error: "Database connection failed." },
+                { status: 503 } // Service Unavailable
+            );
+        }
+
+        // Return generic server error
         return NextResponse.json(
-            { message: "Something went wrong" },
+            { message: "Internal server error. Failed to fetch cart items." },
             { status: 500 }
         );
     }

@@ -4,18 +4,23 @@ import { Button } from "@/components/ui/button";
 
 export function Whatsapp() {
     return (
-        <Button
-            asChild
-            className="fixed bottom-16 lg:bottom-8 right-5 z-50 h-12 w-12 lg:h-14 lg:w-14 rounded-full bg-green-400 hover:bg-green-300 p-2 shadow-lg hover:scale-105 hover:shadow-xl active:scale-95 active:shadow-sm transition-all duration-200 ease-in-out"
-        >
-            <Link href={"https://wa.me/message/S56WRTWK7EW4H1"}>
-                <Image
-                    src="/whatsapp.png"
-                    alt="WhatsApp"
-                    width={50}
-                    height={50}
-                />
-            </Link>
-        </Button>
+        <div className="fixed bottom-16 right-6 lg:bottom-8 lg:right-8 z-50 aspect-square overflow-hidden rounded-full">
+            <Button
+                asChild
+                size={"icon"}
+                className="h-12 lg:h-14 w-full bg-green-400 hover:bg-green-500 p-2 hover:scale-105 active:scale-95 active:shadow-sm transition-all"
+            >
+                <Link href="https://wa.me/message/S56WRTWK7EW4H1">
+                    <div className="relative h-full w-full aspect-square">
+                        <Image
+                            src="/whatsapp.svg"
+                            alt="WhatsApp"
+                            fill
+                            className="object-cover"
+                        />
+                    </div>
+                </Link>
+            </Button>
+        </div>
     );
 }

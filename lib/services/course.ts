@@ -91,7 +91,7 @@ export async function getCourses(
 }
 
 // Get course by id
-export async function getCourseById(id: string): Promise<CourseType | null> {
+export async function findCourseById(id: string): Promise<CourseType | null> {
     return await prisma.course.findUnique({
         where: {
             id: id,
@@ -155,3 +155,6 @@ export async function getCourseBySlug(
         },
     });
 }
+
+// todo: create a function for creating new course.
+// todo: create a function for updating a course.

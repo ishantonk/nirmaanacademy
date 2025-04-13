@@ -21,3 +21,19 @@ export async function getEnrollments(
         },
     });
 }
+
+export async function findEnrollment(
+    userId: string,
+    courseId: string
+): Promise<EnrollmentType | null> {
+    return await prisma.enrollment.findUnique({
+        where: {
+            userId_courseId: {
+                userId: userId,
+                courseId: courseId,
+            },
+        },
+    });
+}
+
+// todo: create a function for creating new enrollment.

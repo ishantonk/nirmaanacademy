@@ -50,25 +50,16 @@ export default async function CoursePage({
               ) / course.reviews.length
             : 0;
 
-    // Initialize enrollment and cart status flags.
+    // Initialize enrollment status flags.
     let isEnrolled = false;
-    let isInCart = false;
 
-    // If there's an active session, check for enrollment and cart items.
+    // If there's an active session, check for enrollment.
     if (session) {
         // Determine if the user is already enrolled.
         const enrollment = course.enrollments?.find(
             (enrollment) => enrollment.userId === session.user.id
         );
         isEnrolled = !!enrollment;
-
-        // Determine if the course is in the user's cart.
-        const cartStatus = course.cartItems?.find(
-            (cartItem) =>
-                cartItem.courseId === course.id &&
-                cartItem.userId === session.user.id
-        );
-        isInCart = !!cartStatus;
     }
 
     // Only render the page for authenticated users.
@@ -251,7 +242,6 @@ export default async function CoursePage({
                             <div className="mt-6 w-full">
                                 <CourseAddCartButton
                                     courseId={course.id}
-                                    isInCart={isInCart}
                                     className="w-full"
                                 />
                             </div>
@@ -315,7 +305,7 @@ export default async function CoursePage({
                                 </div>
                             </div>
 
-                            {/* TODO: Add a carousel for related courses */}
+                            {/* Todo: Add a carousel for related courses */}
                         </div>
                     </div>
 

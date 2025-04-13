@@ -32,3 +32,6 @@ export async function getAllCategories(): Promise<CategoryType[]> {
         },
     });
 }
+
+// todo: create a new function for creating new category.
+// todo: create a function for updating a category.

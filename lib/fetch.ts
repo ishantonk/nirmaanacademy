@@ -143,7 +143,7 @@ export async function fetchIsInCart({
     headers,
 }: AuthIsInCartFetchProps): Promise<boolean> {
     const response = await fetch(
-        `${process.env.NEXT_PUBLIC_DOMAIN}/api/cart/check?courseId=${courseId}`,
+        `${process.env.NEXT_PUBLIC_DOMAIN}/api/cart?courseId=${courseId}`,
         {
             credentials: server ? "omit" : "include",
             // Get the request cookies from the server
