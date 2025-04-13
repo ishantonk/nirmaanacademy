@@ -12,6 +12,7 @@ import { CartItemType } from "@/lib/types";
 
 export function CartOrderSummary({ cartItems }: { cartItems: CartItemType[] }) {
     const total = cartItems.reduce((acc, item) => {
+        if (!item.course) return 0;
         let price = item.course.price;
         if (item.course.onSale) {
             price = item.course.discountPrice ?? item.course.price;
@@ -25,26 +26,29 @@ export function CartOrderSummary({ cartItems }: { cartItems: CartItemType[] }) {
                 <h2 className="text-lg font-semibold">Order Summary</h2>
             </CardHeader>
             <CardContent>
-                {cartItems.map((item) => (
-                    <div
-                        className="flex justify-between mb-4"
-                        key={item.course.id}
-                    >
-                        <span className="line-clamp-1 text-muted-foreground">
-                            {item.course.title}
-                        </span>
-                        <span>
-                            {formatPrice(
-                                Number(
-                                    item.course.onSale
-                                        ? item.course.discountPrice ??
-                                              item.course.price
-                                        : item.course.price
-                                )
-                            )}
-                        </span>
-                    </div>
-                ))}
+                {cartItems.map((item) => {
+                    if (!item.course) return null;
+                    return (
+                        <div
+                            className="flex justify-between mb-4"
+                            key={item.course.id}
+                        >
+                            <span className="line-clamp-1 text-muted-foreground">
+                                {item.course.title}
+                            </span>
+                            <span>
+                                {formatPrice(
+                                    Number(
+                                        item.course.onSale
+                                            ? item.course.discountPrice ??
+                                                  item.course.price
+                                            : item.course.price
+                                    )
+                                )}
+                            </span>
+                        </div>
+                    );
+                })}
                 <Separator />
             </CardContent>
             <CardFooter className="flex flex-col gap-4">
@@ -52,7 +56,7 @@ export function CartOrderSummary({ cartItems }: { cartItems: CartItemType[] }) {
                     <span>Total</span>
                     <span>{formatPrice(total)}</span>
                 </div>
-                <Button asChild className="w-full">
+                <Button disabled={!!cartItems} asChild className="w-full">
                     <Link href={"/checkout"}>Checkout</Link>
                 </Button>
             </CardFooter>
