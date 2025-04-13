@@ -18,7 +18,7 @@ export function BottomNavBar() {
 
     return (
         (isMobile && (
-            <nav className="fixed z-30 bottom-0 left-0 w-full bg-accent/95 backdrop-blur supports-[backdrop-filter]:bg-accent/60 border-t drop-shadow-lg p-2 flex justify-around">
+            <nav className="fixed z-30 bottom-0 left-0 w-full bg-accent/95 backdrop-blur supports-[backdrop-filter]:bg-accent/60 border-t drop-shadow-lg p-2 pb-4 flex justify-around">
                 {navItems.map(({ name, href, icon: Icon }) => (
                     <Link
                         key={name}
