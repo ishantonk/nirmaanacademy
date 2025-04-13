@@ -10,6 +10,7 @@ import { BottomNavBar } from "@/components/layout/bottom/bottom-navbar";
 import { brandName } from "@/data/contact-info";
 import { aboutUsData } from "@/data/about-us";
 import { Whatsapp } from "@/components/layout/whatsapp/whatsapp";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -52,6 +53,7 @@ export default function RootLayout({
                             <SiteFooter />
                             <Whatsapp />
                             <BottomNavBar />
+                            <Toaster />
                         </ThemeProvider>
                     </QueryProvider>
                 </AuthProvider>
