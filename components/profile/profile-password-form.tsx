@@ -125,7 +125,7 @@ export function ProfilePasswordForm() {
                 <Form {...form}>
                     <form
                         onSubmit={form.handleSubmit(onSubmit)}
-                        className="space-y-4"
+                        className="space-y-6"
                     >
                         {/* Current Password Field */}
                         <FormField
