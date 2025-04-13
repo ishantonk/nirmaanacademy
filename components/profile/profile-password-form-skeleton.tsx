@@ -1,6 +1,7 @@
 "use client";
 
 import { Skeleton } from "@/components/ui/skeleton";
+import { Card } from "@/components/ui/card";
 
 /**
  * ProfilePasswordFormLoading Component
@@ -13,44 +14,33 @@ import { Skeleton } from "@/components/ui/skeleton";
  */
 export default function ProfilePasswordFormLoading() {
     return (
-        <div className="container mx-auto py-8 px-4">
-            {/* Card Container Skeleton */}
-            <div className="rounded-lg border p-6 animate-pulse">
-                {/* Header Skeleton */}
-                <div className="mb-6">
-                    {/* Simulated CardTitle */}
-                    <Skeleton className="h-8 w-1/2 rounded" />
-                    {/* Simulated CardDescription */}
-                    <Skeleton className="h-4 w-full mt-2 rounded" />
+        // Card Skeleton
+        <Card>
+            <div className="space-y-4">
+                {/* Current Password Field Skeleton */}
+                <div className="space-y-2">
+                    <Skeleton className="h-5 w-1/3 rounded" /> {/* Label */}
+                    <Skeleton className="h-10 w-full rounded" /> {/* Input */}
+                    <Skeleton className="h-4 w-2/3 rounded" />{" "}
+                    {/* Message/Error placeholder */}
                 </div>
-                {/* Form Fields Skeleton */}
-                <div className="space-y-4">
-                    {/* Current Password Field Skeleton */}
-                    <div className="space-y-2">
-                        <Skeleton className="h-5 w-1/3 rounded" /> {/* Label */}
-                        <Skeleton className="h-10 w-full rounded" />{" "}
-                        {/* Input */}
-                        <Skeleton className="h-4 w-2/3 rounded" />{" "}
-                        {/* Message/Error placeholder */}
-                    </div>
-                    {/* New Password Field Skeleton */}
-                    <div className="space-y-2">
-                        <Skeleton className="h-5 w-1/3 rounded" />
-                        <Skeleton className="h-10 w-full rounded" />
-                        <Skeleton className="h-4 w-2/3 rounded" />
-                    </div>
-                    {/* Confirm Password Field Skeleton */}
-                    <div className="space-y-2">
-                        <Skeleton className="h-5 w-1/3 rounded" />
-                        <Skeleton className="h-10 w-full rounded" />
-                        <Skeleton className="h-4 w-2/3 rounded" />
-                    </div>
+                {/* New Password Field Skeleton */}
+                <div className="space-y-2">
+                    <Skeleton className="h-5 w-1/3 rounded" />
+                    <Skeleton className="h-10 w-full rounded" />
+                    <Skeleton className="h-4 w-2/3 rounded" />
                 </div>
-                {/* Submit Button Skeleton */}
-                <div className="flex justify-end mt-6">
-                    <Skeleton className="h-10 w-32 rounded" />
+                {/* Confirm Password Field Skeleton */}
+                <div className="space-y-2">
+                    <Skeleton className="h-5 w-1/3 rounded" />
+                    <Skeleton className="h-10 w-full rounded" />
+                    <Skeleton className="h-4 w-2/3 rounded" />
                 </div>
             </div>
-        </div>
+            {/* Submit Button Skeleton */}
+            <div className="flex justify-end mt-6">
+                <Skeleton className="h-10 w-32 rounded" />
+            </div>
+        </Card>
     );
 }

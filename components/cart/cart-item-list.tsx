@@ -25,9 +25,9 @@ export function CartItemList({ cartItems }: { cartItems: CartItemType[] }) {
 
     return (
         <div className="md:col-span-2 space-y-4">
-            {cartItems.map((item) => (
-                <CartItemCard key={item.id} item={item} />
-            ))}
+            {cartItems.map((item) =>
+                item.course ? <CartItemCard key={item.id} item={item} /> : null
+            )}
         </div>
     );
 }
