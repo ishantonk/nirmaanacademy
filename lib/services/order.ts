@@ -1,6 +1,27 @@
 import { prisma } from "@/lib/prisma";
 import { CartItemType } from "@/lib/types";
 
+export async function findOrderById({ orderId }: { orderId: string }) {
+    try {
+        return await prisma.order.findUnique({
+            where: {
+                id: orderId,
+            },
+            include: {
+                orderItems: {
+                    include: {
+                        course: true,
+                    },
+                },
+            },
+        });
+    } catch (error) {
+        console.error("Error on finding your order:", error);
+        // Optionally, rethrow the error if you want the caller to handle it.
+        throw error;
+    }
+}
+
 interface CreateOrderProps {
     userId: string;
     amount: number;
@@ -40,6 +61,32 @@ export async function createOrder({
         });
     } catch (error) {
         console.error("Error on making order:", error);
+        // Optionally, rethrow the error if you want the caller to handle it.
+        throw error;
+    }
+}
+
+interface updateOrderByIdProps {
+    orderId: string;
+    paymentId: string;
+}
+
+export async function updateOrderById({
+    orderId,
+    paymentId,
+}: updateOrderByIdProps) {
+    try {
+        return await prisma.order.update({
+            where: {
+                id: orderId,
+            },
+            data: {
+                status: "COMPLETED",
+                paymentId: paymentId,
+            },
+        });
+    } catch (error) {
+        console.error("Error on updating paymentId in order:", error);
         // Optionally, rethrow the error if you want the caller to handle it.
         throw error;
     }

@@ -6,6 +6,7 @@ import {
     Enrollment,
     Faculty,
     Mode,
+    Order,
     Post,
     Prisma,
     Review,
@@ -104,6 +105,8 @@ export type CourseType = Course & {
         courseId: string;
     }>;
 };
+
+export type OrderType = Order
 
 export type BlogPostType = Post & {
     author?: {

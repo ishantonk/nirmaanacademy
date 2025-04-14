@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import Script from "next/script";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import {
     Form,
@@ -18,7 +18,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { formatPrice } from "@/lib/format";
+import { brandName } from "@/data/contact-info";
+import { OrderType } from "@/lib/types";
+import { useSession } from "next-auth/react";
 
+/**
+ * Define the schema for checkout form validation.
+ */
 const formSchema = z.object({
     name: z.string().min(3, {
         message: "Name must be at least 3 characters",
@@ -34,11 +40,21 @@ interface CheckoutFormProps {
     amount: number;
 }
 
+/**
+ * CheckoutForm Component:
+ * - Displays payment details form.
+ * - Creates an order on the server.
+ * - Initializes Razorpay with the order details.
+ * - Handles payment verification and redirects on success.
+ */
 export function CheckoutForm({ amount }: CheckoutFormProps) {
     const router = useRouter();
+    const { data: session } = useSession();
+
     const [isLoading, setIsLoading] = useState(false);
     const [razorpayLoaded, setRazorpayLoaded] = useState(false);
 
+    // Initialize React Hook Form with zod validation.
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -47,23 +63,38 @@ export function CheckoutForm({ amount }: CheckoutFormProps) {
         },
     });
 
+    // Load Razorpay SDK script if it's not already loaded.
     useEffect(() => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        if ((window as any).Razorpay) {
+        // Check on the client if Razorpay is available (window.Razorpay exists)
+        if (typeof window !== "undefined" && window.Razorpay) {
             setRazorpayLoaded(true);
         }
     }, []);
 
+    // Populate form with session data.
+    useEffect(() => {
+        if (session) {
+            form.reset({
+                name: session.user.name!,
+                email: session.user.email!,
+            });
+        }
+    }, [session, form]);
+
+    /**
+     * onSubmit:
+     * - Creates an order on the server.
+     * - Initializes Razorpay with order data.
+     * - Defines a payment handler callback to verify the payment.
+     */
     async function onSubmit(data: FormValues) {
         try {
             setIsLoading(true);
 
-            // Create order on server
+            // Create order on the server.
             const response = await fetch("/api/checkout", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     amount,
                     name: data.name,
@@ -75,34 +106,30 @@ export function CheckoutForm({ amount }: CheckoutFormProps) {
                 throw new Error("Failed to create order");
             }
 
-            const orderData = await response.json();
+            const orderData: OrderType = await response.json();
 
             if (!razorpayLoaded) {
                 throw new Error("Razorpay SDK not loaded");
             }
 
-            // Initialize Razorpay payment
-            const options = {
-                key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-                amount: orderData.amount,
+            // Define Razorpay options.
+            // If you encounter a type error with RazorpayOptions, consider augmenting the global types.
+            const razorpayOptions: RazorpayOptions = {
+                key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!, // Ensure environment variable is defined
+                amount: Number(orderData.amount), // should be in subunits (e.g., paise)
                 currency: "INR",
-                name: "EduLearn",
+                name: brandName,
                 description: "Course Purchase",
-                order_id: orderData.razorpayOrderId,
-                handler: async (response: {
-                    razorpay_payment_id: string;
-                    razorpay_order_id: string;
-                    razorpay_signature: string;
-                }) => {
+                order_id: orderData.razorpayOrderId!, // order id from Razorpay order creation
+                handler: async (response) => {
                     try {
-                        // Verify payment on server
+                        // Verify payment on the server.
                         const verifyResponse = await fetch(
                             "/api/checkout/verify",
                             {
                                 method: "POST",
-                                headers: {
-                                    "Content-Type": "application/json",
-                                },
+                                credentials: "include",
+                                headers: { "Content-Type": "application/json" },
                                 body: JSON.stringify({
                                     orderId: orderData.id,
                                     paymentId: response.razorpay_payment_id,
@@ -119,7 +146,6 @@ export function CheckoutForm({ amount }: CheckoutFormProps) {
                             description:
                                 "Your order has been placed successfully",
                         });
-
                         // Redirect to success page
                         router.push("/checkout/success");
                     } catch {
@@ -137,9 +163,18 @@ export function CheckoutForm({ amount }: CheckoutFormProps) {
                 },
             };
 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const razorpay = new (window as any).Razorpay(options);
-            razorpay.open();
+            // Instantiate Razorpay using the global constructor.
+            // Ensure that your global type declarations are set for Razorpay.
+            if (window.Razorpay) {
+                // Type assertion: override types if necessary.
+                const RazorpayConstructor = window.Razorpay;
+                const razorpayInstance = new RazorpayConstructor(
+                    razorpayOptions
+                );
+                razorpayInstance.open();
+            } else {
+                throw new Error("Razorpay SDK is not available");
+            }
         } catch {
             toast.error("Something went wrong", {
                 description: "Failed to process payment. Please try again.",
@@ -151,6 +186,7 @@ export function CheckoutForm({ amount }: CheckoutFormProps) {
 
     return (
         <div>
+            {/* Include Razorpay SDK script */}
             <Script
                 src="https://checkout.razorpay.com/v1/checkout.js"
                 onLoad={() => setRazorpayLoaded(true)}
@@ -163,6 +199,7 @@ export function CheckoutForm({ amount }: CheckoutFormProps) {
                     onSubmit={form.handleSubmit(onSubmit)}
                     className="space-y-6"
                 >
+                    {/* Name Field */}
                     <FormField
                         control={form.control}
                         name="name"
@@ -177,6 +214,7 @@ export function CheckoutForm({ amount }: CheckoutFormProps) {
                         )}
                     />
 
+                    {/* Email Field */}
                     <FormField
                         control={form.control}
                         name="email"
@@ -194,6 +232,7 @@ export function CheckoutForm({ amount }: CheckoutFormProps) {
                         )}
                     />
 
+                    {/* Submit Button */}
                     <Button
                         type="submit"
                         className="w-full"

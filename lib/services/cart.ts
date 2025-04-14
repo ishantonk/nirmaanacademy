@@ -88,6 +88,24 @@ export async function removeCourseFromCartByCourseId(
     }
 }
 
+interface EmptyUserCartProps {
+    userId: string;
+}
+
+export async function emptyUserCart({ userId }: EmptyUserCartProps) {
+    try {
+        return await prisma.cartItem.deleteMany({
+            where: {
+                userId: userId,
+            },
+        });
+    } catch (error) {
+        console.error("Error on emptying user cart:", error);
+        // Optionally, rethrow the error if you want the caller to handle it.
+        throw error;
+    }
+}
+
 export async function getCartItems({
     userId,
 }: {
