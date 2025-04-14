@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 
 export function Whatsapp() {
     return (
-        <div className="fixed bottom-16 right-6 lg:bottom-8 lg:right-8 z-50 aspect-square overflow-hidden rounded-full">
+        <div className="fixed bottom-20 right-4 lg:bottom-8 lg:right-8 z-50 aspect-square overflow-hidden rounded-full">
             <Button
                 asChild
                 size={"icon"}

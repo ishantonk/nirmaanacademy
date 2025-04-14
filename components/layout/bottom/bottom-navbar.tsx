@@ -2,14 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Search, User } from "lucide-react";
+import { BookOpen, Home, LayoutDashboard, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 const navItems = [
     { name: "Home", href: "/", icon: Home },
+    { name: "Courses", href: "/courses", icon: BookOpen },
     { name: "Search", href: "/search", icon: Search },
-    { name: "Profile", href: "/profile", icon: User },
+    { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
 ];
 
 export function BottomNavBar() {
@@ -18,7 +19,7 @@ export function BottomNavBar() {
 
     return (
         (isMobile && (
-            <nav className="fixed z-30 bottom-0 left-0 w-full bg-accent/95 backdrop-blur supports-[backdrop-filter]:bg-accent/60 border-t drop-shadow-lg p-2 pb-4 flex justify-around">
+            <nav className="fixed z-30 bottom-0 left-0 w-full bg-accent/95 backdrop-blur supports-[backdrop-filter]:bg-accent/60 border-t drop-shadow-lg p-2 pb-5 flex justify-around">
                 {navItems.map(({ name, href, icon: Icon }) => (
                     <Link
                         key={name}

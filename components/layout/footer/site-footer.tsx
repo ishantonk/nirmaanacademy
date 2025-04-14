@@ -8,7 +8,7 @@ import { FooterNewsletter } from "@/components/layout/footer/footer-newsletter";
 
 export function SiteFooter() {
     return (
-        <footer className="border-t bg-accent">
+        <footer className="border-t bg-primary/10">
             <div className="container py-8 md:py-12 mx-auto px-4">
                 <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
                     <FooterLogoAndInfo />
