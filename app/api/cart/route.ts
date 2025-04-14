@@ -137,7 +137,7 @@ export async function GET(request: NextRequest) {
         }
 
         // If no courseId, fetch all cart items
-        const cartItems = await getCartItems(userId);
+        const cartItems = await getCartItems({ userId: userId });
         if (!cartItems || cartItems.length === 0) {
             return NextResponse.json([], { status: 200 }); // Your cart is empty.
         }
