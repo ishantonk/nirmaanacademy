@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 // import { CheckoutForm } from "@/components/checkout/checkout-form";
-import { CheckoutOrderSummary } from "@/components/checkout/checkout-order-summary";
+// import { CheckoutOrderSummary } from "@/components/checkout/checkout-order-summary";
 import { getAuthSession } from "@/lib/auth";
 import { fetchCartItems } from "@/lib/fetch";
 
@@ -29,7 +29,7 @@ export default async function CheckoutPage() {
 
     return (
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-            <CheckoutOrderSummary cartItems={cartItems} />
+            {/* <CheckoutOrderSummary cartItems={cartItems} /> */}
 
             {/* <CheckoutForm amount={total} /> */}
         </div>
