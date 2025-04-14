@@ -1,9 +1,10 @@
 import { Metadata } from "next";
 import { fetchFaculties } from "@/lib/fetch";
 import { FacultyCard } from "@/components/faculty/faculty-card";
+import { brandName } from "@/data/contact-info";
 
 export const metadata: Metadata = {
-    title: "Our Faculty - Nirmaan Academy",
+    title: `Our Faculty | ${brandName}`,
     description:
         "Meet our expert instructors who are passionate about teaching business and corporate law.",
 };
