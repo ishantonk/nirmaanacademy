@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
         const json = await request.json();
         const body = checkoutSchema.parse(json);
 
-        const cartItems = await getCartItems(userId);
+        const cartItems = await getCartItems({ userId: userId });
         if (!cartItems || cartItems.length === 0) {
             return NextResponse.json([], { status: 200 }); // Your cart is empty.
         }
