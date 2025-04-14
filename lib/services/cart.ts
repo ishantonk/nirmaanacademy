@@ -101,6 +101,7 @@ export async function getCartItems({
             include: {
                 course: {
                     include: {
+                        category: true,
                         faculties: true,
                         availableModes: true,
                         availableAttempts: true,
