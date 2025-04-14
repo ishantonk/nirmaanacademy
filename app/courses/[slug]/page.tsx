@@ -188,8 +188,7 @@ export default async function CoursePage({
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectGroup>
-                                        {course.availableModes &&
-                                        course.availableModes.length ? (
+                                        {course.availableModes.length ? (
                                             course.availableModes.map(
                                                 (mode) => (
                                                     <SelectItem
@@ -215,8 +214,7 @@ export default async function CoursePage({
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectGroup>
-                                        {course.availableAttempts &&
-                                        course.availableAttempts.length ? (
+                                        {course.availableAttempts.length ? (
                                             course.availableAttempts.map(
                                                 (attempt) => (
                                                     <SelectItem
@@ -242,6 +240,10 @@ export default async function CoursePage({
                             <div className="mt-6 w-full">
                                 <CourseAddCartButton
                                     courseId={course.id}
+                                    attemptId={
+                                        course.availableAttempts[0].id
+                                    }
+                                    modeId={course.availableModes[0].id}
                                     className="w-full"
                                 />
                             </div>
@@ -265,7 +267,7 @@ export default async function CoursePage({
 
                             {/* Course Content Info */}
                             <CourseContentInfo
-                                selectedMode={course.selectedMode}
+                                selectedMode={course.availableModes?.[0]}
                                 duration={course.durationInMin}
                                 enrollments={course.enrollments}
                                 videoLanguage={course.videoLanguage}

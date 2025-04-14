@@ -125,7 +125,13 @@ export function CourseCard({ course, actions }: CourseCardProps) {
 
             {/* Add to Cart / Custom Actions */}
             <CardFooter className="flex justify-end gap-2 mt-auto">
-                {!isEnrolled && <CourseAddCartButton courseId={course.id} />}
+                {!isEnrolled && (
+                    <CourseAddCartButton
+                        courseId={course.id}
+                        attemptId={course.availableAttempts[0].id}
+                        modeId={course.availableModes[0].id}
+                    />
+                )}
                 {actions}
             </CardFooter>
         </Card>

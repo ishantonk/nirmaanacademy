@@ -30,10 +30,7 @@ export async function GET(request: NextRequest) {
 
             // Handle case when course is not found
             if (!course) {
-                return NextResponse.json(
-                    { error: "Course not found." },
-                    { status: 404 }
-                );
+                return NextResponse.json([], { status: 200 }); // Course not found.
             }
 
             return NextResponse.json(course, { status: 200 });

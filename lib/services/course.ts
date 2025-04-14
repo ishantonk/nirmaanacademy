@@ -70,6 +70,8 @@ export async function getCourses(
                 category: true,
                 faculties: true,
                 cartItems: true,
+                availableModes: true,
+                availableAttempts: true,
             },
             take: count,
             orderBy,
@@ -84,6 +86,8 @@ export async function getCourses(
             category: true,
             faculties: true,
             cartItems: true,
+            availableModes: true,
+            availableAttempts: true,
         },
         orderBy,
     });
@@ -99,6 +103,8 @@ export async function findCourseById(id: string): Promise<CourseType | null> {
         },
         include: {
             category: true,
+            availableAttempts: true,
+            availableModes: true,
             faculties: true,
             cartItems: true,
         },
@@ -119,9 +125,7 @@ export async function getCourseBySlug(
             faculties: true,
             enrollments: true,
             availableModes: true,
-            selectedMode: true,
             availableAttempts: true,
-            selectedAttempt: true,
             cartItems: {
                 select: {
                     id: true,

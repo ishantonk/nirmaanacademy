@@ -12,8 +12,7 @@ import { CourseCard } from "@/components/course/course-card";
 import { CourseCardSkeleton } from "@/components/course/course-card-skeleton";
 import { fetchCourses } from "@/lib/fetch";
 
-export function CoursesLive({ userId }: { userId?: string }) {
-    console.log(userId);
+export function CoursesLive() {
     const searchParams = useSearchParams();
 
     // Get filter values from URL parameters directly.

@@ -20,10 +20,7 @@ export async function GET() {
 
         // If blogs is an empty array, respond with 204 No Content
         if (Array.isArray(blogs) && blogs.length === 0) {
-            return NextResponse.json(
-                { message: "No blog records available." },
-                { status: 204 }
-            );
+            return NextResponse.json([], { status: 200 }); // No blog records available.
         }
 
         // If blogs is not an array (unexpected format), return bad data error

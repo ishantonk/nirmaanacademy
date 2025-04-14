@@ -31,7 +31,7 @@ export function CartOrderSummary({ cartItems }: { cartItems: CartItemType[] }) {
                         return (
                             <div
                                 className="flex justify-between mb-4"
-                                key={item.course.id}
+                                key={item.id}
                             >
                                 <span className="line-clamp-1 text-muted-foreground">
                                     {item.course.title}
@@ -56,7 +56,11 @@ export function CartOrderSummary({ cartItems }: { cartItems: CartItemType[] }) {
                     <span>Total</span>
                     <span>{formatPrice(total)}</span>
                 </div>
-                <Button asChild={!!total} disabled className="w-full">
+                <Button
+                    asChild={!!total}
+                    disabled
+                    className="w-full"
+                >
                     {total ? (
                         <Link href={"/checkout"}>Checkout</Link>
                     ) : (

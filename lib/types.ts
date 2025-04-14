@@ -84,6 +84,8 @@ export type CartItemType = CartItem & {
     id: string;
     userId: string;
     courseId: string;
+    modeId: string | null;
+    attemptId: string | null;
     course?: CourseType;
 };
 
@@ -92,10 +94,8 @@ export type CourseType = Course & {
         name: string;
     };
     enrollments?: Array<EnrollmentType>;
-    selectedMode?: ModeType;
-    availableModes?: Array<ModeType>;
-    selectedAttempt?: AttemptType;
-    availableAttempts?: Array<AttemptType>;
+    availableModes: Array<ModeType>;
+    availableAttempts: Array<AttemptType>;
     faculties?: Array<FacultyType>;
     reviews?: Array<ReviewType>;
     cartItems?: Array<{

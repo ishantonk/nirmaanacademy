@@ -17,10 +17,7 @@ export async function GET() {
 
         // Check if the data is empty (e.g., an empty array)
         if (Array.isArray(faculty) && faculty.length === 0) {
-            return NextResponse.json(
-                { message: "No faculty records available." },
-                { status: 204 } // No Content
-            );
+            return NextResponse.json([], { status: 200 }); // No faculty records available.
         }
 
         // Return the fetched faculty data with a success status

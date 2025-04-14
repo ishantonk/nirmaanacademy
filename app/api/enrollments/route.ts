@@ -31,10 +31,7 @@ export async function GET() {
 
         // Handle the case where the enrollments array is empty
         if (Array.isArray(enrollments) && enrollments.length === 0) {
-            return NextResponse.json(
-                { message: "You have no current enrollments." },
-                { status: 204 } // No Content
-            );
+            return NextResponse.json([], { status: 200 }); // No Content
         }
 
         // If everything is fine, return the enrollment data

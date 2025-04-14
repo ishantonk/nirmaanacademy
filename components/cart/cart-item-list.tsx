@@ -34,7 +34,7 @@ export function CartItemList({ cartItems }: { cartItems: CartItemType[] }) {
                             key={item.id}
                             fallback={<CartItemCardSkeleton />}
                         >
-                            <CartItemCard item={item} />;
+                            <CartItemCard item={item} />
                         </Suspense>
                     );
             })}

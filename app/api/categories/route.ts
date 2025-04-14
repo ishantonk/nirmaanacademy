@@ -31,10 +31,7 @@ export async function GET(request: NextRequest) {
 
             // Check for empty result
             if (categories.length === 0) {
-                return NextResponse.json(
-                    { message: "No categories found." },
-                    { status: 204 } // No Content
-                );
+                return NextResponse.json([], { status: 200 }); // No categories found.
             }
 
             return NextResponse.json(categories, { status: 200 });
@@ -45,10 +42,7 @@ export async function GET(request: NextRequest) {
 
         // Optional: Handle case where no categories exist
         if (categories.length === 0) {
-            return NextResponse.json(
-                { message: "No categories available." },
-                { status: 204 } // No Content
-            );
+            return NextResponse.json([], { status: 200 }); // No categories found.
         }
 
         return NextResponse.json(categories, { status: 200 });

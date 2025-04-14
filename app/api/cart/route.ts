@@ -4,7 +4,7 @@ import { getAuthSession } from "@/lib/auth";
 import { findEnrollment } from "@/lib/services/enrollment";
 import { findCourseById } from "@/lib/services/course";
 import {
-    AddItemToCart,
+    CreateCartItem,
     findCartItemByCourseId,
     getCartItems,
 } from "@/lib/services/cart";
@@ -12,6 +12,8 @@ import {
 // Schema to validate incoming cart item data
 const cartItemSchema = z.object({
     courseId: z.string().min(1, "Course ID is required"),
+    modeId: z.string().min(1, "Mode ID is required"),
+    attemptId: z.string().min(1, "Attempt ID is required"),
 });
 
 /**
@@ -33,7 +35,7 @@ export async function POST(request: NextRequest) {
 
         // Validate request body
         const body = await request.json();
-        const { courseId } = cartItemSchema.parse(body);
+        const { courseId, attemptId, modeId } = cartItemSchema.parse(body);
 
         // Check if the course exists
         const course = await findCourseById(courseId);
@@ -63,7 +65,12 @@ export async function POST(request: NextRequest) {
         }
 
         // Add the course to cart
-        const cartItem = await AddItemToCart(userId, courseId);
+        const cartItem = await CreateCartItem({
+            userId: userId,
+            courseId: courseId,
+            attemptId: attemptId,
+            modeId: modeId,
+        });
 
         // Return success with 201 Created
         return NextResponse.json(cartItem, { status: 201 });
@@ -132,10 +139,7 @@ export async function GET(request: NextRequest) {
         // If no courseId, fetch all cart items
         const cartItems = await getCartItems(userId);
         if (!cartItems || cartItems.length === 0) {
-            return NextResponse.json(
-                { message: "Your cart is empty." },
-                { status: 204 } // No Content
-            );
+            return NextResponse.json([], { status: 200 }); // Your cart is empty.
         }
 
         return NextResponse.json(cartItems, { status: 200 });

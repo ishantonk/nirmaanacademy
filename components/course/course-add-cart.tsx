@@ -10,11 +10,15 @@ import { fetchIsInCart } from "@/lib/fetch";
 
 interface AddToCartButtonProps {
     courseId: string;
+    attemptId: string;
+    modeId: string;
     className?: string;
 }
 
 export function CourseAddCartButton({
     courseId,
+    attemptId,
+    modeId,
     className,
 }: AddToCartButtonProps) {
     const router = useRouter();
@@ -51,7 +55,11 @@ export function CourseAddCartButton({
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ courseId }),
+                body: JSON.stringify({
+                    courseId: courseId,
+                    attemptId: attemptId,
+                    modeId: modeId,
+                }),
             });
 
             if (!response.ok) {

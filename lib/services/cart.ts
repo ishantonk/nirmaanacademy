@@ -1,15 +1,26 @@
 import { prisma } from "@/lib/prisma";
 import { CartItemType } from "@/lib/types";
 
-export async function AddItemToCart(
-    userId: string,
-    courseId: string
-): Promise<CartItemType> {
+interface CreateCartItemProps {
+    userId: string;
+    courseId: string;
+    attemptId: string;
+    modeId: string;
+}
+
+export async function CreateCartItem({
+    userId,
+    courseId,
+    attemptId,
+    modeId,
+}: CreateCartItemProps): Promise<CartItemType> {
     try {
         return await prisma.cartItem.create({
             data: {
                 userId: userId,
                 courseId: courseId,
+                attemptId: attemptId,
+                modeId: modeId,
             },
         });
     } catch (error) {
@@ -77,7 +88,11 @@ export async function removeCourseFromCartByCourseId(
     }
 }
 
-export async function getCartItems(userId: string): Promise<CartItemType[]> {
+export async function getCartItems({
+    userId,
+}: {
+    userId: string;
+}): Promise<CartItemType[]> {
     try {
         return await prisma.cartItem.findMany({
             where: {
@@ -87,6 +102,8 @@ export async function getCartItems(userId: string): Promise<CartItemType[]> {
                 course: {
                     include: {
                         faculties: true,
+                        availableModes: true,
+                        availableAttempts: true,
                     },
                 },
             },

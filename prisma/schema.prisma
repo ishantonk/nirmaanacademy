@@ -150,10 +150,9 @@ model Mode {
   updatedAt DateTime @updatedAt
 
   // Relationships:
-  // Courses where this mode is available.
-  availableInCourses Course[] @relation("AvailableModes")
-  // Courses which have selected this mode.
-  selectedByCourses  Course[] @relation("SelectedMode")
+  availableInCourses  Course[]    @relation("AvailableModes")
+  selectedInOrderItem OrderItem[] @relation("OrderMode")
+  selectedInCartItem  CartItem[]  @relation("CartMode")
 }
 
 // Attempt model: represents available attempts (or sessions) for a course.
@@ -165,8 +164,9 @@ model Attempt {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  availableInCourses Course[] @relation("AvailableAttempts")
-  selectedByCourses  Course[] @relation("SelectedAttempt")
+  availableInCourses  Course[]    @relation("AvailableAttempts")
+  selectedInOrderItem OrderItem[] @relation("OrderAttempt")
+  selectedInCartItem  CartItem[]  @relation("CartAttempt")
 }
 
 // The main Course model.
@@ -192,10 +192,6 @@ model Course {
   // Relationships:
   categoryId        String
   category          Category     @relation(fields: [categoryId], references: [id])
-  selectedModeId    String
-  selectedMode      Mode         @relation("SelectedMode", fields: [selectedModeId], references: [id])
-  selectedAttemptId String
-  selectedAttempt   Attempt      @relation("SelectedAttempt", fields: [selectedAttemptId], references: [id])
   availableModes    Mode[]       @relation("AvailableModes")
   availableAttempts Attempt[]    @relation("AvailableAttempts")
   faculties         Faculty[]    @relation("CourseFaculties")
@@ -254,10 +250,14 @@ model CartItem {
   updatedAt DateTime @updatedAt
 
   // Relationships:
-  userId   String
-  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  courseId String
-  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  modeId    String?
+  Mode      Mode?    @relation("CartMode", fields: [modeId], references: [id])
+  attemptId String?
+  Attempt   Attempt? @relation("CartAttempt", fields: [attemptId], references: [id])
 
   @@unique([userId, courseId])
   @@index([userId])
@@ -292,10 +292,14 @@ model OrderItem {
   updatedAt DateTime @updatedAt
 
   // Relationships:
-  orderId  String
-  order    Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  courseId String
-  course   Course @relation(fields: [courseId], references: [id])
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id])
+  modeId    String?
+  mode      Mode?    @relation("OrderMode", fields: [modeId], references: [id])
+  attemptId String?
+  attempt   Attempt? @relation("OrderAttempt", fields: [attemptId], references: [id])
 
   @@index([orderId])
   @@index([courseId])
