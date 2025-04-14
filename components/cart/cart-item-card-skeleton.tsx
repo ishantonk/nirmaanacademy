@@ -15,7 +15,9 @@ export function CartItemCardSkeleton() {
     return (
         <Card className="flex-row gap-4 p-4 animate-pulse">
             {/* Image placeholder */}
-            <div className="h-24 w-24 rounded-md bg-muted" />
+            <div className="relative aspect-video h-24 rounded-md overflow-hidden">
+                <Skeleton className="h-full w-full" />
+            </div>
 
             {/* Right side: Title, faculty info & price/button area */}
             <div className="flex flex-1 flex-col justify-between">
@@ -29,7 +31,7 @@ export function CartItemCardSkeleton() {
                     {/* Price placeholder */}
                     <Skeleton className="h-5 w-16 rounded" />
                     {/* Remove button placeholder */}
-                    <Skeleton className="h-8 w-8 rounded-full" />
+                    <Skeleton className="h-8 w-8 rounded-md" />
                 </div>
             </div>
         </Card>
