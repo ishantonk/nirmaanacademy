@@ -4,8 +4,6 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { Button } from "@/components/ui/button";
 import { CartItemCard } from "@/components/cart/cart-item-card";
 import { CartItemType } from "@/lib/types";
-import { Suspense } from "react";
-import { CartItemCardSkeleton } from "./cart-item-card-skeleton";
 
 export function CartItemList({ cartItems }: { cartItems: CartItemType[] }) {
     if (cartItems.length === 0) {
@@ -29,14 +27,7 @@ export function CartItemList({ cartItems }: { cartItems: CartItemType[] }) {
         <div className="md:col-span-2 space-y-4">
             {cartItems.map((item) => {
                 if (item.course)
-                    return (
-                        <Suspense
-                            key={item.id}
-                            fallback={<CartItemCardSkeleton />}
-                        >
-                            <CartItemCard item={item} />
-                        </Suspense>
-                    );
+                    return <CartItemCard key={item.id} item={item} />;
             })}
         </div>
     );
