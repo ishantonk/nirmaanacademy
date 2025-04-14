@@ -13,6 +13,8 @@ export async function getEnrollments(
                 include: {
                     category: true,
                     faculties: true,
+                    availableModes: true,
+                    availableAttempts: true,
                 },
             },
         },
