@@ -17,52 +17,49 @@ export async function CheckoutOrderSummary({
     }, 0);
 
     return (
-        <div className="flex flex-col">
-            <Card>
-                <CardHeader>
-                    <CardTitle>
-                        <h2>Order Summary</h2>
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <ul className="divide-y">
-                        {cartItems.map(
-                            (item) =>
-                                item.course && (
-                                    <li
-                                        key={item.id}
-                                        className="py-4 first:pt-0 last:pb-0"
-                                    >
-                                        <div className="flex justify-between">
-                                            <div>
-                                                <p className="font-medium">
-                                                    {item.course.title}
-                                                </p>
-                                                <p className="text-sm text-muted-foreground">
-                                                    {item.course.category
-                                                        ?.name ||
-                                                        "Uncategorized"}
-                                                </p>
-                                            </div>
+        <Card>
+            <CardHeader>
+                <CardTitle>
+                    <h2>Order Summary</h2>
+                </CardTitle>
+            </CardHeader>
+            <CardContent>
+                <ul className="divide-y">
+                    {cartItems.map(
+                        (item) =>
+                            item.course && (
+                                <li
+                                    key={item.id}
+                                    className="py-4 first:pt-0 last:pb-0"
+                                >
+                                    <div className="flex justify-between">
+                                        <div>
                                             <p className="font-medium">
-                                                {formatPrice(
-                                                    Number(item.course.price)
-                                                )}
+                                                {item.course.title}
+                                            </p>
+                                            <p className="text-sm text-muted-foreground">
+                                                {item.course.category?.name ||
+                                                    "Uncategorized"}
                                             </p>
                                         </div>
-                                    </li>
-                                )
-                        )}
-                    </ul>
+                                        <p className="font-medium">
+                                            {formatPrice(
+                                                Number(item.course.price)
+                                            )}
+                                        </p>
+                                    </div>
+                                </li>
+                            )
+                    )}
+                </ul>
 
-                    <div className="mt-4 pt-4 border-t">
-                        <div className="flex justify-between font-medium">
-                            <span>Total</span>
-                            <span>{formatPrice(total)}</span>
-                        </div>
+                <div className="mt-4 pt-4 border-t">
+                    <div className="flex justify-between font-medium">
+                        <span>Total</span>
+                        <span>{formatPrice(total)}</span>
                     </div>
-                </CardContent>
-            </Card>
-        </div>
+                </div>
+            </CardContent>
+        </Card>
     );
 }

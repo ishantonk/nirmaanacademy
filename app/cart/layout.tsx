@@ -1,12 +1,4 @@
-import { Metadata } from "next";
-import { brandName } from "@/data/contact-info";
-
-export const metadata: Metadata = {
-    title: "Shopping Cart | " + brandName,
-    description: "Your shopping cart",
-};
-
-export default function CartLayout({
+export default async function CartLayout({
     children,
 }: {
     children: React.ReactNode;
@@ -21,6 +13,7 @@ export default function CartLayout({
                     View your courses in cart.
                 </p>
             </div>
+
             {children}
         </div>
     );
