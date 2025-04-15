@@ -1,8 +1,8 @@
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CartItemType } from "@/lib/types";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { formatPrice } from "@/lib/format";
 
-export async function CheckoutOrderSummary({
+export function CheckoutOrderSummary({
     cartItems,
 }: {
     cartItems: CartItemType[];
@@ -42,7 +42,7 @@ export async function CheckoutOrderSummary({
                                                     "Uncategorized"}
                                             </p>
                                         </div>
-                                        <p className="font-medium">
+                                        <p className="font-medium text-muted-foreground">
                                             {formatPrice(
                                                 Number(item.course.price)
                                             )}

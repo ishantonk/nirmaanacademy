@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import Loading from "@/app/checkout/loading";
 import { CheckoutForm } from "@/components/checkout/checkout-form";
 import { CheckoutOrderSummary } from "@/components/checkout/checkout-order-summary";
 import { fetchCartItems } from "@/lib/fetch";
-import { useSession } from "next-auth/react";
 import { CartItemType } from "@/lib/types";
 
 export default function CheckoutPage() {
@@ -65,7 +66,7 @@ export default function CheckoutPage() {
 
     // While loading data, display a loading message.
     if (isLoading) {
-        return <p>Loading checkout...</p>;
+        return <Loading />;
     }
 
     return (

@@ -1,10 +1,13 @@
 "use client";
 
-import * as React from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Card } from "@/components/ui/card";
+import {
+    Card,
+    CardContent,
+    CardFooter,
+    CardHeader,
+} from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
 
 /**
  * CartOrderSummarySkeleton Component
@@ -22,39 +25,37 @@ export function CartOrderSummarySkeleton() {
     const placeholderItems = Array.from({ length: 3 });
 
     return (
-        <Card>
-            {/* Header Section */}
-            <div className="p-4">
-                <Skeleton className="h-6 w-1/2 rounded" />
-            </div>
+        <div>
+            <Card>
+                {/* Header Section */}
+                <CardHeader>
+                    <Skeleton className="h-6 w-1/2" />
+                </CardHeader>
 
-            {/* Content Section */}
-            <div className="p-4 space-y-4">
-                {placeholderItems.map((_, index) => (
-                    <div
-                        key={index}
-                        className="flex justify-between items-center"
-                    >
-                        {/* Simulated cart item title */}
-                        <Skeleton className="h-4 w-2/3 rounded" />
-                        {/* Simulated cart item price */}
-                        <Skeleton className="h-4 w-1/4 rounded" />
+                {/* Content Section */}
+                <CardContent>
+                    {placeholderItems.map((_, index) => (
+                        <div key={index} className="flex justify-between mb-4">
+                            {/* Simulated cart item title */}
+                            <Skeleton className="h-4 w-2/3" />
+                            {/* Simulated cart item price */}
+                            <Skeleton className="h-4 w-1/4" />
+                        </div>
+                    ))}
+                    <Separator />
+                </CardContent>
+
+                {/* Footer Section */}
+                <CardFooter className="flex flex-col gap-4">
+                    <div className="flex justify-between font-semibold">
+                        <Skeleton className="h-4 w-1/4" />
+                        <Skeleton className="h-5 w-1/4" />
                     </div>
-                ))}
-                <Separator />
-            </div>
 
-            {/* Footer Section */}
-            <div className="p-4 space-y-4">
-                <div className="flex justify-between font-semibold">
-                    <Skeleton className="h-5 w-1/4 rounded" />
-                    <Skeleton className="h-5 w-1/4 rounded" />
-                </div>
-                {/* Simulated checkout button */}
-                <Button className="w-full" disabled>
-                    <Skeleton className="h-10 w-full rounded" />
-                </Button>
-            </div>
-        </Card>
+                    {/* Simulated checkout button */}
+                    <Skeleton className="h-8 w-full rounded-md" />
+                </CardFooter>
+            </Card>
+        </div>
     );
 }
