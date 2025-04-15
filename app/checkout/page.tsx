@@ -1,36 +1,76 @@
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { CheckoutForm } from "@/components/checkout/checkout-form";
 import { CheckoutOrderSummary } from "@/components/checkout/checkout-order-summary";
-import { getAuthSession } from "@/lib/auth";
 import { fetchCartItems } from "@/lib/fetch";
+import { useSession } from "next-auth/react";
+import { CartItemType } from "@/lib/types";
 
-export default async function CheckoutPage() {
-    const session = await getAuthSession();
+export default function CheckoutPage() {
+    const router = useRouter();
+    const { data: session, status } = useSession();
 
-    if (!session) {
-        redirect("/login");
-    }
+    // Local state for cart items, total amount, and loading flag.
+    const [cartItems, setCartItems] = useState<CartItemType[]>([]);
+    const [total, setTotal] = useState(0);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const cartItems = await fetchCartItems({ server: true, headers: headers });
+    useEffect(() => {
+        // Wait until the session is loaded
+        if (status === "loading") return;
 
-    if (cartItems.length === 0) {
-        redirect("/courses");
-    }
-
-    const total = cartItems.reduce((acc, item) => {
-        if (!item.course) return 0;
-        let price = item.course.price;
-        if (item.course.onSale) {
-            price = item.course.discountPrice ?? item.course.price;
+        // If no session is found, redirect to login.
+        if (!session) {
+            router.push("/login?callbackUrl=/checkout");
+            return;
         }
-        return acc + Number(price);
-    }, 0);
+
+        // Fetch the cart items client-side.
+        async function loadCart() {
+            try {
+                // Pass any required parameters to fetchCartItems.
+                const items = await fetchCartItems({ server: false });
+
+                // If there are no items, redirect to the courses page.
+                if (!Array.isArray(items) || items.length === 0) {
+                    router.push("/courses");
+                    return;
+                }
+
+                // Update the cart items state.
+                setCartItems(items);
+
+                // Calculate the total.
+                const computedTotal = items.reduce((acc, item) => {
+                    if (!item.course) return acc;
+                    // Use discountPrice if course is on sale.
+                    let price = item.course.price;
+                    if (item.course.onSale) {
+                        price = item.course.discountPrice ?? item.course.price;
+                    }
+                    return acc + Number(price);
+                }, 0);
+                setTotal(computedTotal);
+            } catch (error) {
+                console.error("Error fetching cart items:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        }
+
+        loadCart();
+    }, [session, status, router]);
+
+    // While loading data, display a loading message.
+    if (isLoading) {
+        return <p>Loading checkout...</p>;
+    }
 
     return (
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
             <CheckoutOrderSummary cartItems={cartItems} />
-
             <CheckoutForm amount={total} />
         </div>
     );
