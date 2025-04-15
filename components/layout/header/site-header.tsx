@@ -85,12 +85,20 @@ export function SiteHeader() {
     );
 }
 
-const navItems: {
+interface NavItems {
     title: string;
     href: string;
     icon?: React.ElementType;
     description?: string;
-}[] = [
+    subItems?: Array<{
+        title: string;
+        href: string;
+        icon?: React.ElementType;
+        description?: string;
+    }>;
+}
+
+const navItems: NavItems[] = [
     {
         title: "Home",
         href: "/",
@@ -100,6 +108,13 @@ const navItems: {
         title: "Video Courses",
         href: "/courses",
         icon: BookOpen,
+        subItems: [
+            {
+                title: "CA",
+                href: "/courses",
+                icon: BookOpen,
+            },
+        ],
     },
     {
         title: "Free PDF",
