@@ -16,6 +16,7 @@ import { CourseFacultyInfoCard } from "@/components/course/course-faculty-info-c
 import { CourseType } from "@/lib/types";
 import { formatPrice } from "@/lib/format";
 import { fetchEnrollments } from "@/lib/fetch";
+import { CourseBuyNow } from "./course-buy-now";
 
 interface CourseCardProps {
     course: CourseType;
@@ -127,11 +128,13 @@ export function CourseCard({ course, actions }: CourseCardProps) {
             <CardFooter className="flex justify-end gap-2 mt-auto">
                 {!isEnrolled && (
                     <CourseAddCartButton
+                        size="icon"
                         courseId={course.id}
                         attemptId={course.availableAttempts[0].id}
                         modeId={course.availableModes[0].id}
                     />
                 )}
+                {!isEnrolled && <CourseBuyNow courseId={course.id} />}
                 {actions}
             </CardFooter>
         </Card>

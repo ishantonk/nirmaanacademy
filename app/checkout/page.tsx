@@ -71,8 +71,8 @@ export default function CheckoutPage() {
 
     return (
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-            <CheckoutOrderSummary cartItems={cartItems} />
-            <CheckoutForm amount={total} />
+            <CheckoutOrderSummary type="cart" items={cartItems} />
+            <CheckoutForm type="cart" amount={total} />
         </div>
     );
 }

@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export function CourseCategoriesCard() {
     return (
-        <Card className="mb-6 w-full max-w-md bg-accent/85">
+        <Card className="w-full max-w-md bg-accent/85">
             <CardHeader>
                 <CardTitle className="text-lg font-bold">Courses</CardTitle>
             </CardHeader>

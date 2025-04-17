@@ -28,7 +28,7 @@ export function HeroSection() {
             <div className="absolute inset-0 bg-black/50" />
 
             {/* Content */}
-            <div className="relative z-10 h-full grid grid-cols-2 lg:grid-cols-4 items-center">
+            <div className="relative z-10 h-full grid grid-cols-2 lg:grid-cols-4 items-center justify-center">
                 {!isMobile && (
                     <div className="hidden md:flex col-span-1 p-4 items-center justify-center">
                         <NoticeCard />
@@ -45,7 +45,6 @@ export function HeroSection() {
                 <div className="col-span-2 lg:col-span-1 p-4 flex items-center justify-center">
                     <CourseCategoriesCard />
                 </div>
-
             </div>
         </section>
     );

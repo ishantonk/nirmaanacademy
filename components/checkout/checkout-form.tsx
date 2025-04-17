@@ -36,9 +36,18 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-interface CheckoutFormProps {
+interface CartProps {
+    type: "cart";
     amount: number;
 }
+
+interface CourseProps {
+    type: "course";
+    courseId: string;
+    amount: number;
+}
+
+type CheckoutFormProps = CartProps | CourseProps;
 
 /**
  * CheckoutForm Component:
@@ -47,7 +56,10 @@ interface CheckoutFormProps {
  * - Initializes Razorpay with the order details.
  * - Handles payment verification and redirects on success.
  */
-export function CheckoutForm({ amount }: CheckoutFormProps) {
+export function CheckoutForm(props: CheckoutFormProps) {
+    const amount = props.amount;
+    const courseId = props.type === "course" ? props.courseId : "";
+
     const router = useRouter();
     const { data: session } = useSession();
 
@@ -92,15 +104,26 @@ export function CheckoutForm({ amount }: CheckoutFormProps) {
             setIsLoading(true);
 
             // Create order on the server.
-            const response = await fetch("/api/checkout", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    amount,
-                    name: data.name,
-                    email: data.email,
-                }),
-            });
+            const response = await fetch(
+                props.type === "cart" ? "/api/checkout" : "/api/checkout/buy",
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body:
+                        props.type === "cart"
+                            ? JSON.stringify({
+                                  amount,
+                                  name: data.name,
+                                  email: data.email,
+                              })
+                            : JSON.stringify({
+                                  courseId,
+                                  amount,
+                                  name: data.name,
+                                  email: data.email,
+                              }),
+                }
+            );
 
             if (!response.ok) {
                 throw new Error("Failed to create order");

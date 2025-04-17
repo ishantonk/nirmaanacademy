@@ -13,12 +13,14 @@ interface AddToCartButtonProps {
     attemptId: string;
     modeId: string;
     className?: string;
+    size?: "default" | "icon";
 }
 
 export function CourseAddCartButton({
     courseId,
     attemptId,
     modeId,
+    size = "default",
     className,
 }: AddToCartButtonProps) {
     const router = useRouter();
@@ -86,27 +88,30 @@ export function CourseAddCartButton({
     return isInCart ? (
         <Button
             variant="outline"
+            size={size === "icon" ? "icon" : "default"}
             onClick={() => router.push("/cart")}
-            className={className}
+            className={"gap-x-2" + className}
         >
-            <Check className="mr-2 h-4 w-4" />
-            Go to Cart
+            <Check className="h-4 w-4" />
+            {size === "default" && "Go to Cart"}
         </Button>
     ) : (
         <Button
             onClick={handleAddToCart}
+            variant={size === "icon" ? "outline" : "default"}
+            size={size === "icon" ? "icon" : "default"}
             disabled={isLoading}
-            className={className}
+            className={"gap-x-2" + className}
         >
             {isLoading ? (
                 <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Adding to cart...
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    {size === "default" && "Adding to cart..."}
                 </>
             ) : (
                 <>
-                    <ShoppingCart className="mr-2 h-4 w-4" />
-                    Add to Cart
+                    <ShoppingCart className="h-4 w-4" />
+                    {size === "default" && "Add to Cart"}
                 </>
             )}
         </Button>

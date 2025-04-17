@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { CartItemType } from "@/lib/types";
+import { CartItemType, CourseType } from "@/lib/types";
 
 export async function findOrderById({ orderId }: { orderId: string }) {
     try {
@@ -56,6 +56,47 @@ export async function createOrder({
                             return null;
                         })
                         .filter((orderItem) => orderItem !== null),
+                },
+            },
+        });
+    } catch (error) {
+        console.error("Error on making order:", error);
+        // Optionally, rethrow the error if you want the caller to handle it.
+        throw error;
+    }
+}
+
+interface createOrderByCourseProps {
+    userId: string;
+    razorpayOrderId: string;
+    currentPrice: number;
+    attemptId: string;
+    modeId: string;
+    course: CourseType;
+}
+
+export async function createOrderByCourse({
+    userId,
+    razorpayOrderId,
+    currentPrice,
+    attemptId,
+    modeId,
+    course,
+}: createOrderByCourseProps) {
+    try {
+        return await prisma.order.create({
+            data: {
+                userId: userId,
+                amount: currentPrice,
+                status: "PENDING",
+                razorpayOrderId: razorpayOrderId,
+                orderItems: {
+                    create: {
+                        courseId: course.id,
+                        price: currentPrice,
+                        attemptId: attemptId,
+                        modeId: modeId,
+                    },
                 },
             },
         });
