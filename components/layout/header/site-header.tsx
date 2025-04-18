@@ -24,10 +24,30 @@ import { UserNav } from "@/components/layout/header/user-nav";
 import { ToggleTheme } from "@/components/theme/toggle-theme";
 import { Input } from "@/components/ui/input";
 
+async function registerVisit() {
+    const response = await fetch("/api/visitors", {
+        method: "POST",
+        cache: "no-store",
+        credentials: "include",
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to register your visit.");
+    }
+    return response.json();
+}
+
 export function SiteHeader() {
     // State to track whether the user has scrolled
     const [isScrolled, setIsScrolled] = useState(false);
     const isMobile = useIsMobile();
+
+    useEffect(() => {
+        const register = async () => {
+            await registerVisit();
+        };
+        register();
+    }, []);
 
     useEffect(() => {
         const handleScroll = () => {

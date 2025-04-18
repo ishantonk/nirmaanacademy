@@ -15,7 +15,7 @@ export function CategoryCard({
     return (
         <Link href={`/categories/${category.slug}`}>
             <Card className={"overflow-hidden transition-all hover:shadow-md h-full bg-amber-200" + " " + color}>
-                <CardContent className="p-6">
+                <CardContent className="p-2 lg:p-6">
                     <div className="mb-4 h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
                         <BookOpen className="h-6 w-6 text-primary" />
                     </div>
@@ -28,7 +28,7 @@ export function CategoryCard({
                         </p>
                     )}
                 </CardContent>
-                <CardFooter className="p-6 pt-0">
+                <CardFooter className="p-2 lg:p-6 pt-0">
                     <div className="text-sm text-muted-foreground">
                         {courseCount} {courseCount === 1 ? "course" : "courses"}
                     </div>

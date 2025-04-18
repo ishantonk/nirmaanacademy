@@ -14,8 +14,8 @@ export default function Home() {
             <CoursesSection />
             <FacultySection />
             <TestimonialsSection />
-            <VisitorsCounterSection />
             <CTASection />
+            <VisitorsCounterSection />
         </div>
     );
 }

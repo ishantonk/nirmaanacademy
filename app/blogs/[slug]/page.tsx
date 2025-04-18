@@ -12,7 +12,9 @@ import { isValidUrl } from "@/lib/utils";
 import { BlogPostType } from "@/lib/types";
 
 async function getBlogPost(slug: string) {
-    const response = await fetch(process.env.NEXT_PUBLIC_DOMAIN + "/api/blogs/" + slug);
+    const response = await fetch(
+        `${process.env.NEXT_PUBLIC_DOMAIN}/api/blogs/${slug}`
+    );
     if (!response.ok) {
         // throw new Error("Failed to fetch blog");
         return null;
@@ -123,7 +125,9 @@ export default async function BlogPost({
                                     <p className="font-medium text-foreground">
                                         {post.author?.name}
                                     </p>
-                                    <p className="text-xs">{post.author?.bio}</p>
+                                    <p className="text-xs">
+                                        {post.author?.bio}
+                                    </p>
                                 </div>
                             </div>
                             <div className="flex items-center gap-2">

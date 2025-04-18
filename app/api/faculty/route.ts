@@ -1,5 +1,11 @@
-import { NextResponse } from "next/server";
-import { getFaculty } from "@/lib/services/faculty";
+import { NextRequest, NextResponse } from "next/server";
+import {
+    CreateFaculty,
+    findFacultyByEmail,
+    getFaculty,
+} from "@/lib/services/faculty";
+import { getAuthSession } from "@/lib/auth";
+import { z } from "zod";
 
 // GET API endpoint to retrieve faculty data
 export async function GET() {
@@ -37,6 +43,87 @@ export async function GET() {
         // Return a generic internal server error response
         return NextResponse.json(
             { error: "Failed to fetch faculty due to server error." },
+            { status: 500 }
+        );
+    }
+}
+
+// Schema to validate incoming faculty data
+const createFacultySchema = z.object({
+    name: z
+        .string()
+        .min(3, { message: "Faculty name must be at least 3 characters" }),
+    email: z.string().email({ message: "Invalid email address" }),
+    phone: z.string().optional(),
+    bio: z.string().optional(),
+    image: z.string().optional(),
+    designation: z.string().optional(),
+});
+
+export async function POST(request: NextRequest) {
+    try {
+        // Check for user session
+        const session = await getAuthSession();
+        if (!session) {
+            return NextResponse.json(
+                { message: "Unauthorized access." },
+                { status: 401 }
+            );
+        }
+
+        const userRole = session.user.role;
+
+        // Validate request body
+        const body = await request.json();
+        const { name, email, phone, bio, image, designation } =
+            createFacultySchema.parse(body);
+
+        // Checking for admin user.
+        if (userRole !== "ADMIN") {
+            return new NextResponse("Forbidden", { status: 403 });
+        }
+
+        // Find if same faculty exist already.
+        const existingFaculty = await findFacultyByEmail({ email: email });
+        if (existingFaculty) {
+            return NextResponse.json(
+                { message: "Faculty email is already exist." },
+                { status: 400 }
+            );
+        }
+
+        // Creating new faculty.
+        const faculty = await CreateFaculty({
+            name: name,
+            email: email,
+            phone: phone,
+            bio: bio,
+            image: image,
+            designation: designation,
+        });
+        if (!faculty) {
+            return NextResponse.json(
+                { message: "Unable to creating new faculty." },
+                { status: 400 }
+            );
+        }
+
+        return NextResponse.json(faculty, { status: 201 });
+    } catch (error) {
+        // Log detailed error to the console for debugging purposes
+        console.error("Error on creating new faculty:", error);
+
+        // Handle specific known errors (e.g., DB connection issue)
+        if ((error as { code?: string }).code === "ECONNREFUSED") {
+            return NextResponse.json(
+                { error: "Database connection refused." },
+                { status: 503 } // Service Unavailable
+            );
+        }
+
+        // Return a generic internal server error response
+        return NextResponse.json(
+            { error: "Failed on creating faculty due to server error." },
             { status: 500 }
         );
     }

@@ -21,7 +21,7 @@ export async function CTASection() {
                         <Button size="lg" variant="secondary" asChild>
                             <Link href="/courses">Browse Courses</Link>
                         </Button>
-                        {session && (
+                        {!session && (
                             <Button
                                 size="lg"
                                 variant="outline"

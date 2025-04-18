@@ -140,11 +140,9 @@ model Faculty {
 
 // Mode model: represents modes for a course (e.g., in-person, online) with associated pricing.
 model Mode {
-  id            String   @id @default(cuid())
-  name          String
-  slug          String   @unique
-  price         Decimal  @default(0) @db.Decimal(10, 2)
-  discountPrice Decimal? @db.Decimal(10, 2)
+  id   String @id @default(cuid())
+  name String
+  slug String @unique
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -348,4 +346,9 @@ model Tag {
   posts Post[]
 
   @@index([slug])
+}
+
+model Visitor {
+  id   String @id @default(cuid())
+  user String
 }

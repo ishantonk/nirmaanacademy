@@ -76,11 +76,12 @@ export async function POST(request: NextRequest) {
         const timestamp = formatDate(new Date(Date.now()));
         const fileName = `${slugify(file.name)}-${slugify(
             userName
-        )}-${timestamp}`;
+        )}-${timestamp}.${extension}`;
 
         // Upload file to Vercel Blob storage
         const blob = await put(fileName, file, {
             access: "public",
+            contentType: file.type,
         });
 
         if (!blob) {

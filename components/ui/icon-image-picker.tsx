@@ -2,15 +2,15 @@ import { useRef } from "react";
 import { Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-interface ProfileImagePickerProps {
+interface IconImagePickerProps {
     className?: string;
     onImageSelect: (file: File) => void;
 }
 
-export function ProfileImagePicker({
+export function IconImagePicker({
     onImageSelect,
     className,
-}: ProfileImagePickerProps) {
+}: IconImagePickerProps) {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleButtonClick = () => {

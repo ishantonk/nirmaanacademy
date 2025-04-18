@@ -29,7 +29,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "../ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { getInitials } from "@/lib/utils";
-import { ProfileImagePicker } from "@/components/profile/profile-image-picker";
+import { IconImagePicker } from "@/components/ui/icon-image-picker";
 import { ProfileFormSkeleton } from "@/components/profile/profile-form-skeleton";
 
 /**
@@ -105,7 +105,11 @@ async function uploadFile(file: File): Promise<URL> {
         throw new Error(errorData.error || "Failed to upload file.");
     }
 
-    return response.json();
+    const data: {
+        url: string;
+        success: boolean;
+    } = await response.json();
+    return new URL(data.url); // return the public URL as a URL object
 }
 
 /**
@@ -226,7 +230,9 @@ export function ProfileForm() {
                                                 <AvatarImage
                                                     {...field}
                                                     className="object-cover"
-                                                    src={field.value}
+                                                    src={
+                                                        field.value || undefined
+                                                    }
                                                 />
                                                 <AvatarFallback className="text-2xl">
                                                     {form.getValues().name
@@ -237,7 +243,7 @@ export function ProfileForm() {
                                                         : "NA"}
                                                 </AvatarFallback>
                                             </Avatar>
-                                            <ProfileImagePicker
+                                            <IconImagePicker
                                                 // {...field}
                                                 className="absolute bottom-2 -right-2"
                                                 onImageSelect={(file) =>

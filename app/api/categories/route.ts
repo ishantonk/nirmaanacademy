@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
+    createCategory,
+    findCategoryBySlug,
     getAllCategories,
     getCategoriesWithCount,
 } from "@/lib/services/category";
+import { getAuthSession } from "@/lib/auth";
+import { z } from "zod";
+import { slugify } from "@/lib/utils";
 
 /**
  * GET API handler to retrieve course categories.
@@ -66,5 +71,76 @@ export async function GET(request: NextRequest) {
     }
 }
 
+// Schema to validate incoming category data
+const createCategorySchema = z.object({
+    name: z.string().min(3, "Category name must be at least 3 characters"),
+    description: z.string().optional(),
+});
+
+export async function POST(request: NextRequest) {
+    try {
+        // Check for user session
+        const session = await getAuthSession();
+        if (!session) {
+            return NextResponse.json(
+                { message: "Unauthorized access." },
+                { status: 401 }
+            );
+        }
+
+        const userRole = session.user.role;
+
+        // Validate request body
+        const body = await request.json();
+        const { name, description } = createCategorySchema.parse(body);
+        const slug = slugify(name);
+
+        // Checking for admin user.
+        if (userRole !== "ADMIN") {
+            return new NextResponse("Forbidden", { status: 403 });
+        }
+
+        // Find if same category exist already.
+        const existingCategory = await findCategoryBySlug({ slug: slug });
+        if (existingCategory) {
+            return NextResponse.json(
+                { message: "Category is already exist." },
+                { status: 400 }
+            );
+        }
+
+        // Creating new category.
+        const category = await createCategory({
+            name: name,
+            description: description,
+            slug: slug,
+        });
+        if (!category) {
+            return NextResponse.json(
+                { message: "Unable to creating new category." },
+                { status: 400 }
+            );
+        }
+
+        return NextResponse.json(category, { status: 201 });
+    } catch (error) {
+        // Log the error for debugging purposes
+        console.error("Error on creating category:", error);
+
+        // Handle known specific error types here (e.g., database issues)
+        if ((error as { code?: string }).code === "ECONNREFUSED") {
+            return NextResponse.json(
+                { error: "Database connection failed." },
+                { status: 503 } // Service Unavailable
+            );
+        }
+
+        // Return generic server error
+        return NextResponse.json(
+            { error: "Failed to create category due to server error." },
+            { status: 500 }
+        );
+    }
+}
+
 // todo: add put request for editing category.
-// todo: add post request for creating new category.
