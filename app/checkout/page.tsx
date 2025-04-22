@@ -6,8 +6,8 @@ import { useSession } from "next-auth/react";
 import Loading from "@/app/checkout/loading";
 import { CheckoutForm } from "@/components/checkout/checkout-form";
 import { CheckoutOrderSummary } from "@/components/checkout/checkout-order-summary";
-import { fetchCartItems } from "@/lib/fetch";
 import { CartItemType } from "@/lib/types";
+import { fetchCart } from "@/lib/services/api";
 
 export default function CheckoutPage() {
     const router = useRouter();
@@ -32,7 +32,7 @@ export default function CheckoutPage() {
         async function loadCart() {
             try {
                 // Pass any required parameters to fetchCartItems.
-                const items = await fetchCartItems({ server: false });
+                const items = await fetchCart();
 
                 // If there are no items, redirect to the courses page.
                 if (!Array.isArray(items) || items.length === 0) {

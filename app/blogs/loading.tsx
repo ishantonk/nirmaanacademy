@@ -13,7 +13,7 @@ export default function Loading() {
                 </p>
             </div>
             <BlogGrid
-                blogs={Array.from({ length: 6 }).map((_, i) => (
+                blogs={Array.from({ length: 3 }).map((_, i) => (
                     <PostCardSkeleton key={i} />
                 ))}
             />

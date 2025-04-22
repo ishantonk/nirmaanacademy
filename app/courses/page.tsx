@@ -1,6 +1,6 @@
 import { CourseFilters } from "@/components/course/course-filters";
 import { CoursesLive } from "@/components/course/course-live";
-import { fetchCategories } from "@/lib/fetch";
+import { fetchCategories } from "@/lib/services/api";
 
 export default async function CoursesPage() {
     const categories = await fetchCategories();

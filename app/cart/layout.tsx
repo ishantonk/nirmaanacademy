@@ -1,3 +1,11 @@
+import { brandName } from "@/data/contact-info";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Shopping Cart | " + brandName,
+    description: "Your shopping cart",
+};
+
 export default async function CartLayout({
     children,
 }: {

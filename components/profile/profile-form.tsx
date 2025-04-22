@@ -31,6 +31,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { getInitials } from "@/lib/utils";
 import { IconImagePicker } from "@/components/ui/icon-image-picker";
 import { ProfileFormSkeleton } from "@/components/profile/profile-form-skeleton";
+import { UserType } from "@/lib/types";
+import { fetchUserProfile, updateUserProfile, uploadToBlob } from "@/lib/services/api";
 
 /**
  * Zod schema for profile validation.
@@ -47,70 +49,6 @@ const profileSchema = z.object({
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
-
-/**
- * Fetch the user profile.
- * Uses credentials to send session cookies.
- */
-async function fetchUserProfile(): Promise<ProfileFormValues> {
-    const res = await fetch("/api/profile", {
-        credentials: "include",
-        cache: "no-store",
-    });
-    if (!res.ok) {
-        throw new Error("Failed to fetch profile");
-    }
-    return res.json();
-}
-
-/**
- * Update the user profile.
- * @param data - The profile data to update.
- */
-async function updateUserProfile(
-    data: ProfileFormValues
-): Promise<ProfileFormValues> {
-    const res = await fetch("/api/profile", {
-        method: "PUT",
-        credentials: "include",
-        cache: "no-store",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-    });
-    if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.error || "Failed to update profile");
-    }
-    return res.json();
-}
-
-/**
- * Uploads a file (profile image) and returns its URL.
- * @param file - The file to upload.
- */
-async function uploadFile(file: File): Promise<URL> {
-    const formData = new FormData();
-    formData.append("file", file);
-
-    const response = await fetch("api/upload", {
-        method: "POST",
-        credentials: "include",
-        body: formData,
-    });
-
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to upload file.");
-    }
-
-    const data: {
-        url: string;
-        success: boolean;
-    } = await response.json();
-    return new URL(data.url); // return the public URL as a URL object
-}
 
 /**
  * ProfileForm Component:
@@ -135,7 +73,7 @@ export function ProfileForm() {
         data: profileData,
         isLoading,
         isError,
-    } = useQuery<ProfileFormValues>({
+    } = useQuery<UserType>({
         queryKey: ["profile"],
         queryFn: fetchUserProfile,
     });
@@ -143,18 +81,18 @@ export function ProfileForm() {
     // Once fetched, reset form values to the profile data.
     useEffect(() => {
         if (profileData) {
-            if (!profileData.bio) profileData.bio = "";
-            form.reset(profileData);
+            const fieldData: ProfileFormValues = {
+                name: profileData.name || "",
+                email: profileData.email || "",
+                bio: profileData.bio || "",
+                image: profileData.image || "",
+            };
+            form.reset(fieldData);
         }
     }, [profileData, form]);
 
     // Mutation hook for updating the profile.
-    const mutation = useMutation<
-        ProfileFormValues,
-        Error,
-        ProfileFormValues,
-        unknown
-    >({
+    const mutation = useMutation<UserType, Error, ProfileFormValues, unknown>({
         mutationFn: updateUserProfile,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["profile"] });
@@ -167,12 +105,17 @@ export function ProfileForm() {
     });
 
     // Mutation for uploading profile image.
-    const uploadProfileImage = useMutation<URL, Error, File, unknown>({
-        mutationFn: (file) => uploadFile(file),
+    const uploadProfileImage = useMutation<
+        { url: string; success: boolean },
+        Error,
+        File,
+        unknown
+    >({
+        mutationFn: (file) => uploadToBlob(file),
         onSuccess: (uploadedUrl) => {
             toast.success("Profile image successfully uploaded");
             // Optionally update the form field with the new permanent URL after upload completes.
-            form.setValue("image", uploadedUrl.toString());
+            form.setValue("image", uploadedUrl.url.toString());
         },
         onError: (error: Error) => {
             toast.error("Upload failed", { description: error.message });

@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
 import { CourseCard } from "@/components/course/course-card";
 import { CourseCardSkeleton } from "@/components/course/course-card-skeleton";
-import { fetchCategories, fetchCourses } from "@/lib/fetch";
+import { fetchCategories, fetchCourses } from "@/lib/services/api";
 
 // -----------------------------------------------------------------------------
 // MAIN COMPONENT

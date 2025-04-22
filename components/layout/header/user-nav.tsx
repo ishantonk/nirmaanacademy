@@ -4,8 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import {
-    Cloud,
     CreditCard,
+    LayoutDashboard,
     LifeBuoy,
     LogOut,
     Settings,
@@ -36,7 +36,6 @@ import {
     DrawerTrigger,
 } from "@/components/ui/drawer";
 import { Separator } from "@/components/ui/separator";
-import { APP_ROUTES } from "@/data/routes-names";
 import { getInitials } from "@/lib/utils";
 
 export function UserNav() {
@@ -51,7 +50,7 @@ export function UserNav() {
                     /* Mobile user nav */
                     <div className="flex md:hidden items-center gap-2">
                         <Button size={"icon"} variant="ghost" asChild>
-                            <Link href={APP_ROUTES.login}>
+                            <Link href={"/login"}>
                                 <User className="h-4 w-4" />
                             </Link>
                         </Button>
@@ -60,10 +59,10 @@ export function UserNav() {
                     /* Desktop user nav */
                     <div className="hidden md:flex items-center gap-2">
                         <Button variant="ghost" asChild>
-                            <Link href={APP_ROUTES.login}>Login</Link>
+                            <Link href={"/login"}>Login</Link>
                         </Button>
                         <Button asChild>
-                            <Link href={APP_ROUTES.register}>Sign Up</Link>
+                            <Link href={"/register"}>Sign Up</Link>
                         </Button>
                     </div>
                 )}
@@ -75,7 +74,7 @@ export function UserNav() {
 
     const handleSignOut = async () => {
         await signOut({ redirect: false });
-        router.push(APP_ROUTES.home);
+        router.push("/");
         router.refresh();
     };
 
@@ -157,7 +156,7 @@ export function UserNavMobile({
                             className="w-full"
                             asChild
                         >
-                            <Link href={APP_ROUTES.profile}>
+                            <Link href={"/profile"}>
                                 <div className="flex items-start w-full">
                                     <User className="mr-8 h-8 w-8" />
                                     <span>Profile</span>
@@ -172,31 +171,14 @@ export function UserNavMobile({
                             className="w-full"
                             asChild
                         >
-                            <Link href={APP_ROUTES.dashboard}>
+                            <Link href={"/dashboard"}>
                                 <div className="flex items-start w-full">
-                                    <User className="mr-8 h-8 w-8" />
+                                    <LayoutDashboard className="mr-8 h-8 w-8" />
                                     <span>Dashboard</span>
                                 </div>
                             </Link>
                         </Button>
                     </DrawerClose>
-                    {(user.role === "INSTRUCTOR" || user.role === "ADMIN") && (
-                        <DrawerClose asChild className="px-4">
-                            <Button
-                                variant={"ghost"}
-                                size={"lg"}
-                                className="w-full"
-                                asChild
-                            >
-                                <Link href={APP_ROUTES.instructorDashboard}>
-                                    <div className="flex items-start w-full">
-                                        <Cloud className="mr-8 h-8 w-8" />
-                                        <span>Instructor Dashboard</span>
-                                    </div>
-                                </Link>
-                            </Button>
-                        </DrawerClose>
-                    )}
                     {user.role === "ADMIN" && (
                         <DrawerClose asChild className="px-4">
                             <Button
@@ -205,7 +187,7 @@ export function UserNavMobile({
                                 className="w-full"
                                 asChild
                             >
-                                <Link href={APP_ROUTES.admin}>
+                                <Link href={"/admin"}>
                                     <div className="flex items-start w-full">
                                         <Settings className="mr-8 h-8 w-8" />
                                         <span>Admin Dashboard</span>
@@ -221,7 +203,7 @@ export function UserNavMobile({
                             className="w-full"
                             asChild
                         >
-                            <Link href={APP_ROUTES.checkout}>
+                            <Link href={"/checkout"}>
                                 <div className="flex items-start w-full">
                                     <CreditCard className="mr-8 h-8 w-8" />
                                     <span>Checkout</span>
@@ -236,7 +218,7 @@ export function UserNavMobile({
                             className="w-full"
                             asChild
                         >
-                            <Link href={APP_ROUTES.contact}>
+                            <Link href={"/contact"}>
                                 <div className="flex items-start w-full">
                                     <LifeBuoy className="mr-8 h-8 w-8" />
                                     <span>Support</span>
@@ -296,35 +278,27 @@ export function UserNavDesktop({
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
                     <DropdownMenuItem asChild>
-                        <Link href={APP_ROUTES.profile}>
+                        <Link href={"/profile"}>
                             <User className="mr-2 h-4 w-4" />
                             <span>Profile</span>
                         </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                        <Link href={APP_ROUTES.dashboard}>
-                            <User className="mr-2 h-4 w-4" />
+                        <Link href={"/dashboard"}>
+                            <LayoutDashboard className="mr-2 h-4 w-4" />
                             <span>Dashboard</span>
                         </Link>
                     </DropdownMenuItem>
-                    {(user.role === "INSTRUCTOR" || user.role === "ADMIN") && (
-                        <DropdownMenuItem asChild>
-                            <Link href={APP_ROUTES.instructorDashboard}>
-                                <Cloud className="mr-2 " />
-                                <span>Instructor Dashboard</span>
-                            </Link>
-                        </DropdownMenuItem>
-                    )}
                     {user.role === "ADMIN" && (
                         <DropdownMenuItem asChild>
-                            <Link href={APP_ROUTES.admin}>
+                            <Link href={"/admin"}>
                                 <Settings className="mr-2 h-4 w-4" />
                                 <span>Admin Dashboard</span>
                             </Link>
                         </DropdownMenuItem>
                     )}
                     <DropdownMenuItem asChild>
-                        <Link href={APP_ROUTES.checkout}>
+                        <Link href={"/checkout"}>
                             <CreditCard className="mr-2 h-4 w-4" />
                             <span>Checkout</span>
                         </Link>
@@ -332,7 +306,7 @@ export function UserNavDesktop({
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                    <Link href={APP_ROUTES.contact}>
+                    <Link href={"/contact"}>
                         <LifeBuoy className="mr-2 h-4 w-4" />
                         <span>Support</span>
                     </Link>

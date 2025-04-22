@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CoursesCarousel } from "@/components/home/courses-carousel";
-import { fetchCourses } from "@/lib/fetch";
+import { fetchCourses } from "@/lib/services/api";
 
 export async function CoursesSection() {
     const params = new URLSearchParams();

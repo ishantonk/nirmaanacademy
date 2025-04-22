@@ -9,19 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/format";
 import { isValidUrl } from "@/lib/utils";
-import { BlogPostType } from "@/lib/types";
-
-async function getBlogPost(slug: string) {
-    const response = await fetch(
-        `${process.env.NEXT_PUBLIC_DOMAIN}/api/blogs/${slug}`
-    );
-    if (!response.ok) {
-        // throw new Error("Failed to fetch blog");
-        return null;
-    }
-    const post: BlogPostType = await response.json();
-    return post;
-}
+import { fetchBlogBySlug } from "@/lib/services/api";
 
 export async function generateMetadata({
     params,
@@ -29,7 +17,7 @@ export async function generateMetadata({
     params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
     const { slug } = await params;
-    const post = await getBlogPost(slug);
+    const post = await fetchBlogBySlug(slug);
 
     if (!post) {
         return {
@@ -71,7 +59,7 @@ export default async function BlogPost({
     params: Promise<{ slug: string }>;
 }) {
     const { slug } = await params;
-    const post = await getBlogPost(slug);
+    const post = await fetchBlogBySlug(slug);
 
     if (!post) {
         notFound();

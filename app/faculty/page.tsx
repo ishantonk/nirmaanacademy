@@ -1,7 +1,7 @@
 import { Metadata } from "next";
-import { fetchFaculties } from "@/lib/fetch";
 import { FacultyCard } from "@/components/faculty/faculty-card";
 import { brandName } from "@/data/contact-info";
+import { fetchFaculties } from "@/lib/services/api";
 
 export const metadata: Metadata = {
     title: `Our Faculty | ${brandName}`,

@@ -3,6 +3,7 @@ import { PostCard } from "@/components/blog/post-card";
 import { BlogGrid } from "@/components/blog/blog-grid";
 import { brandName } from "@/data/contact-info";
 import { BlogPostType } from "@/lib/types";
+import { fetchBlogs } from "@/lib/services/api";
 
 export const metadata: Metadata = {
     title: "Blog | " + brandName,
@@ -10,17 +11,8 @@ export const metadata: Metadata = {
         "Latest articles, tutorials, and updates from Nirmaan Academy.",
 };
 
-async function getBlogPosts(): Promise<BlogPostType[]> {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_DOMAIN}/api/blogs`);
-    if (response.ok) {
-        const posts: BlogPostType[] = await response.json();
-        return posts;
-    }
-    return [];
-}
-
 export default async function BlogsPage() {
-    const posts = await getBlogPosts();
+    const posts = await fetchBlogs();
 
     return (
         <div className="container mx-auto py-10 px-4">

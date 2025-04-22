@@ -6,8 +6,8 @@ import {
     getCategoriesWithCount,
 } from "@/lib/services/category";
 import { getAuthSession } from "@/lib/auth";
-import { z } from "zod";
 import { slugify } from "@/lib/utils";
+import { zCategoriesSchema } from "@/lib/types";
 
 /**
  * GET API handler to retrieve course categories.
@@ -71,12 +71,6 @@ export async function GET(request: NextRequest) {
     }
 }
 
-// Schema to validate incoming category data
-const createCategorySchema = z.object({
-    name: z.string().min(3, "Category name must be at least 3 characters"),
-    description: z.string().optional(),
-});
-
 export async function POST(request: NextRequest) {
     try {
         // Check for user session
@@ -92,7 +86,7 @@ export async function POST(request: NextRequest) {
 
         // Validate request body
         const body = await request.json();
-        const { name, description } = createCategorySchema.parse(body);
+        const { name, description } = zCategoriesSchema.parse(body);
         const slug = slugify(name);
 
         // Checking for admin user.

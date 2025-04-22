@@ -7,7 +7,7 @@ export function AdminCourses() {
             <div className="lg:col-span-7">
                 <AdminCoursesCreate />
             </div>
-            <div className="lg:col-span-5">
+            <div className="lg:col-span-5 relative">
                 <AdminCoursesList />
             </div>
         </div>

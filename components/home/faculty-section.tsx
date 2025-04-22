@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { fetchFaculties } from "@/lib/fetch";
 import { FacultiesCarousel } from "@/components/home/faculties-carousel";
+import { fetchFaculties } from "@/lib/services/api";
 
 export async function FacultySection() {
     const faculties = await fetchFaculties();

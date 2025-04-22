@@ -12,53 +12,23 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { createCategory } from "@/lib/services/api";
+import {
+    AdminCategoriesFormValues,
+    CategoryType,
+    zCategoriesSchema,
+} from "@/lib/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { z } from "zod";
-
-/**
- * Zod schema for category validation.
- * - name: required non-empty string.
- * - description: required valid description.
- */
-const categoriesSchema = z.object({
-    name: z.string().min(3, { message: "Name must be at least 3 characters" }),
-    description: z.string().optional(),
-});
-
-type AdminCategoriesFormValues = z.infer<typeof categoriesSchema>;
-
-/**
- * Create new category.
- * @param data - Data for creating new category.
- */
-async function createNewCategory(
-    data: AdminCategoriesFormValues
-): Promise<AdminCategoriesFormValues> {
-    const response = await fetch("/api/categories", {
-        method: "POST",
-        credentials: "include",
-        cache: "no-store",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-    });
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to create faculty");
-    }
-    return response.json();
-}
 
 export function AdminCategoriesForm() {
     const queryClient = useQueryClient();
 
     // Initialize React Hook Form with Zod resolver and default values.
     const form = useForm<AdminCategoriesFormValues>({
-        resolver: zodResolver(categoriesSchema),
+        resolver: zodResolver(zCategoriesSchema),
         defaultValues: {
             name: "",
             description: "",
@@ -67,12 +37,12 @@ export function AdminCategoriesForm() {
 
     // Mutation hook for creating category.
     const mutation = useMutation<
-        AdminCategoriesFormValues,
+        CategoryType,
         Error,
         AdminCategoriesFormValues,
         unknown
     >({
-        mutationFn: createNewCategory,
+        mutationFn: createCategory,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["category"] });
 

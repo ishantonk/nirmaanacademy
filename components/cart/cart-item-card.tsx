@@ -10,23 +10,14 @@ import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/format";
 import { CartItemType } from "@/lib/types";
 import { Card, CardImage } from "@/components/ui/card";
+import { removeCartItem } from "@/lib/services/api";
 
 export function CartItemCard({ item }: { item: CartItemType }) {
     const router = useRouter();
 
     const { mutate: removeFromCart, isPending } = useMutation({
-        mutationFn: async () => {
-            const response = await fetch(`/api/cart/${item.id}`, {
-                method: "DELETE",
-            });
-
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.message || "Failed to remove from cart");
-            }
-
-            return response.json();
-        },
+        mutationFn: async () =>
+            await removeCartItem({ itemId: item.id }),
         onSuccess: () => {
             toast.success("Removed from cart", {
                 description: "The course has been removed from your cart.",

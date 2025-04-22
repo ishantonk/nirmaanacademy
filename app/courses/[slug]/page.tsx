@@ -12,13 +12,11 @@ import {
 import { CourseAddCartButton } from "@/components/course/course-add-cart";
 import { formatDuration, formatPrice } from "@/lib/format";
 import { CourseFacultyInfoCard } from "@/components/course/course-faculty-info-card";
-import { CourseType } from "@/lib/types";
-import { serializeDecimal } from "@/lib/utils";
 import { CourseContentInfo } from "@/components/course/course-content-info";
 import { CourseReviews } from "@/components/course/course-reviews";
 import { getAuthSession } from "@/lib/auth";
 import { notFound } from "next/navigation";
-import { fetchCourseBySlug } from "@/lib/fetch";
+import { fetchCourseBySlug } from "@/lib/services/api";
 
 export default async function CoursePage({
     params,
@@ -30,16 +28,12 @@ export default async function CoursePage({
     const { slug } = await params;
 
     // Fetch course data by its slug.
-    const course: CourseType = await fetchCourseBySlug(slug);
+    const course = await fetchCourseBySlug(slug);
 
     // If no course is found, show a "not found" page.
     if (!course) {
         return notFound();
     }
-
-    // Serialize price and discountPrice for calculations.
-    const price = serializeDecimal(course.price ?? null);
-    const discountPrice = serializeDecimal(course.discountPrice ?? null);
 
     // Calculate the average rating from the reviews.
     const averageRating =
@@ -161,20 +155,26 @@ export default async function CoursePage({
                         <div className="mt-6">
                             <div className="flex items-center gap-2">
                                 {course.onSale &&
-                                discountPrice &&
-                                price &&
-                                discountPrice < price ? (
+                                course.discountPrice &&
+                                course.price &&
+                                course.discountPrice < course.price ? (
                                     <span className="flex items-center gap-2">
                                         <span className="text-3xl font-bold text-green-500">
-                                            {formatPrice(discountPrice)}
+                                            {formatPrice(
+                                                Number(course.discountPrice)
+                                            )}
                                         </span>
                                         <span className="text-lg text-muted-foreground line-through">
-                                            {formatPrice(price)}
+                                            {formatPrice(Number(course.price))}
                                         </span>
                                     </span>
                                 ) : (
                                     <span className="text-3xl font-bold text-green-500">
-                                        {formatPrice(price ? price : 0)}
+                                        {formatPrice(
+                                            Number(
+                                                course.price ? course.price : 0
+                                            )
+                                        )}
                                     </span>
                                 )}
                             </div>
@@ -240,9 +240,7 @@ export default async function CoursePage({
                             <div className="mt-6 w-full">
                                 <CourseAddCartButton
                                     courseId={course.id}
-                                    attemptId={
-                                        course.availableAttempts[0].id
-                                    }
+                                    attemptId={course.availableAttempts[0].id}
                                     modeId={course.availableModes[0].id}
                                     className="w-full"
                                 />

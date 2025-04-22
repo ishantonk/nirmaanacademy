@@ -7,7 +7,7 @@ export function AdminFaculties() {
             <div className="lg:col-span-7">
                 <AdminFacultiesCreate />
             </div>
-            <div className="lg:col-span-5">
+            <div className="lg:col-span-5 relative">
                 <AdminFacultiesList />
             </div>
         </div>

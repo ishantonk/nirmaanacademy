@@ -32,12 +32,12 @@ export function CourseFacultyInfoCard({
             </Avatar>
 
             <div>
-                <h3 className={"font-medium" + " " + nameFontSize}>
+                <h3 className={"font-medium line-clamp-1" + " " + nameFontSize}>
                     {faculty.name || "NA"}
                 </h3>
                 <p
                     className={
-                        "text-muted-foreground" + " " + designationFontSize
+                        "text-muted-foreground line-clamp-1" + " " + designationFontSize
                     }
                 >
                     {faculty.designation || "NA"}

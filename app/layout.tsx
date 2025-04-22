@@ -11,6 +11,8 @@ import { brandName } from "@/data/contact-info";
 import { aboutUsData } from "@/data/about-us";
 import { Whatsapp } from "@/components/layout/whatsapp/whatsapp";
 import { Toaster } from "sonner";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { VisitorTracker } from "@/components/layout/visitor/visitor-tracker";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -38,7 +40,7 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body
-                className={`flex flex-col min-h-screen ${geistSans.variable} ${geistMono.variable} antialiased`}
+                className={`flex flex-col min-h-screen h-screen ${geistSans.variable} ${geistMono.variable} antialiased`}
             >
                 <AuthProvider>
                     <QueryProvider>
@@ -48,12 +50,17 @@ export default function RootLayout({
                             enableSystem
                             disableTransitionOnChange
                         >
-                            <SiteHeader />
-                            <main className="flex-1">{children}</main>
-                            <SiteFooter />
+                            <div className="flex flex-col overflow-hidden">
+                                <ScrollArea className="flex-1 h-full">
+                                    <SiteHeader />
+                                    <main className="flex-1">{children}</main>
+                                    <SiteFooter />
+                                </ScrollArea>
+                            </div>
                             <Whatsapp />
                             <BottomNavBar />
                             <Toaster />
+                            <VisitorTracker />
                         </ThemeProvider>
                     </QueryProvider>
                 </AuthProvider>

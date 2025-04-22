@@ -1,5 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { findCourseById, getCourses } from "@/lib/services/course";
+import {
+    createCourse,
+    findCourseById,
+    findCourseBySlug,
+    getCourses,
+} from "@/lib/services/course";
+import { getAuthSession } from "@/lib/auth";
+import { slugify } from "@/lib/utils";
+import { zCourseSchema } from "@/lib/types";
 
 /**
  * GET API handler to retrieve courses based on filters or a single course by ID.
@@ -45,14 +53,14 @@ export async function GET(request: NextRequest) {
         }
 
         // Fetch filtered list of courses
-        const courses = await getCourses(
-            category,
-            search,
-            price,
-            sort,
-            isNaN(count) ? undefined : count,
-            featured
-        );
+        const courses = await getCourses({
+            category: category,
+            search: search,
+            price: price,
+            sort: sort,
+            count: isNaN(count) ? undefined : count,
+            featured: featured,
+        });
 
         // Handle case where no courses match the filters
         if (Array.isArray(courses) && courses.length === 0) {
@@ -78,6 +86,100 @@ export async function GET(request: NextRequest) {
 
         return NextResponse.json(
             { error: "Failed to fetch courses due to a server error." },
+            { status: 500 }
+        );
+    }
+}
+
+export async function POST(request: NextRequest) {
+    try {
+        // Check for user session
+        const session = await getAuthSession();
+        if (!session) {
+            return NextResponse.json(
+                { message: "Unauthorized access." },
+                { status: 401 }
+            );
+        }
+
+        const userRole = session.user.role;
+
+        // Validate request body
+        const body = await request.json();
+        const {
+            title,
+            description,
+            thumbnail,
+            price,
+            discountPrice,
+            onSale,
+            durationInMin,
+            featured,
+            videoLanguage,
+            courseMaterialLanguage,
+            demoVideoUrl,
+            categoryId,
+            facultyIds,
+            modeIds,
+            attemptIds,
+        } = zCourseSchema.parse(body);
+        const slug = slugify(title);
+
+        // Checking for admin user.
+        if (userRole !== "ADMIN") {
+            return new NextResponse("Forbidden", { status: 403 });
+        }
+
+        // Find if same course exist already.
+        const existingCourse = await findCourseBySlug({ slug: slug });
+        if (existingCourse) {
+            return NextResponse.json(
+                { message: "Course with this slug(title) is already exist." },
+                { status: 400 }
+            );
+        }
+
+        // Creating new course.
+        const course = await createCourse({
+            title: title,
+            slug: slug,
+            description: description,
+            thumbnail: thumbnail,
+            price: price,
+            discountPrice: discountPrice,
+            onSale: onSale,
+            durationInMin: durationInMin,
+            featured: featured,
+            videoLanguage: videoLanguage,
+            courseMaterialLanguage: courseMaterialLanguage,
+            demoVideoUrl: demoVideoUrl,
+            categoryId: categoryId,
+            modeIds: modeIds,
+            attemptIds: attemptIds,
+            facultyIds: facultyIds,
+        });
+        if (!course) {
+            return NextResponse.json(
+                { message: "Unable to creating new course." },
+                { status: 400 }
+            );
+        }
+
+        return NextResponse.json(course, { status: 201 });
+    } catch (error) {
+        // Log unexpected server errors
+        console.error("Error on creating new course:", error);
+
+        // Handle known specific error types here (e.g., database issues)
+        if ((error as { code?: string }).code === "ECONNREFUSED") {
+            return NextResponse.json(
+                { error: "Database connection failed." },
+                { status: 503 } // Service Unavailable
+            );
+        }
+
+        return NextResponse.json(
+            { error: "Failed to create course due to a server error." },
             { status: 500 }
         );
     }

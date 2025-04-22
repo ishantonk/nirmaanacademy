@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CategoriesCarousel } from "@/components/home/categories-carousel";
-import { fetchCategories } from "@/lib/fetch";
+import { fetchCategories } from "@/lib/services/api";
 
 export async function CategoriesSection() {
     const categories = await fetchCategories(8);

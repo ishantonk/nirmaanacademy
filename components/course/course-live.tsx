@@ -10,7 +10,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { CourseGrid } from "@/components/course/course-grid";
 import { CourseCard } from "@/components/course/course-card";
 import { CourseCardSkeleton } from "@/components/course/course-card-skeleton";
-import { fetchCourses } from "@/lib/fetch";
+import { fetchCourses } from "@/lib/services/api";
 
 export function CoursesLive() {
     const searchParams = useSearchParams();

@@ -13,6 +13,7 @@ import {
     Tag,
     User,
 } from "@prisma/client";
+import { z } from "zod";
 
 export type CourseWhereType = Prisma.CourseWhereInput & {
     status: string;
@@ -106,7 +107,7 @@ export type CourseType = Course & {
     }>;
 };
 
-export type OrderType = Order
+export type OrderType = Order;
 
 export type BlogPostType = Post & {
     author?: {
@@ -118,3 +119,66 @@ export type BlogPostType = Post & {
     category?: CategoryType;
     tags?: Tag[];
 };
+
+export const zCourseSchema = z
+    .object({
+        title: z
+            .string()
+            .min(3, { message: "Title must have at least 3 characters." }),
+        description: z.string().optional(),
+        thumbnail: z.string().optional(),
+        price: z.coerce.number().min(1, { message: "Price must be positive" }),
+        discountPrice: z.coerce
+            .number()
+            .min(1, { message: "Discount must be positive" })
+            .optional(),
+        onSale: z.boolean().default(false),
+        durationInMin: z.coerce
+            .number()
+            .min(1, { message: "Duration must be positive" }),
+        featured: z.boolean().default(false),
+        videoLanguage: z.string().optional(),
+        courseMaterialLanguage: z.string().optional(),
+        demoVideoUrl: z.string().optional(),
+        categoryId: z.string().min(1, { message: "Please select a category" }),
+        facultyIds: z
+            .array(z.string())
+            .min(1, { message: "Select at least one faculty" }),
+        modeIds: z
+            .array(z.string())
+            .min(1, { message: "Select at least one mode" }),
+        attemptIds: z
+            .array(z.string())
+            .min(1, { message: "Select at least one attempt" }),
+    })
+    .refine(
+        (data) =>
+            !data.onSale || (data.onSale && data.discountPrice !== undefined),
+        {
+            message: "Discount price is required when the course is on sale.",
+            path: ["discountPrice"],
+        }
+    );
+
+export type AdminCourseFormValues = z.infer<typeof zCourseSchema>;
+
+export const zCourseStatusUpdateSchema = z.object({
+    status: z.enum(["DRAFT", "PUBLISHED", "ARCHIVED"]).optional(),
+    featured: z.boolean().optional(),
+});
+
+export type CourseStatusUpdateValues = z.infer<
+    typeof zCourseStatusUpdateSchema
+>;
+
+/**
+ * Zod schema for category validation.
+ * - name: required non-empty string.
+ * - description: required valid description.
+ */
+export const zCategoriesSchema = z.object({
+    name: z.string().min(3, { message: "Category name must be at least 3 characters." }),
+    description: z.string().optional(),
+});
+
+export type AdminCategoriesFormValues = z.infer<typeof zCategoriesSchema>;

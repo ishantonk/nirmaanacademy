@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Card } from "@/components/ui/card";
+import { fetchVisitors } from "@/lib/services/api";
 
 export function VisitorsCounterSection() {
     const [count, setCount] = useState<number | null>(null);
@@ -12,13 +13,8 @@ export function VisitorsCounterSection() {
     // 1) Fetch & register this visit on mount
     useEffect(() => {
         const registerVisit = async () => {
-            try {
-                const res = await fetch("/api/visitors", { method: "GET" });
-                const { count: newCount } = await res.json();
-                setCount(newCount);
-            } catch (err) {
-                console.error("Failed to fetch visitor count", err);
-            }
+            const count = await fetchVisitors();
+            setCount(count);
         };
         registerVisit();
     }, []);

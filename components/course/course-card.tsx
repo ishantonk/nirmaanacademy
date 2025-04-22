@@ -15,8 +15,8 @@ import { CourseAddCartButton } from "@/components/course/course-add-cart";
 import { CourseFacultyInfoCard } from "@/components/course/course-faculty-info-card";
 import { CourseType } from "@/lib/types";
 import { formatPrice } from "@/lib/format";
-import { fetchEnrollments } from "@/lib/fetch";
 import { CourseBuyNow } from "./course-buy-now";
+import { fetchEnrollments } from "@/lib/services/api";
 
 interface CourseCardProps {
     course: CourseType;
@@ -39,7 +39,7 @@ export function CourseCard({ course, actions }: CourseCardProps) {
             if (!session) return;
 
             try {
-                const enrollments = await fetchEnrollments({ server: false });
+                const enrollments = await fetchEnrollments();
                 const enrolled = enrollments?.some(
                     (e) =>
                         e.courseId === course.id && e.userId === session.user.id

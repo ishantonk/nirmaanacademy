@@ -1,12 +1,8 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ControllerRenderProps, useForm } from "react-hook-form";
+import { UseMutationResult } from "@tanstack/react-query";
+import { UseFormReturn } from "react-hook-form";
 import { ScrollArea } from "@/components/ui/scroll-area";
-
-import { toast } from "sonner";
-import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
     Form,
@@ -28,7 +24,13 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { AttemptType, CategoryType, FacultyType, ModeType } from "@/lib/types";
+import {
+    AdminCourseFormValues,
+    AttemptType,
+    CategoryType,
+    FacultyType,
+    ModeType,
+} from "@/lib/types";
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
@@ -38,192 +40,65 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { CourseFacultyInfoCard } from "@/components/course/course-faculty-info-card";
-
-/**
- * Zod schema for course validation.
- * - title: required non-empty string.
- * - description: optional string.
- * - thumbnail: optional string.
- * - price: required now-empty number.
- * - discountPrice: required now-empty number.
- * - onSale: boolean.
- * - durationInMin: required now-empty number.
- * - featured: boolean.
- * - videoLanguage: optional string.
- * - courseMaterialLanguage: optional string.
- * - demoVideoUrl: optional string.
- */
-const courseSchema = z.object({
-    title: z
-        .string()
-        .min(3, { message: "Title must be at least 3 characters" }),
-    categoryId: z
-        .string()
-        .min(3, { message: "Category ID must be at least 3 characters" }),
-    description: z.string().optional(),
-    thumbnail: z.string().optional(),
-    facultyIds: z
-        .array(z.string())
-        .min(1, { message: "Select at least one faculty" }),
-    modeIds: z
-        .array(z.string())
-        .min(1, { message: "Select at least one mode" }),
-    attemptIds: z
-        .array(z.string())
-        .min(1, { message: "Select at least one attempt" }),
-});
-
-type AdminCourseFormValues = z.infer<typeof courseSchema>;
-
-/**
- * Uploads a file (profile image) and returns its URL.
- * @param file - The file to upload.
- */
-async function uploadFile(file: File): Promise<URL> {
-    const formData = new FormData();
-    formData.append("file", file);
-
-    const response = await fetch("api/upload", {
-        method: "POST",
-        credentials: "include",
-        body: formData,
-    });
-
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to upload file.");
-    }
-
-    const data: {
-        url: string;
-        success: boolean;
-    } = await response.json();
-    return new URL(data.url); // return the public URL as a URL object
-}
-
-/**
- * Create new course.
- * @param data - Data for creating new course.
- */
-async function createNewCourse(
-    data: AdminCourseFormValues
-): Promise<AdminCourseFormValues> {
-    const response = await fetch("/api/courses", {
-        method: "POST",
-        credentials: "include",
-        cache: "no-store",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-    });
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to create course");
-    }
-    return response.json();
-}
+import { Switch } from "@/components/ui/switch";
 
 interface AdminCoursesFormProps {
+    formId: string;
+    formProps: UseFormReturn<AdminCourseFormValues>;
     categories: CategoryType[];
     faculties: FacultyType[];
-    modes: ModeType[];
     attempts: AttemptType[];
+    modes: ModeType[];
+    uploadMutation: UseMutationResult<
+        {
+            url: string;
+            success: boolean;
+        },
+        Error,
+        File,
+        unknown
+    >;
+    submitting?: boolean;
+    onSubmit: (data: AdminCourseFormValues) => void;
 }
 
 export function AdminCoursesForm({
+    formId,
+    formProps,
     categories,
     faculties,
-    modes,
     attempts,
+    modes,
+    uploadMutation,
+    submitting = false,
+    onSubmit,
 }: AdminCoursesFormProps) {
-    const queryClient = useQueryClient();
-
-    // Initialize React Hook Form with Zod resolver and default values.
-    const form = useForm<AdminCourseFormValues>({
-        resolver: zodResolver(courseSchema),
-        defaultValues: {
-            title: "",
-            categoryId: "",
-            description: "",
-            thumbnail: "",
-            facultyIds: [],
-            modeIds: [],
-            attemptIds: [],
-        },
-    });
-
-    // Mutation hook for creating course.
-    const mutation = useMutation<
-        AdminCourseFormValues,
-        Error,
-        AdminCourseFormValues,
-        unknown
-    >({
-        mutationFn: createNewCourse,
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["course"] });
-
-            toast.success("Course created successfully");
-            form.reset();
-        },
-        onError: (error: Error) => {
-            toast.error("Creating course failed", {
-                description: error.message,
-            });
-        },
-    });
-
-    // Mutation for uploading course thumbnail.
-    const uploadCourseThumbnail = useMutation<URL, Error, File, unknown>({
-        mutationFn: (file) => uploadFile(file),
-        onSuccess: (uploadedUrl) => {
-            toast.success("Course thumbnail successfully uploaded");
-            // Optionally update the form field with the new permanent URL after upload completes.
-            form.setValue("thumbnail", uploadedUrl.toString());
-        },
-        onError: (error: Error) => {
-            toast.error("Upload failed", { description: error.message });
-        },
-    });
-
-    // Handler for course thumbnail selection.
-    const onCourseThumbnailSelect = async (
-        file: File,
-        field: ControllerRenderProps<AdminCourseFormValues, "thumbnail">
-    ) => {
+    const onFileSelect = (file: File) => {
         // Generate a temporary URL for preview.
         const preview = URL.createObjectURL(file);
-        // Update the form field with the temporary URL.
-        field.onChange(preview);
-        // Trigger the image upload mutation.
-        uploadCourseThumbnail.mutate(file);
-    };
-
-    // Combined loading state: disable submit if profile update or image upload is pending.
-    const isSubmitDisabled =
-        mutation.isPending || uploadCourseThumbnail.isPending;
-
-    // Form submission handler.
-    const onSubmit = (data: AdminCourseFormValues) => {
-        mutation.mutate(data);
+        // Update the form value with the temporary URL.
+        formProps.setValue("thumbnail", preview);
+        // Trigger the image upload mutation
+        uploadMutation.mutate(file);
     };
 
     return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <Form {...formProps}>
+            <form
+                id={formId}
+                onSubmit={formProps.handleSubmit(onSubmit)}
+                className="space-y-6"
+            >
                 {/* Course Thumbnail Field */}
                 <FormField
-                    control={form.control}
+                    control={formProps.control}
                     name="thumbnail"
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Faculty Picture</FormLabel>
                             <FormControl>
                                 <ImageDropzone
-                                    onFileSelect={(file) =>
-                                        onCourseThumbnailSelect(file, field)
-                                    }
+                                    onFileSelect={(file) => onFileSelect(file)}
                                     className="w-full h-60 cursor-pointer"
                                     placeholder={
                                         field.value ? (
@@ -239,7 +114,7 @@ export function AdminCoursesForm({
                             </FormControl>
                             <FormDescription>
                                 Upload a faculty picture. Recommended size:
-                                200x200 pixels.
+                                200x240 pixels.
                             </FormDescription>
                             <FormMessage />
                         </FormItem>
@@ -250,7 +125,7 @@ export function AdminCoursesForm({
                     <div className="lg:col-span-3">
                         {/* Title Field */}
                         <FormField
-                            control={form.control}
+                            control={formProps.control}
                             name="title"
                             render={({ field }) => (
                                 <FormItem>
@@ -273,36 +148,35 @@ export function AdminCoursesForm({
                     <div className="lg:col-span-2">
                         {/* Category selector */}
                         <FormField
-                            control={form.control}
+                            control={formProps.control}
                             name="categoryId"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Category</FormLabel>
-                                    <Select
-                                        disabled={isSubmitDisabled}
-                                        onValueChange={field.onChange}
-                                        value={field.value}
-                                        defaultValue={field.value}
-                                    >
-                                        <FormControl>
+                                    <FormControl>
+                                        <Select
+                                            disabled={submitting}
+                                            onValueChange={field.onChange}
+                                            value={field.value}
+                                            defaultValue={field.value}
+                                        >
                                             <SelectTrigger className="w-full">
                                                 <SelectValue placeholder="Select a category" />
                                             </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            {categories.map((category) => (
-                                                <SelectItem
-                                                    key={category.id}
-                                                    value={category.id}
-                                                >
-                                                    {category.name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
+                                            <SelectContent>
+                                                {categories.map((category) => (
+                                                    <SelectItem
+                                                        key={category.id}
+                                                        value={category.id}
+                                                    >
+                                                        {category.name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </FormControl>
                                     <FormDescription>
-                                        Select the category that best fits your
-                                        course.
+                                        Category that best fits your course.
                                     </FormDescription>
                                     <FormMessage />
                                 </FormItem>
@@ -311,11 +185,11 @@ export function AdminCoursesForm({
                     </div>
                 </div>
 
-                <div className="grid gap-4 lg:grid-cols-4">
-                    <div className="lg:col-span-1">
-                        {/* Faculties Selector */}
+                <div className="grid lg:grid-cols-4 gap-4">
+                    <div className="lg:col-span-2">
+                        {/* Faculties multi‑select */}
                         <FormField
-                            control={form.control}
+                            control={formProps.control}
                             name="facultyIds"
                             render={({ field }) => (
                                 <FormItem>
@@ -324,26 +198,23 @@ export function AdminCoursesForm({
                                         <DropdownMenuTrigger asChild>
                                             <Button
                                                 variant="outline"
-                                                className="justify-start"
-                                                disabled={isSubmitDisabled}
+                                                className="w-4/6 lg:w-full justify-start"
+                                                disabled={submitting}
                                             >
-                                                {field.value.length > 0
-                                                    ? `${field.value.length} selected`
-                                                    : "Select faculties"}
+                                                {field.value.length} selected
                                             </Button>
                                         </DropdownMenuTrigger>
-                                        <DropdownMenuContent className="max-w-fit">
+                                        <DropdownMenuContent className="w-80">
                                             <DropdownMenuLabel>
                                                 Faculties
                                             </DropdownMenuLabel>
                                             <DropdownMenuSeparator />
-                                            <ScrollArea className="max-h-60 space-y-2">
-                                                {faculties.map((faculty) => (
+                                            <ScrollArea className="max-h-48 space-y-2 p-2">
+                                                {faculties.map((f) => (
                                                     <DropdownMenuCheckboxItem
-                                                        key={faculty.id}
-                                                        id={`faculty-${faculty.id}`}
+                                                        key={f.id}
                                                         checked={field.value.includes(
-                                                            faculty.id
+                                                            f.id
                                                         )}
                                                         onCheckedChange={(
                                                             checked
@@ -351,12 +222,12 @@ export function AdminCoursesForm({
                                                             const next = checked
                                                                 ? [
                                                                       ...field.value,
-                                                                      faculty.id,
+                                                                      f.id,
                                                                   ]
                                                                 : field.value.filter(
                                                                       (id) =>
                                                                           id !==
-                                                                          faculty.id
+                                                                          f.id
                                                                   );
                                                             field.onChange(
                                                                 next
@@ -364,7 +235,7 @@ export function AdminCoursesForm({
                                                         }}
                                                     >
                                                         <CourseFacultyInfoCard
-                                                            faculty={faculty}
+                                                            faculty={f}
                                                             size="sm"
                                                         />
                                                     </DropdownMenuCheckboxItem>
@@ -373,8 +244,7 @@ export function AdminCoursesForm({
                                         </DropdownMenuContent>
                                     </DropdownMenu>
                                     <FormDescription>
-                                        Choose one or more
-                                        instructors(faculties).
+                                        Choose one or more instructors.
                                     </FormDescription>
                                     <FormMessage />
                                 </FormItem>
@@ -382,142 +252,266 @@ export function AdminCoursesForm({
                         />
                     </div>
 
-                    <div className="lg:col-span-1">
-                        {/* Attempt Selector */}
-                        <FormField
-                            control={form.control}
-                            name="attemptIds"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Attempts</FormLabel>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button
-                                                variant="outline"
-                                                className="justify-start"
-                                                disabled={isSubmitDisabled}
-                                            >
-                                                {field.value.length > 0
-                                                    ? `${field.value.length} selected`
-                                                    : "Select attempts"}
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent className="max-w-fit">
-                                            <DropdownMenuLabel>
-                                                Attempt
-                                            </DropdownMenuLabel>
-                                            <DropdownMenuSeparator />
-                                            <ScrollArea className="max-h-60 space-y-2">
-                                                {attempts.map((attempt) => (
-                                                    <DropdownMenuCheckboxItem
-                                                        key={attempt.id}
-                                                        id={`attempt-${attempt.id}`}
-                                                        checked={field.value.includes(
-                                                            attempt.id
-                                                        )}
-                                                        onCheckedChange={(
-                                                            checked
-                                                        ) => {
-                                                            const next = checked
-                                                                ? [
-                                                                      ...field.value,
-                                                                      attempt.id,
-                                                                  ]
-                                                                : field.value.filter(
-                                                                      (id) =>
-                                                                          id !==
-                                                                          attempt.id
-                                                                  );
-                                                            field.onChange(
-                                                                next
-                                                            );
-                                                        }}
-                                                    >
-                                                        {attempt.name}
-                                                    </DropdownMenuCheckboxItem>
-                                                ))}
-                                            </ScrollArea>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                    <FormDescription>
-                                        Choose one or more attempts.
-                                    </FormDescription>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                    </div>
+                    {/* Modes multi‑select */}
+                    <FormField
+                        control={formProps.control}
+                        name="modeIds"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Modes</FormLabel>
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button
+                                            variant="outline"
+                                            className="w-full justify-start"
+                                            disabled={submitting}
+                                        >
+                                            {field.value.length} selected
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent className="max-w-xs">
+                                        <DropdownMenuLabel>
+                                            Modes
+                                        </DropdownMenuLabel>
+                                        <DropdownMenuSeparator />
+                                        <ScrollArea className="max-h-48 space-y-2 p-2">
+                                            {modes.map((m) => (
+                                                <DropdownMenuCheckboxItem
+                                                    key={m.id}
+                                                    checked={field.value.includes(
+                                                        m.id
+                                                    )}
+                                                    onCheckedChange={(
+                                                        checked
+                                                    ) => {
+                                                        const next = checked
+                                                            ? [
+                                                                  ...field.value,
+                                                                  m.id,
+                                                              ]
+                                                            : field.value.filter(
+                                                                  (id) =>
+                                                                      id !==
+                                                                      m.id
+                                                              );
+                                                        field.onChange(next);
+                                                    }}
+                                                >
+                                                    {m.name}
+                                                </DropdownMenuCheckboxItem>
+                                            ))}
+                                        </ScrollArea>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                                <FormDescription>
+                                    Choose one or more.
+                                </FormDescription>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
 
-                    <div className="lg:col-span-1">
-                        {/* Mode Selector */}
-                        <FormField
-                            control={form.control}
-                            name="modeIds"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Modes</FormLabel>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button
-                                                variant="outline"
-                                                className="justify-start"
-                                                disabled={isSubmitDisabled}
-                                            >
-                                                {field.value.length > 0
-                                                    ? `${field.value.length} selected`
-                                                    : "Select modes"}
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent className="max-w-fit">
-                                            <DropdownMenuLabel>
-                                                Mode
-                                            </DropdownMenuLabel>
-                                            <DropdownMenuSeparator />
-                                            <ScrollArea className="max-h-60 space-y-2">
-                                                {modes.map((mode) => (
-                                                    <DropdownMenuCheckboxItem
-                                                        key={mode.id}
-                                                        id={`attempt-${mode.id}`}
-                                                        checked={field.value.includes(
-                                                            mode.id
-                                                        )}
-                                                        onCheckedChange={(
-                                                            checked
-                                                        ) => {
-                                                            const next = checked
-                                                                ? [
-                                                                      ...field.value,
-                                                                      mode.id,
-                                                                  ]
-                                                                : field.value.filter(
-                                                                      (id) =>
-                                                                          id !==
-                                                                          mode.id
-                                                                  );
-                                                            field.onChange(
-                                                                next
-                                                            );
-                                                        }}
-                                                    >
-                                                        {mode.name}
-                                                    </DropdownMenuCheckboxItem>
-                                                ))}
-                                            </ScrollArea>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                    <FormDescription>
-                                        Choose one or more modes.
-                                    </FormDescription>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                    </div>
+                    {/* Attempts multi‑select */}
+                    <FormField
+                        control={formProps.control}
+                        name="attemptIds"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Attempts</FormLabel>
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button
+                                            variant="outline"
+                                            className="w-full justify-start"
+                                            disabled={submitting}
+                                        >
+                                            {field.value.length} selected
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent className="max-w-xs">
+                                        <DropdownMenuLabel>
+                                            Attempts
+                                        </DropdownMenuLabel>
+                                        <DropdownMenuSeparator />
+                                        <ScrollArea className="max-h-48 space-y-2 p-2">
+                                            {attempts.map((a) => (
+                                                <DropdownMenuCheckboxItem
+                                                    key={a.id}
+                                                    checked={field.value.includes(
+                                                        a.id
+                                                    )}
+                                                    onCheckedChange={(
+                                                        checked
+                                                    ) => {
+                                                        const next = checked
+                                                            ? [
+                                                                  ...field.value,
+                                                                  a.id,
+                                                              ]
+                                                            : field.value.filter(
+                                                                  (id) =>
+                                                                      id !==
+                                                                      a.id
+                                                              );
+                                                        field.onChange(next);
+                                                    }}
+                                                >
+                                                    {a.name}
+                                                </DropdownMenuCheckboxItem>
+                                            ))}
+                                        </ScrollArea>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                                <FormDescription>
+                                    Choose at least one.
+                                </FormDescription>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
+
+                {/* Numeric Fields: price, discountPrice, durationInMin */}
+                <div className="grid grid-cols-3 gap-4">
+                    <FormField
+                        control={formProps.control}
+                        name="price"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Price</FormLabel>
+                                <FormControl>
+                                    <Input type="number" {...field} />
+                                </FormControl>
+                                <FormDescription>
+                                    Set the price for your course.
+                                </FormDescription>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={formProps.control}
+                        name="discountPrice"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Discount Price</FormLabel>
+                                <FormControl>
+                                    <Input type="number" {...field} />
+                                </FormControl>
+                                <FormDescription>
+                                    Set the discount price (optional).
+                                </FormDescription>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={formProps.control}
+                        name="durationInMin"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Duration (min)</FormLabel>
+                                <FormControl>
+                                    <Input type="number" {...field} />
+                                </FormControl>
+                                <FormDescription>
+                                    Duration in minutes.
+                                </FormDescription>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
+
+                {/* Toggles: onSale, featured */}
+                <div className="flex gap-8">
+                    <FormField
+                        control={formProps.control}
+                        name="onSale"
+                        render={({ field }) => (
+                            <FormItem className="flex items-center justify-between">
+                                <FormLabel>On Sale</FormLabel>
+                                <FormControl>
+                                    <Switch
+                                        checked={field.value}
+                                        onCheckedChange={field.onChange}
+                                    />
+                                </FormControl>
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={formProps.control}
+                        name="featured"
+                        render={({ field }) => (
+                            <FormItem className="flex items-center justify-between">
+                                <FormLabel>Featured</FormLabel>
+                                <FormControl>
+                                    <Switch
+                                        checked={field.value}
+                                        onCheckedChange={field.onChange}
+                                    />
+                                </FormControl>
+                            </FormItem>
+                        )}
+                    />
+                </div>
+
+                {/* Text Inputs: videoLanguage, courseMaterialLanguage, demoVideoUrl (all fields optional) */}
+                <div className="grid grid-cols-3 gap-4">
+                    <FormField
+                        control={formProps.control}
+                        name="videoLanguage"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Video Language</FormLabel>
+                                <FormControl>
+                                    <Input {...field} />
+                                </FormControl>
+                                <FormDescription>
+                                    Video lessons language (optional).
+                                </FormDescription>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={formProps.control}
+                        name="courseMaterialLanguage"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Material Language</FormLabel>
+                                <FormControl>
+                                    <Input {...field} />
+                                </FormControl>
+                                <FormDescription>
+                                    Books language (optional).
+                                </FormDescription>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={formProps.control}
+                        name="demoVideoUrl"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Demo Video URL</FormLabel>
+                                <FormControl>
+                                    <Input {...field} />
+                                </FormControl>
+                                <FormDescription>
+                                    Link of demo video (optional).
+                                </FormDescription>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
                 </div>
 
                 {/* Description Field */}
                 <FormField
-                    control={form.control}
+                    control={formProps.control}
                     name="description"
                     render={({ field }) => (
                         <FormItem>
@@ -538,13 +532,6 @@ export function AdminCoursesForm({
                         </FormItem>
                     )}
                 />
-
-                <div className="flex flex-row items-center justify-end">
-                    {/* Submit Button */}
-                    <Button type="submit" disabled={isSubmitDisabled}>
-                        {isSubmitDisabled ? "Creating..." : "Create Course"}
-                    </Button>
-                </div>
             </form>
         </Form>
     );

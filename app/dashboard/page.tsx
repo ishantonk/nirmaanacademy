@@ -3,10 +3,9 @@ import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { brandName } from "@/data/contact-info";
 import { getAuthSession } from "@/lib/auth";
-import { fetchEnrollments } from "@/lib/fetch";
+import { fetchEnrollments } from "@/lib/services/api";
 import { BookOpen } from "lucide-react";
 import { Metadata } from "next";
-import { headers } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -23,10 +22,7 @@ export default async function DashboardPage() {
         redirect("/login");
     }
 
-    const enrollments = await fetchEnrollments({
-        server: true,
-        headers: headers,
-    });
+    const enrollments = await fetchEnrollments();
 
     return (
         <div className="container py-8 mx-auto px-4">
@@ -60,7 +56,6 @@ export default async function DashboardPage() {
                     {enrollments.map((enroll) => {
                         if (enroll.course)
                             return (
-                                // Todo: change or create new for dashboard
                                 <CourseCard
                                     key={enroll.course?.id}
                                     course={enroll.course}

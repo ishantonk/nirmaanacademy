@@ -24,38 +24,23 @@ import { UserNav } from "@/components/layout/header/user-nav";
 import { ToggleTheme } from "@/components/theme/toggle-theme";
 import { Input } from "@/components/ui/input";
 
-async function registerVisit() {
-    const response = await fetch("/api/visitors", {
-        method: "POST",
-        cache: "no-store",
-        credentials: "include",
-    });
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to register your visit.");
-    }
-    return response.json();
-}
-
 export function SiteHeader() {
     // State to track whether the user has scrolled
     const [isScrolled, setIsScrolled] = useState(false);
     const isMobile = useIsMobile();
 
     useEffect(() => {
-        const register = async () => {
-            await registerVisit();
-        };
-        register();
+        // Radix gives the viewport a data attribute by default:
+        const viewport = document.querySelector<HTMLElement>(
+            "[data-radix-scroll-area-viewport]"
+        );
+        if (!viewport) return;
+
+        const onScroll = () => setIsScrolled(viewport.scrollTop > 0);
+        viewport.addEventListener("scroll", onScroll);
+        return () => viewport.removeEventListener("scroll", onScroll);
     }, []);
 
-    useEffect(() => {
-        const handleScroll = () => {
-            setIsScrolled(window.scrollY > 0);
-        };
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
     return (
         <header
             className={cn(

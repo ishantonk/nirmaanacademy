@@ -63,7 +63,7 @@ function CardAction({ className, ...props }: React.ComponentProps<"div">) {
 }
 
 interface CardImageProps extends React.ComponentProps<"div"> {
-    thumbnail: string;
+    thumbnail: string | null;
     title: string;
     overlay?: React.ReactNode;
 }
