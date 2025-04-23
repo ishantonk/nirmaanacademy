@@ -60,15 +60,14 @@ export function SiteHeader() {
                         />
                     </div>
                     {!isMobile && (
+                        // todo: Add search functionality
                         <div className="hidden md:flex flex-1 items-center justify-center space-x-4">
                             <div className="relative w-10/12">
                                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                 <Input
-                                    type="search"
-                                    name="search"
+                                    name="headerSearch"
                                     placeholder="Search courses..."
-                                    className="pl-10 border border-neutral-300"
-                                    defaultValue={""}
+                                    className="pl-10 border border-muted-foreground/20 focus-visible:border-primary focus-visible:ring-0 focus-visible:outline-none focus-visible:ring-offset-0"
                                 />
                             </div>
                         </div>

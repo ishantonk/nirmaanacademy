@@ -6,7 +6,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Pencil } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
     Dialog,
     DialogClose,
@@ -95,25 +94,21 @@ export function AdminCategoryEdit({ category }: { category: CategoryType }) {
             </DialogTrigger>
 
             {/* Give the dialog a viewport‑relative height and hide overflow */}
-            <DialogContent className="p-0 py-6 w-screen md:max-w-xl lg:max-w-4xl h-[calc(100vh-4rem)]">
-                <DialogHeader className="px-6">
+            <DialogContent className="p-6 w-screen md:max-w-xl lg:max-w-2xl">
+                <DialogHeader>
                     <DialogTitle>Edit Category</DialogTitle>
                     <DialogDescription>
                         Make changes in category details below.
                     </DialogDescription>
                 </DialogHeader>
 
-                <div className="relative flex flex-col overflow-hidden">
-                    <ScrollArea className="flex-1 h-full px-6 py-1">
-                        <AdminCategoriesForm
-                            formId={formId}
-                            formProps={form}
-                            onSubmit={onSubmit}
-                        />
-                    </ScrollArea>
-                </div>
+                <AdminCategoriesForm
+                    formId={formId}
+                    formProps={form}
+                    onSubmit={onSubmit}
+                />
 
-                <DialogFooter className="px-6">
+                <DialogFooter>
                     <DialogClose asChild>
                         <Button
                             variant={"destructive"}

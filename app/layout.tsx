@@ -52,9 +52,13 @@ export default function RootLayout({
                         >
                             <div className="flex flex-col overflow-hidden">
                                 <ScrollArea className="flex-1 h-full">
-                                    <SiteHeader />
-                                    <main className="flex-1">{children}</main>
-                                    <SiteFooter />
+                                    <div className="flex flex-col w-screen">
+                                        <SiteHeader />
+                                        <main className="flex-1">
+                                            {children}
+                                        </main>
+                                        <SiteFooter />
+                                    </div>
                                 </ScrollArea>
                             </div>
                             <Whatsapp />

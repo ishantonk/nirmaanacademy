@@ -54,7 +54,7 @@ export function CourseCard({ course, actions }: CourseCardProps) {
     }, [session, course.id]);
 
     return (
-        <Card className="pt-0">
+        <Card className="pt-0 h-full">
             {/* Course Thumbnail with Sale Badge */}
             <Link href={`/courses/${course.slug}`} className="block">
                 <CardImage
