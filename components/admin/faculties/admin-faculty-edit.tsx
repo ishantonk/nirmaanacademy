@@ -24,6 +24,7 @@ import { Pencil } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { AdminFacultiesForm } from "@/components/admin/faculties/admin-faculties-form";
+import { useEffect } from "react";
 
 export function AdminFacultyEdit({ faculty }: { faculty: FacultyType }) {
     const queryClient = useQueryClient();
@@ -42,11 +43,23 @@ export function AdminFacultyEdit({ faculty }: { faculty: FacultyType }) {
         },
     });
 
+    // Reset form values when faculty prop changes (e.g., reopening dialog)
+    useEffect(() => {
+        form.reset({
+            name: faculty.name ?? "",
+            email: faculty.email ?? "",
+            phone: faculty.phone ?? "",
+            bio: faculty.bio ?? "",
+            image: faculty.image ?? "",
+            designation: faculty.designation ?? "",
+        });
+    }, [faculty, form]);
+
     // Mutation hook for editing faculty.
     const mutation = useMutation<
         FacultyType,
         Error,
-        AdminFacultyFormValues,
+        { id: string } & AdminFacultyFormValues,
         unknown
     >({
         mutationFn: updateFaculty,
@@ -84,28 +97,32 @@ export function AdminFacultyEdit({ faculty }: { faculty: FacultyType }) {
         },
     });
 
+    // Mutation hook for removing faculty.
+    const removeMutation = useMutation<FacultyType, Error, string, unknown>({
+        mutationFn: removeFaculty,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["faculty"] });
+
+            toast.success("Faculty removed successfully");
+        },
+        onError: (error: Error) => {
+            toast.error("Removing faculty failed", {
+                description: error.message,
+            });
+        },
+    });
+
+    // Handler for removing faculty.
+    const handleRemoveFaculty = (facultyId: string) => {
+        removeMutation.mutate(facultyId);
+    };
+
     // Combined loading state: disable submit if profile update or image upload is pending.
     const submitting = mutation.isPending || uploadMutation.isPending;
 
-    const handleRemoveFaculty = async (facultyId: string) => {
-        try {
-            await removeFaculty(facultyId);
-            toast.success("Faculty removed successfully");
-            queryClient.invalidateQueries({ queryKey: ["faculty"] });
-        } catch (error) {
-            toast.error("Failed to remove faculty", {
-                description:
-                    error instanceof Error
-                        ? error.message
-                        : "An unknown error occurred",
-            });
-        }
-    };
-
     // Form submission handler.
     const onSubmit = (data: AdminFacultyFormValues) => {
-        data.email = faculty.email; // Keep the original email from the faculty prop
-        mutation.mutate(data); // Keep the original email from the faculty prop
+        mutation.mutate({ ...data, id: faculty.id });
     };
 
     return (

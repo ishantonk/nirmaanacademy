@@ -60,7 +60,7 @@ export function AdminCategoryEdit({ category }: { category: CategoryType }) {
     });
 
     // Mutation hook for removing category.
-    const removeMutation = useMutation({
+    const removeMutation = useMutation<CategoryType, Error, string, unknown>({
         mutationFn: removeCategory,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["categories"] });

@@ -16,13 +16,30 @@ export async function getFaculty(): Promise<FacultyType[]> {
     });
 }
 
-interface findFacultyByEmailProps {
-    email: string;
+export async function findFacultyById({
+    id,
+}: {
+    id: string;
+}): Promise<FacultyType | null> {
+    try {
+        const faculty = await prisma.faculty.findUnique({
+            where: {
+                id: id,
+            },
+        });
+        return faculty;
+    } catch (error) {
+        console.error("Error on finding faculty by this ID:", error);
+        // Optionally, rethrow the error if you want the caller to handle it.
+        throw error;
+    }
 }
 
 export async function findFacultyByEmail({
     email,
-}: findFacultyByEmailProps): Promise<FacultyType | null> {
+}: {
+    email: string;
+}): Promise<FacultyType | null> {
     try {
         const faculty = await prisma.faculty.findUnique({
             where: {

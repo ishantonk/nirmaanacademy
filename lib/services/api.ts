@@ -126,7 +126,7 @@ export async function updateCategory(
     data: { id: string } & AdminCategoriesFormValues
 ): Promise<CategoryType> {
     return safeFetch(
-        `${BASE}/api/categories/${encodeURIComponent(data.id)}`,
+        `${BASE}/api/categories/${data.id}`,
         {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
@@ -139,7 +139,7 @@ export async function updateCategory(
 
 export async function removeCategory(id: string): Promise<CategoryType> {
     return safeFetch<CategoryType>(
-        `${BASE}/api/categories/${encodeURIComponent(id)}`,
+        `${BASE}/api/categories/${id}`,
         { method: "DELETE" },
         "Failed to delete category",
         true
@@ -276,7 +276,7 @@ export async function updateFaculty(
     data: Partial<FacultyType>
 ): Promise<FacultyType> {
     return safeFetch<FacultyType>(
-        `${BASE}/api/faculty`,
+        `${BASE}/api/faculty/${data.id}`,
         {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
@@ -289,7 +289,7 @@ export async function updateFaculty(
 
 export async function removeFaculty(id: string): Promise<FacultyType> {
     return safeFetch<FacultyType>(
-        `${BASE}/api/faculty?facultyId=${id}`,
+        `${BASE}/api/faculty/${id}`,
         { method: "DELETE" },
         "Failed to delete faculty",
         true
