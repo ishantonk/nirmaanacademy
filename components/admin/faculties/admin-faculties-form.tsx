@@ -1,13 +1,9 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ControllerRenderProps, useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod";
+import { UseMutationResult } from "@tanstack/react-query";
+import { UseFormReturn } from "react-hook-form";
 import { IconImagePicker } from "@/components/ui/icon-image-picker";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import {
     Form,
     FormControl,
@@ -20,153 +16,51 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { getInitials } from "@/lib/utils";
+import { AdminFacultyFormValues } from "@/lib/types";
+import { toast } from "sonner";
 
-/**
- * Zod schema for faculty validation.
- * - name: required non-empty string.
- * - email: required valid email.
- * - phone: optional string.
- * - bio: optional string.
- * - image: optional string.
- * - designation: optional string.
- */
-const facultySchema = z.object({
-    name: z.string().min(3, { message: "Name must be at least 3 characters" }),
-    email: z.string().email({ message: "Invalid email address" }),
-    phone: z.string().optional(),
-    bio: z.string().optional(),
-    image: z.string().optional(),
-    designation: z.string().optional(),
-});
-
-type AdminFacultyFormValues = z.infer<typeof facultySchema>;
-
-/**
- * Uploads a file (profile image) and returns its URL.
- * @param file - The file to upload.
- */
-async function uploadFile(file: File): Promise<URL> {
-    const formData = new FormData();
-    formData.append("file", file);
-
-    const response = await fetch("api/upload", {
-        method: "POST",
-        credentials: "include",
-        body: formData,
-    });
-
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to upload file.");
-    }
-
-    const data: {
-        url: string;
-        success: boolean;
-    } = await response.json();
-    return new URL(data.url); // return the public URL as a URL object
-}
-
-/**
- * Create new faculty.
- * @param data - Data for creating new faculty.
- */
-async function createNewFaculty(
-    data: AdminFacultyFormValues
-): Promise<AdminFacultyFormValues> {
-    const response = await fetch("/api/faculty", {
-        method: "POST",
-        credentials: "include",
-        cache: "no-store",
-        headers: {
-            "Content-Type": "application/json",
+interface AdminFacultiesFormProps {
+    formId: string;
+    formProps: UseFormReturn<AdminFacultyFormValues>;
+    uploadMutation: UseMutationResult<
+        {
+            url: string;
+            success: boolean;
         },
-        body: JSON.stringify(data),
-    });
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to create faculty");
-    }
-    return response.json();
-}
-
-export function AdminFacultiesForm() {
-    const queryClient = useQueryClient();
-
-    // Initialize React Hook Form with Zod resolver and default values.
-    const form = useForm<AdminFacultyFormValues>({
-        resolver: zodResolver(facultySchema),
-        defaultValues: {
-            name: "",
-            email: "",
-            phone: "",
-            bio: "",
-            image: "",
-            designation: "",
-        },
-    });
-
-    // Mutation hook for creating faculty.
-    const mutation = useMutation<
-        AdminFacultyFormValues,
         Error,
-        AdminFacultyFormValues,
+        File,
         unknown
-    >({
-        mutationFn: createNewFaculty,
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["Faculty"] });
+    >;
+    onSubmit: (data: AdminFacultyFormValues) => void;
+    isEdit?: boolean;
+}
 
-            toast.success("Faculty created successfully");
-            form.reset();
-        },
-        onError: (error: Error) => {
-            toast.error("Creating faculty failed", {
-                description: error.message,
-            });
-        },
-    });
-
-    // Mutation for uploading faculty image.
-    const uploadFacultyImage = useMutation<URL, Error, File, unknown>({
-        mutationFn: (file) => uploadFile(file),
-        onSuccess: (uploadedUrl) => {
-            toast.success("Faculty image successfully uploaded");
-            // Optionally update the form field with the new permanent URL after upload completes.
-            form.setValue("image", uploadedUrl.toString());
-        },
-        onError: (error: Error) => {
-            toast.error("Upload failed", { description: error.message });
-        },
-    });
-
-    // Handler for faculty image selection.
-    const onFacultyImageSelect = async (
-        file: File,
-        field: ControllerRenderProps<AdminFacultyFormValues, "image">
-    ) => {
+export function AdminFacultiesForm({
+    formId,
+    formProps,
+    uploadMutation,
+    onSubmit,
+    isEdit = false,
+}: AdminFacultiesFormProps) {
+    const onFileSelect = (file: File) => {
         // Generate a temporary URL for preview.
-        const imageUrl = URL.createObjectURL(file);
-        // Update the form field with the temporary URL.
-        field.onChange(imageUrl);
-        // Trigger the image upload mutation.
-        uploadFacultyImage.mutate(file);
-    };
-
-    // Combined loading state: disable submit if profile update or image upload is pending.
-    const isSubmitDisabled = mutation.isPending || uploadFacultyImage.isPending;
-
-    // Form submission handler.
-    const onSubmit = (data: AdminFacultyFormValues) => {
-        mutation.mutate(data);
+        const preview = URL.createObjectURL(file);
+        // Update the form value with the temporary URL.
+        formProps.setValue("image", preview);
+        // Trigger the image upload mutation
+        uploadMutation.mutate(file);
     };
 
     return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <Form {...formProps}>
+            <form
+                id={formId}
+                onSubmit={formProps.handleSubmit(onSubmit)}
+                className="space-y-6"
+            >
                 {/* Faculty Image Field */}
                 <FormField
-                    control={form.control}
+                    control={formProps.control}
                     name="image"
                     render={({ field }) => (
                         <FormItem>
@@ -180,9 +74,9 @@ export function AdminFacultiesForm() {
                                             src={field.value || undefined}
                                         />
                                         <AvatarFallback className="text-2xl">
-                                            {form.getValues().name
+                                            {formProps.getValues().name
                                                 ? getInitials(
-                                                      form.getValues().name
+                                                      formProps.getValues().name
                                                   )
                                                 : "NA"}
                                         </AvatarFallback>
@@ -191,7 +85,7 @@ export function AdminFacultiesForm() {
                                         // {...field}
                                         className="absolute bottom-2 -right-2"
                                         onImageSelect={(file) =>
-                                            onFacultyImageSelect(file, field)
+                                            onFileSelect(file)
                                         }
                                     />
                                 </div>
@@ -207,7 +101,7 @@ export function AdminFacultiesForm() {
 
                 {/* Name Field */}
                 <FormField
-                    control={form.control}
+                    control={formProps.control}
                     name="name"
                     render={({ field }) => (
                         <FormItem>
@@ -228,13 +122,22 @@ export function AdminFacultiesForm() {
 
                 {/* Email Field */}
                 <FormField
-                    control={form.control}
+                    control={formProps.control}
                     name="email"
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Email</FormLabel>
                             <FormControl>
                                 <Input
+                                    onFocus={(e) => {
+                                        if (isEdit) {
+                                            e.target.blur(); // prevent typing by removing focus
+                                            toast.warning(
+                                                "Email for faculty can't be changed."
+                                            );
+                                        }
+                                    }}
+                                    readOnly={isEdit}
                                     placeholder="Your faculty email"
                                     {...field}
                                 />
@@ -249,7 +152,7 @@ export function AdminFacultiesForm() {
 
                 {/* Phone Field */}
                 <FormField
-                    control={form.control}
+                    control={formProps.control}
                     name="phone"
                     render={({ field }) => (
                         <FormItem>
@@ -271,7 +174,7 @@ export function AdminFacultiesForm() {
 
                 {/* Designation Field */}
                 <FormField
-                    control={form.control}
+                    control={formProps.control}
                     name="designation"
                     render={({ field }) => (
                         <FormItem>
@@ -292,7 +195,7 @@ export function AdminFacultiesForm() {
 
                 {/* Bio Field */}
                 <FormField
-                    control={form.control}
+                    control={formProps.control}
                     name="bio"
                     render={({ field }) => (
                         <FormItem>
@@ -314,13 +217,6 @@ export function AdminFacultiesForm() {
                         </FormItem>
                     )}
                 />
-
-                <div className="flex flex-row items-center justify-end">
-                    {/* Submit Button */}
-                    <Button type="submit" disabled={isSubmitDisabled}>
-                        {isSubmitDisabled ? "Creating..." : "Create Faculty"}
-                    </Button>
-                </div>
             </form>
         </Form>
     );

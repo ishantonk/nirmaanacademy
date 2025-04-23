@@ -33,7 +33,7 @@ export function AdminCourseCard({
         : null;
 
     return (
-        <div className="flex flex-row sm:items-center gap-4 bg-gradient-to-br from-primary/5 via-white dark:via-black to-transparent border border-muted rounded-lg p-3">
+        <div className="flex flex-row bg-muted/50 border border-muted rounded-lg p-3 sm:items-center gap-4 ">
             {thumbnailUrl ? (
                 <div className="shrink-0 relative w-32 h-20 rounded overflow-hidden bg-muted">
                     <Image

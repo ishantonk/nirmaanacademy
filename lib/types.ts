@@ -177,8 +177,30 @@ export type CourseStatusUpdateValues = z.infer<
  * - description: required valid description.
  */
 export const zCategoriesSchema = z.object({
-    name: z.string().min(3, { message: "Category name must be at least 3 characters." }),
+    name: z
+        .string()
+        .min(3, { message: "Category name must be at least 3 characters." }),
     description: z.string().optional(),
 });
 
 export type AdminCategoriesFormValues = z.infer<typeof zCategoriesSchema>;
+
+/**
+ * Zod schema for faculty validation.
+ * - name: required non-empty string.
+ * - email: required valid email.
+ * - phone: optional string.
+ * - bio: optional string.
+ * - image: optional string.
+ * - designation: optional string.
+ */
+export const zFacultySchema = z.object({
+    name: z.string().min(3, { message: "Name must be at least 3 characters" }),
+    email: z.string().email({ message: "Invalid email address" }),
+    phone: z.string().optional(),
+    bio: z.string().optional(),
+    image: z.string().optional(),
+    designation: z.string().optional(),
+});
+
+export type AdminFacultyFormValues = z.infer<typeof zFacultySchema>;

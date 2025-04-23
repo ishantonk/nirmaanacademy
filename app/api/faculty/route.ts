@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
-    CreateFaculty,
+    createFaculty,
     findFacultyByEmail,
     getFaculty,
+    removeFaculty,
+    updateFaculty,
 } from "@/lib/services/faculty";
 import { getAuthSession } from "@/lib/auth";
-import { z } from "zod";
+import { zFacultySchema } from "@/lib/types";
 
 // GET API endpoint to retrieve faculty data
 export async function GET() {
@@ -48,18 +50,6 @@ export async function GET() {
     }
 }
 
-// Schema to validate incoming faculty data
-const createFacultySchema = z.object({
-    name: z
-        .string()
-        .min(3, { message: "Faculty name must be at least 3 characters" }),
-    email: z.string().email({ message: "Invalid email address" }),
-    phone: z.string().optional(),
-    bio: z.string().optional(),
-    image: z.string().optional(),
-    designation: z.string().optional(),
-});
-
 export async function POST(request: NextRequest) {
     try {
         // Check for user session
@@ -76,7 +66,7 @@ export async function POST(request: NextRequest) {
         // Validate request body
         const body = await request.json();
         const { name, email, phone, bio, image, designation } =
-            createFacultySchema.parse(body);
+            zFacultySchema.parse(body);
 
         // Checking for admin user.
         if (userRole !== "ADMIN") {
@@ -93,7 +83,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Creating new faculty.
-        const faculty = await CreateFaculty({
+        const faculty = await createFaculty({
             name: name,
             email: email,
             phone: phone,
@@ -124,6 +114,131 @@ export async function POST(request: NextRequest) {
         // Return a generic internal server error response
         return NextResponse.json(
             { error: "Failed on creating faculty due to server error." },
+            { status: 500 }
+        );
+    }
+}
+
+export async function PUT(request: NextRequest) {
+    try {
+        // Check for user session
+        const session = await getAuthSession();
+        if (!session) {
+            return NextResponse.json(
+                { message: "Unauthorized access." },
+                { status: 401 }
+            );
+        }
+
+        const userRole = session.user.role;
+
+        // Validate request body
+        const body = await request.json();
+        const data = zFacultySchema.parse(body);
+
+        // Checking for admin user.
+        if (userRole !== "ADMIN") {
+            return new NextResponse("Forbidden", { status: 403 });
+        }
+
+        // Find if same faculty exist already.
+        const existingFaculty = await findFacultyByEmail({ email: data.email });
+
+        if (!existingFaculty) {
+            return NextResponse.json(
+                { message: "Unable to find faculty with this email." },
+                { status: 404 }
+            );
+        }
+
+        const facultyId = existingFaculty.id;
+
+        const updatedFaculty = await updateFaculty({ id: facultyId, ...data });
+
+        if (!updatedFaculty) {
+            return NextResponse.json(
+                { message: "Unable to update faculty." },
+                { status: 400 }
+            );
+        }
+
+        return NextResponse.json(updatedFaculty, { status: 201 });
+    } catch (error) {
+        // Log detailed error to the console for debugging purposes
+        console.error("Error on updating faculty:", error);
+
+        // Handle specific known errors (e.g., DB connection issue)
+        if ((error as { code?: string }).code === "ECONNREFUSED") {
+            return NextResponse.json(
+                { error: "Database connection refused." },
+                { status: 503 } // Service Unavailable
+            );
+        }
+
+        // Return a generic internal server error response
+        return NextResponse.json(
+            { error: "Failed on updating faculty due to server error." },
+            { status: 500 }
+        );
+    }
+}
+
+export async function DELETE(request: NextRequest) {
+    try {
+        // Extract faculty ID from the request URL
+        const searchParams = request.nextUrl.searchParams;
+        const facultyId = searchParams.get("facultyId");
+
+        // Validate faculty ID
+        if (!facultyId) {
+            return NextResponse.json(
+                { message: "Faculty ID is required." },
+                { status: 400 }
+            );
+        }
+
+        // Check for user session
+        const session = await getAuthSession();
+        if (!session) {
+            return NextResponse.json(
+                { message: "Unauthorized access." },
+                { status: 401 }
+            );
+        }
+
+        const userRole = session.user.role;
+
+        // Checking for admin user.
+        if (userRole !== "ADMIN") {
+            return new NextResponse("Forbidden", { status: 403 });
+        }
+
+        // Call the delete function from your service layer
+        const deletedFaculty = await removeFaculty({ id: facultyId });
+
+        if (!deletedFaculty) {
+            return NextResponse.json(
+                { message: "Unable to delete faculty." },
+                { status: 400 }
+            );
+        }
+
+        return NextResponse.json(deletedFaculty, { status: 201 });
+    } catch (error) {
+        // Log detailed error to the console for debugging purposes
+        console.error("Error on deleting faculty:", error);
+
+        // Handle specific known errors (e.g., DB connection issue)
+        if ((error as { code?: string }).code === "ECONNREFUSED") {
+            return NextResponse.json(
+                { error: "Database connection refused." },
+                { status: 503 } // Service Unavailable
+            );
+        }
+
+        // Return a generic internal server error response
+        return NextResponse.json(
+            { error: "Failed on deleting faculty due to server error." },
             { status: 500 }
         );
     }

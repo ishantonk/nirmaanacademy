@@ -12,82 +12,52 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Pencil } from "lucide-react";
-import { AdminCoursesForm } from "@/components/admin/courses/admin-courses-form";
+import { removeFaculty, updateFaculty, uploadToBlob } from "@/lib/services/api";
 import {
-    AdminCourseFormValues,
-    AttemptType,
-    CategoryType,
-    CourseType,
+    AdminFacultyFormValues,
     FacultyType,
-    ModeType,
-    zCourseSchema,
+    zFacultySchema,
 } from "@/lib/types";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Pencil } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { removeCourse, updateCourse, uploadToBlob } from "@/lib/services/api";
+import { AdminFacultiesForm } from "@/components/admin/faculties/admin-faculties-form";
 
-interface AdminCourseEditProps {
-    course: CourseType;
-    categories: CategoryType[];
-    faculties: FacultyType[];
-    attempts: AttemptType[];
-    modes: ModeType[];
-}
-
-export function AdminCourseEdit({
-    course,
-    attempts,
-    categories,
-    faculties,
-    modes,
-}: AdminCourseEditProps) {
+export function AdminFacultyEdit({ faculty }: { faculty: FacultyType }) {
     const queryClient = useQueryClient();
-    const formId = "edit-course-form";
+    const formId = "edit-faculty-form";
 
-    // seed defaultValues from `course` if it exists
-    const form = useForm<AdminCourseFormValues>({
-        resolver: zodResolver(zCourseSchema),
+    // Initialize React Hook Form with Zod resolver and default values.
+    const form = useForm<AdminFacultyFormValues>({
+        resolver: zodResolver(zFacultySchema),
         defaultValues: {
-            title: course?.title ?? "",
-            categoryId: course?.categoryId ?? "",
-            facultyIds: course?.faculties?.map((f) => f.id) ?? [],
-            modeIds: course?.availableModes?.map((m) => m.id) ?? [],
-            attemptIds: course?.availableAttempts?.map((a) => a.id) ?? [],
-            price: Number(course?.price ?? 0),
-            discountPrice:
-                course?.discountPrice != null
-                    ? Number(course.discountPrice)
-                    : undefined,
-            onSale: course?.onSale ?? false,
-            durationInMin: course?.durationInMin ?? 1,
-            featured: course?.featured ?? false,
-            videoLanguage: course?.videoLanguage ?? "",
-            courseMaterialLanguage: course?.courseMaterialLanguage ?? "",
-            demoVideoUrl: course?.demoVideoUrl ?? "",
-            description: course?.description ?? "",
-            thumbnail: course?.thumbnail ?? "",
+            name: faculty.name ?? "",
+            email: faculty.email ?? "",
+            phone: faculty.phone ?? "",
+            bio: faculty.bio ?? "",
+            image: faculty.image ?? "",
+            designation: faculty.designation ?? "",
         },
     });
 
-    // Mutation hook for editing course.
+    // Mutation hook for editing faculty.
     const mutation = useMutation<
-        CourseType,
+        FacultyType,
         Error,
-        AdminCourseFormValues,
+        AdminFacultyFormValues,
         unknown
     >({
-        mutationFn: (data) => updateCourse(course.slug, data),
+        mutationFn: updateFaculty,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["course"] });
+            queryClient.invalidateQueries({ queryKey: ["Faculty"] });
 
-            toast.success("Course update successfully!");
+            toast.success("Faculty updated successfully");
             form.reset();
         },
         onError: (error: Error) => {
-            toast.error("Updating course failed", {
+            toast.error("Updating faculty failed", {
                 description:
                     error instanceof Error
                         ? error.message
@@ -96,7 +66,7 @@ export function AdminCourseEdit({
         },
     });
 
-    // thumbnail upload
+    // Mutation for uploading faculty image.
     const uploadMutation = useMutation<
         { url: string; success: boolean },
         Error,
@@ -105,9 +75,9 @@ export function AdminCourseEdit({
     >({
         mutationFn: (file) => uploadToBlob(file),
         onSuccess: (uploadedUrl) => {
-            toast.success("Course thumbnail successfully uploaded");
+            toast.success("Faculty image successfully uploaded");
             // Optionally update the form field with the new permanent URL after upload completes.
-            form.setValue("thumbnail", uploadedUrl.url.toString());
+            form.setValue("image", uploadedUrl.toString());
         },
         onError: (error: Error) => {
             toast.error("Upload failed", { description: error.message });
@@ -117,13 +87,13 @@ export function AdminCourseEdit({
     // Combined loading state: disable submit if profile update or image upload is pending.
     const submitting = mutation.isPending || uploadMutation.isPending;
 
-    const handleRemoveCourse = async (courseSlug: string) => {
+    const handleRemoveFaculty = async (facultyId: string) => {
         try {
-            await removeCourse(courseSlug);
-            toast.success("Course deleted successfully");
-            queryClient.invalidateQueries({ queryKey: ["course"] });
+            await removeFaculty(facultyId);
+            toast.success("Faculty removed successfully");
+            queryClient.invalidateQueries({ queryKey: ["Faculty"] });
         } catch (error) {
-            toast.error("Failed to remove course", {
+            toast.error("Failed to remove faculty", {
                 description:
                     error instanceof Error
                         ? error.message
@@ -133,14 +103,15 @@ export function AdminCourseEdit({
     };
 
     // Form submission handler.
-    const onSubmit = (data: AdminCourseFormValues) => {
-        mutation.mutate(data);
+    const onSubmit = (data: AdminFacultyFormValues) => {
+        data.email = faculty.email; // Keep the original email from the faculty prop
+        mutation.mutate(data); // Keep the original email from the faculty prop
     };
 
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button size="icon" variant={"ghost"} aria-label="Edit course">
+                <Button size="icon" variant={"ghost"} aria-label="Edit faculty">
                     <Pencil className="w-4 h-4" />
                 </Button>
             </DialogTrigger>
@@ -148,24 +119,20 @@ export function AdminCourseEdit({
             {/* Give the dialog a viewport‑relative height and hide overflow */}
             <DialogContent className="p-0 py-6 w-screen md:max-w-xl lg:max-w-4xl h-[calc(100vh-4rem)]">
                 <DialogHeader className="px-6">
-                    <DialogTitle>Edit course</DialogTitle>
+                    <DialogTitle>Edit Faculty</DialogTitle>
                     <DialogDescription>
-                        Make changes to your course below.
+                        Make changes in faculty details below.
                     </DialogDescription>
                 </DialogHeader>
 
                 <div className="relative flex flex-col overflow-hidden">
                     <ScrollArea showShadow className="flex-1 h-full px-6 py-1">
-                        <AdminCoursesForm
+                        <AdminFacultiesForm
                             formId={formId}
                             formProps={form}
-                            categories={categories}
-                            faculties={faculties}
-                            attempts={attempts}
-                            modes={modes}
                             uploadMutation={uploadMutation}
-                            submitting={submitting}
                             onSubmit={onSubmit}
+                            isEdit
                         />
                     </ScrollArea>
                 </div>
@@ -174,9 +141,9 @@ export function AdminCourseEdit({
                     <DialogClose asChild>
                         <Button
                             variant={"destructive"}
-                            onClick={() => handleRemoveCourse(course.slug)}
+                            onClick={() => handleRemoveFaculty(faculty.id)}
                         >
-                            Delete Course
+                            Delete Faculty
                         </Button>
                     </DialogClose>
                     <DialogClose asChild>
@@ -186,7 +153,7 @@ export function AdminCourseEdit({
                             type="submit"
                             disabled={!form.formState.isDirty || submitting}
                         >
-                            {submitting ? "Updating..." : "Update Course"}
+                            {submitting ? "Updating..." : "Update Faculty"}
                         </Button>
                     </DialogClose>
                 </DialogFooter>

@@ -9,8 +9,9 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { EmptyState } from "@/components/ui/empty-state";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Skeleton } from "@/components/ui/skeleton";
 import { AdminCourseCard } from "@/components/admin/courses/admin-course-card";
 import {
     fetchAdminCourses,
@@ -26,29 +27,34 @@ import {
     FacultyType,
     ModeType,
 } from "@/lib/types";
-import { Skeleton } from "@/components/ui/skeleton";
+import { useQuery } from "@tanstack/react-query";
 
 export function AdminCoursesList() {
-    const [courses, setCourses] = useState<CourseType[] | null>(null);
+    const {
+        data: courses,
+        isLoading: coursesLoading,
+        isError: coursesError,
+    } = useQuery<CourseType[]>({
+        queryKey: ["course"],
+        queryFn: fetchAdminCourses,
+    });
+
     const [categories, setCategories] = useState<CategoryType[]>([]);
     const [faculties, setFaculties] = useState<FacultyType[]>([]);
     const [modes, setModes] = useState<ModeType[]>([]);
     const [attempts, setAttempts] = useState<AttemptType[]>([]);
-
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [courses, cat, fac, mode, attempt] = await Promise.all([
-                    fetchAdminCourses(),
+                const [cat, fac, mode, attempt] = await Promise.all([
                     fetchCategories(),
                     fetchFaculties(),
                     fetchModes(),
                     fetchAttempts(),
                 ]);
-                setCourses(courses);
                 setCategories(cat);
                 setFaculties(fac);
                 setModes(mode);
@@ -63,7 +69,10 @@ export function AdminCoursesList() {
         fetchData();
     }, []);
 
-    if (loading) {
+    const isLoading = coursesLoading || loading;
+    const isError = coursesError || error;
+
+    if (isLoading) {
         return (
             <Card className="sticky top-24">
                 <CardHeader>
@@ -92,7 +101,7 @@ export function AdminCoursesList() {
         );
     }
 
-    if (error) {
+    if (isError) {
         return (
             <Card className="sticky top-24">
                 <CardHeader>
@@ -114,17 +123,17 @@ export function AdminCoursesList() {
                 <CardDescription>List of all the courses.</CardDescription>
             </CardHeader>
             <CardContent className="h-[calc(100vh-14rem)] p-0">
-                {courses?.length ? (
+                {courses && courses.length ? (
                     <ScrollArea className="h-full px-6 py-4">
                         <div className="space-y-4">
                             {courses.map((course) => (
                                 <AdminCourseCard
                                     key={course.id}
                                     course={course}
-                                    categories={categories}
-                                    faculties={faculties}
-                                    attempts={attempts}
-                                    modes={modes}
+                                    categories={categories || []}
+                                    faculties={faculties || []}
+                                    attempts={attempts || []}
+                                    modes={modes || []}
                                 />
                             ))}
                         </div>

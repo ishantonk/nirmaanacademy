@@ -20,13 +20,16 @@ interface findFacultyByEmailProps {
     email: string;
 }
 
-export async function findFacultyByEmail({ email }: findFacultyByEmailProps) {
+export async function findFacultyByEmail({
+    email,
+}: findFacultyByEmailProps): Promise<FacultyType | null> {
     try {
-        return await prisma.faculty.findUnique({
+        const faculty = await prisma.faculty.findUnique({
             where: {
                 email: email,
             },
         });
+        return faculty;
     } catch (error) {
         console.error("Error on finding faculty by this email:", error);
         // Optionally, rethrow the error if you want the caller to handle it.
@@ -43,14 +46,14 @@ interface CreateFacultyProps {
     designation?: string;
 }
 
-export async function CreateFaculty({
+export async function createFaculty({
     name,
     email,
     phone,
     bio,
     image,
     designation,
-}: CreateFacultyProps) {
+}: CreateFacultyProps): Promise<FacultyType> {
     try {
         return await prisma.faculty.create({
             data: {
@@ -64,6 +67,58 @@ export async function CreateFaculty({
         });
     } catch (error) {
         console.error("Error on creating new faculty by this data:", error);
+        // Optionally, rethrow the error if you want the caller to handle it.
+        throw error;
+    }
+}
+
+interface UpdateFacultyProps extends CreateFacultyProps {
+    id: string;
+}
+export async function updateFaculty({
+    id,
+    name,
+    email,
+    phone,
+    bio,
+    image,
+    designation,
+}: UpdateFacultyProps): Promise<FacultyType> {
+    try {
+        return await prisma.faculty.update({
+            where: {
+                id: id,
+            },
+            data: {
+                name: name,
+                email: email,
+                phone: phone,
+                bio: bio,
+                image: image,
+                designation: designation,
+            },
+        });
+    } catch (error) {
+        console.error("Error on updating faculty by this data:", error);
+        // Optionally, rethrow the error if you want the caller to handle it.
+        throw error;
+    }
+}
+
+interface RemoveFacultyProps {
+    id: string;
+}
+export async function removeFaculty({
+    id,
+}: RemoveFacultyProps): Promise<FacultyType> {
+    try {
+        return await prisma.faculty.delete({
+            where: {
+                id: id,
+            },
+        });
+    } catch (error) {
+        console.error("Error on deleting faculty by this ID:", error);
         // Optionally, rethrow the error if you want the caller to handle it.
         throw error;
     }

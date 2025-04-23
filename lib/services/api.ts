@@ -233,6 +233,45 @@ export async function fetchFaculties(): Promise<FacultyType[]> {
     );
 }
 
+export async function createFaculty(
+    data: Partial<FacultyType>
+): Promise<FacultyType> {
+    return safeFetch<FacultyType>(
+        `${BASE}/api/faculty`,
+        {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+        },
+        "Failed to create faculty",
+        true
+    );
+}
+
+export async function updateFaculty(
+    data: Partial<FacultyType>
+): Promise<FacultyType> {
+    return safeFetch<FacultyType>(
+        `${BASE}/api/faculty`,
+        {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+        },
+        "Failed to update faculty",
+        true
+    );
+}
+
+export async function removeFaculty(id: string): Promise<FacultyType> {
+    return safeFetch<FacultyType>(
+        `${BASE}/api/faculty?facultyId=${id}`,
+        { method: "DELETE" },
+        "Failed to delete faculty",
+        true
+    );
+}
+
 // Modes
 export async function fetchModes(): Promise<ModeType[]> {
     return safeFetch<ModeType[]>(
