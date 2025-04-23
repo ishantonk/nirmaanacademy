@@ -51,7 +51,7 @@ export function AdminFacultyEdit({ faculty }: { faculty: FacultyType }) {
     >({
         mutationFn: updateFaculty,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["Faculty"] });
+            queryClient.invalidateQueries({ queryKey: ["faculty"] });
 
             toast.success("Faculty updated successfully");
             form.reset();
@@ -91,7 +91,7 @@ export function AdminFacultyEdit({ faculty }: { faculty: FacultyType }) {
         try {
             await removeFaculty(facultyId);
             toast.success("Faculty removed successfully");
-            queryClient.invalidateQueries({ queryKey: ["Faculty"] });
+            queryClient.invalidateQueries({ queryKey: ["faculty"] });
         } catch (error) {
             toast.error("Failed to remove faculty", {
                 description:

@@ -81,7 +81,7 @@ export function AdminCourseEdit({
     >({
         mutationFn: (data) => updateCourse(course.slug, data),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["course"] });
+            queryClient.invalidateQueries({ queryKey: ["courses"] });
 
             toast.success("Course update successfully!");
             form.reset();
@@ -121,7 +121,7 @@ export function AdminCourseEdit({
         try {
             await removeCourse(courseSlug);
             toast.success("Course deleted successfully");
-            queryClient.invalidateQueries({ queryKey: ["course"] });
+            queryClient.invalidateQueries({ queryKey: ["courses"] });
         } catch (error) {
             toast.error("Failed to remove course", {
                 description:

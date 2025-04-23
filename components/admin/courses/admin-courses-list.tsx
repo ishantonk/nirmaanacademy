@@ -35,7 +35,7 @@ export function AdminCoursesList() {
         isLoading: coursesLoading,
         isError: coursesError,
     } = useQuery<CourseType[]>({
-        queryKey: ["course"],
+        queryKey: ["courses"],
         queryFn: fetchAdminCourses,
     });
 

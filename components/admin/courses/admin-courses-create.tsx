@@ -96,7 +96,7 @@ export function AdminCoursesCreate() {
     >({
         mutationFn: createCourse,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["course"] });
+            queryClient.invalidateQueries({ queryKey: ["courses"] });
 
             toast.success("Course created successfully!");
             form.reset();

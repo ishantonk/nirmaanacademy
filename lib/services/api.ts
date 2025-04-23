@@ -122,6 +122,30 @@ export async function createCategory(
     );
 }
 
+export async function updateCategory(
+    data: { id: string } & AdminCategoriesFormValues
+): Promise<CategoryType> {
+    return safeFetch(
+        `${BASE}/api/categories/${encodeURIComponent(data.id)}`,
+        {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+        },
+        "Failed to update category",
+        true
+    );
+}
+
+export async function removeCategory(id: string): Promise<CategoryType> {
+    return safeFetch<CategoryType>(
+        `${BASE}/api/categories/${encodeURIComponent(id)}`,
+        { method: "DELETE" },
+        "Failed to delete category",
+        true
+    );
+}
+
 // Checkout
 export async function checkoutSession(): Promise<{ sessionId: string }> {
     return safeFetch<{ sessionId: string }>(

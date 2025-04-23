@@ -18,7 +18,7 @@ import { useQuery } from "@tanstack/react-query";
 
 export function AdminFacultiesList() {
     const { data, isLoading, isError } = useQuery<FacultyType[]>({
-        queryKey: ["Faculty"],
+        queryKey: ["faculty"],
         queryFn: fetchFaculties,
     });
 

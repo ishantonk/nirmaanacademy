@@ -37,7 +37,7 @@ export function AdminCourseStatusSelect({
                 toast.success("Status updated!");
                 setStatus(data.status);
                 queryClient.invalidateQueries({
-                    queryKey: ["course", courseSlug],
+                    queryKey: ["courses", courseSlug],
                 });
             },
             onError: (err) => {

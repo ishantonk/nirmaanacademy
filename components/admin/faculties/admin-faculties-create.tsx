@@ -46,7 +46,7 @@ export function AdminFacultiesCreate() {
     >({
         mutationFn: createFaculty,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["Faculty"] });
+            queryClient.invalidateQueries({ queryKey: ["faculty"] });
 
             toast.success("Faculty created successfully");
             form.reset();

@@ -136,5 +136,3 @@ export async function POST(request: NextRequest) {
         );
     }
 }
-
-// todo: add put request for editing category.
