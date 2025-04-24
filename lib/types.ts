@@ -5,7 +5,10 @@ import {
     Course,
     Enrollment,
     Faculty,
+    GallerySlide,
+    GallerySlideType,
     Mode,
+    Notice,
     Order,
     Post,
     Prisma,
@@ -109,6 +112,10 @@ export type CourseType = Course & {
 
 export type OrderType = Order;
 
+export type NoticeType = Notice;
+
+export type GalleryItemType = GallerySlide;
+
 export type BlogPostType = Post & {
     author?: {
         name: string | null;
@@ -204,3 +211,37 @@ export const zFacultySchema = z.object({
 });
 
 export type AdminFacultyFormValues = z.infer<typeof zFacultySchema>;
+
+export const zNoticeSchema = z.object({
+    content: z.string().max(300, "Content must be at most 300 characters"),
+    visible: z.boolean().optional(),
+});
+
+export type AdminNoticeFormValues = z.infer<typeof zNoticeSchema>;
+
+export const zGallerySchema = z
+    .object({
+        title: z.string().max(100).optional(),
+        subtitle: z.string().max(200).optional(),
+        type: z.nativeEnum(GallerySlideType),
+        imageUrl: z.string().url().optional().nullable(),
+        videoUrl: z.string().url().optional().nullable(),
+        sortOrder: z.number().int().nonnegative(),
+        visible: z.boolean().optional(),
+    })
+    .refine(
+        (data) =>
+            (data.type === GallerySlideType.IMAGE &&
+                !!data.imageUrl &&
+                !data.videoUrl) ||
+            (data.type === GallerySlideType.VIDEO &&
+                !!data.videoUrl &&
+                !data.imageUrl),
+        {
+            message:
+                "When type is IMAGE you must provide imageUrl (and not videoUrl), and vice versa for VIDEO.",
+            path: ["imageUrl", "videoUrl"],
+        }
+    );
+
+export type AdminGalleryFormValues = z.infer<typeof zGallerySchema>;

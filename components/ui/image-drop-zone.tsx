@@ -66,8 +66,8 @@ export function ImageDropzone({
             className={`relative flex flex-col items-center justify-center border-2 rounded-lg p-6 
         ${
             isDragActive
-                ? "border-primary bg-primary/10"
-                : "border-dashed border-muted/60"
+                ? "border-dashed border-muted-foreground/60"
+                : "border-dashed border-muted-foreground/15"
         } 
         ${className}`}
             onDragOver={handleDragOver}

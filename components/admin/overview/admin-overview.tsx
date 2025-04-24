@@ -1,7 +1,7 @@
 import { AdminOverviewAnalytics } from "@/components/admin/overview/admin-overview-analytics";
 import { AdminOverviewCard } from "@/components/admin/overview/admin-overview-card";
-import { AdminOverviewGallery } from "@/components/admin/overview/admin-overview-gallery";
-import { AdminOverviewNotice } from "@/components/admin/overview/admin-overview-notice";
+import { AdminOverviewNotice } from "./notice/admin-overview-notice";
+import { AdminOverviewGallery } from "./gallery/admin-overview-gallery";
 
 export function AdminOverview() {
     return (

@@ -1,6 +1,8 @@
 import {
     AdminCategoriesFormValues,
     AdminCourseFormValues,
+    AdminGalleryFormValues,
+    AdminNoticeFormValues,
     AttemptType,
     BlogPostType,
     CartItemType,
@@ -9,7 +11,9 @@ import {
     CourseType,
     EnrollmentType,
     FacultyType,
+    GalleryItemType,
     ModeType,
+    NoticeType,
     UserType,
 } from "@/lib/types";
 import { safeFetch } from "@/lib/utils";
@@ -376,4 +380,150 @@ export async function registerVisitor(): Promise<number> {
         true
     );
     return data.count;
+}
+
+// Notices
+export async function fetchNotices(): Promise<NoticeType[]> {
+    return safeFetch<NoticeType[]>(
+        `${BASE}/api/notices`,
+        { method: "GET" },
+        "Failed to fetch notices"
+    );
+}
+
+export async function fetchAdminNotices(): Promise<NoticeType[]> {
+    return safeFetch<NoticeType[]>(
+        `${BASE}/api/notices`,
+        { method: "GET" },
+        "Failed to fetch admin notices",
+        true
+    );
+}
+
+export async function createNotice(
+    data: AdminNoticeFormValues
+): Promise<NoticeType> {
+    return safeFetch<NoticeType>(
+        `${BASE}/api/notices`,
+        {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+        },
+        "Failed to create notice",
+        true
+    );
+}
+
+export async function updateNotice(
+    data: { id: string } & AdminNoticeFormValues
+): Promise<NoticeType> {
+    return safeFetch<NoticeType>(
+        `${BASE}/api/notices/${data.id}`,
+        {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+        },
+        "Failed to update notice",
+        true
+    );
+}
+
+export async function updateNoticeVisibility(
+    id: string,
+    visible: boolean
+): Promise<NoticeType> {
+    return safeFetch<NoticeType>(
+        `${BASE}/api/notices/${id}`,
+        {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ visible }),
+        },
+        "Failed to update notice visibility",
+        true
+    );
+}
+
+export async function deleteNotice(id: string): Promise<NoticeType> {
+    return safeFetch<NoticeType>(
+        `${BASE}/api/notices/${id}`,
+        { method: "DELETE" },
+        "Failed to delete notice",
+        true
+    );
+}
+
+// Gallery
+export async function fetchGallerySlides(): Promise<GalleryItemType[]> {
+    return safeFetch<GalleryItemType[]>(
+        `${BASE}/api/gallery`,
+        { method: "GET" },
+        "Failed to fetch gallery slides"
+    );
+}
+
+export async function fetchAdminGallerySlides(): Promise<GalleryItemType[]> {
+    return safeFetch<GalleryItemType[]>(
+        `${BASE}/api/gallery`,
+        { method: "GET" },
+        "Failed to fetch admin gallery slides",
+        true
+    );
+}
+
+export async function createGallerySlide(
+    data: AdminGalleryFormValues
+): Promise<GalleryItemType> {
+    return safeFetch<GalleryItemType>(
+        `${BASE}/api/gallery`,
+        {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+        },
+        "Failed to create gallery slide",
+        true
+    );
+}
+
+export async function updateGallerySlide(
+    data: { id: string } & AdminGalleryFormValues
+): Promise<GalleryItemType> {
+    return safeFetch<GalleryItemType>(
+        `${BASE}/api/gallery/${data.id}`,
+        {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+        },
+        "Failed to update gallery slide",
+        true
+    );
+}
+
+export async function updateGallerySlideVisibility(
+    id: string,
+    visible: boolean
+): Promise<GalleryItemType> {
+    return safeFetch<GalleryItemType>(
+        `${BASE}/api/gallery/${id}`,
+        {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ visible }),
+        },
+        "Failed to update gallery slide visibility",
+        true
+    );
+}
+
+export async function deleteGallerySlide(id: string): Promise<GalleryItemType> {
+    return safeFetch<GalleryItemType>(
+        `${BASE}/api/gallery/${id}`,
+        { method: "DELETE" },
+        "Failed to delete gallery slide",
+        true
+    );
 }

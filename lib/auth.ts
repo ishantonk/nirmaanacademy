@@ -5,6 +5,7 @@ import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
 import { compare } from "bcrypt";
+import { Adapter } from "next-auth/adapters";
 
 // Extend the built-in session types
 declare module "next-auth" {
@@ -32,8 +33,7 @@ declare module "next-auth/jwt" {
 }
 
 export const authOptions: NextAuthOptions = {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    adapter: PrismaAdapter(prisma) as any,
+    adapter: PrismaAdapter(prisma) as Adapter,
     session: {
         strategy: "jwt",
     },

@@ -352,3 +352,33 @@ model Visitor {
   id   String @id @default(cuid())
   user String
 }
+
+model Notice {
+  id      String  @id @default(cuid())
+  content String  @db.VarChar(300)
+  visible Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum GallerySlideType {
+  IMAGE
+  VIDEO
+}
+
+model GallerySlide {
+  id        String           @id @default(cuid())
+  title     String?          @db.VarChar(100)
+  subtitle  String?          @db.VarChar(200)
+  type      GallerySlideType @default(IMAGE)
+  imageUrl  String?
+  videoUrl  String?
+  sortOrder Int              @default(0)
+  visible   Boolean          @default(true)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  @@index([sortOrder])
+  @@index([visible])
+}

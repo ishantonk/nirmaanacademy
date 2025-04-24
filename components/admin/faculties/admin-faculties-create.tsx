@@ -69,7 +69,7 @@ export function AdminFacultiesCreate() {
         onSuccess: (uploadedUrl) => {
             toast.success("Faculty image successfully uploaded");
             // Optionally update the form field with the new permanent URL after upload completes.
-            form.setValue("image", uploadedUrl.toString());
+            form.setValue("image", uploadedUrl.url.toString());
         },
         onError: (error: Error) => {
             toast.error("Upload failed", { description: error.message });
