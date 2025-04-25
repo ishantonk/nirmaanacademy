@@ -44,11 +44,11 @@ export function SiteHeader() {
     return (
         <header
             className={cn(
-                "sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-all duration-300",
+                "sticky top-0 z-50 w-full bg-transparent backdrop-blur supports-[backdrop-filter]:bg-transparent transition-all duration-300",
                 isScrolled && "drop-shadow-sm"
             )}
         >
-            <div className="bg-background/60">
+            <div className="bg-background/70">
                 <div className="mx-auto px-4 max-w-7xl flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         {

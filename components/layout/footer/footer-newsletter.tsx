@@ -11,7 +11,11 @@ export function FooterNewsletter() {
                     content.
                 </p>
                 <form className="flex space-x-2">
-                    <Input type="email" placeholder="Enter your email" />
+                    <Input
+                        className="border-primary/20"
+                        type="email"
+                        placeholder="Enter your email"
+                    />
                     <Button type="submit">Subscribe</Button>
                 </form>
             </div>

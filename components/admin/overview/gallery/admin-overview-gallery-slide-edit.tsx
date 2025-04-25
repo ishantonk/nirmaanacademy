@@ -22,8 +22,12 @@ import {
     GalleryItemType,
     zGallerySchema,
 } from "@/lib/types";
-import { updateGallerySlide, deleteGallerySlide } from "@/lib/services/gallery";
-import { uploadToBlob } from "@/lib/services/api";
+import {
+    deleteGallerySlide,
+    updateGallerySlide,
+    uploadToBlob,
+} from "@/lib/services/api";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export function AdminGallerySlideEdit({ slide }: { slide: GalleryItemType }) {
     const queryClient = useQueryClient();
@@ -64,7 +68,7 @@ export function AdminGallerySlideEdit({ slide }: { slide: GalleryItemType }) {
     // Delete mutation
     const deleteMutation = useMutation<GalleryItemType, Error, string, unknown>(
         {
-            mutationFn: (id) => deleteGallerySlide(id),
+            mutationFn: deleteGallerySlide,
             onSuccess: () => {
                 queryClient.invalidateQueries({ queryKey: ["gallerySlides"] });
                 toast.success("Slide deleted successfully");
@@ -110,27 +114,31 @@ export function AdminGallerySlideEdit({ slide }: { slide: GalleryItemType }) {
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button size="icon" variant="ghost" aria-label="Edit Slide">
+                <Button size="icon" variant="outline" aria-label="Edit Slide">
                     <Pencil className="w-4 h-4" />
                 </Button>
             </DialogTrigger>
 
-            <DialogContent className="p-6 w-screen max-w-lg">
-                <DialogHeader>
+            <DialogContent className="p-0 py-6 w-screen  md:max-w-lg lg:max-w-2xl h-[calc(100vh-4rem)]">
+                <DialogHeader className="px-6">
                     <DialogTitle>Edit Slide</DialogTitle>
                     <DialogDescription>
                         Update the slide details below.
                     </DialogDescription>
                 </DialogHeader>
 
-                <AdminGallerySlideForm
-                    formId={formId}
-                    formProps={form}
-                    onSubmit={onSubmit}
-                    uploadMutation={uploadMutation}
-                />
+                <div className="relative flex flex-col overflow-hidden">
+                    <ScrollArea showShadow className="flex-1 h-full px-6 py-1">
+                        <AdminGallerySlideForm
+                            formId={formId}
+                            formProps={form}
+                            onSubmit={onSubmit}
+                            uploadMutation={uploadMutation}
+                        />
+                    </ScrollArea>
+                </div>
 
-                <DialogFooter>
+                <DialogFooter className="px-6">
                     <DialogClose asChild>
                         <Button
                             variant="destructive"

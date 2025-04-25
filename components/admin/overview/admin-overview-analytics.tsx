@@ -48,7 +48,6 @@ export function AdminOverviewAnalytics() {
             </CardHeader>
             <CardContent>
                 <ChartContainer
-                    className="h-96"
                     config={{
                         revenue: {
                             label: "Revenue",

@@ -16,13 +16,9 @@ export async function createGallerySlide(
                 type: data.type,
                 // ensure the “other” field is set to null
                 imageUrl:
-                    data.type === GallerySlideType.IMAGE
-                        ? data.imageUrl!
-                        : null,
+                    data.type === GallerySlideType.IMAGE ? data.imageUrl! : "", // Replace with a valid default URL
                 videoUrl:
-                    data.type === GallerySlideType.VIDEO
-                        ? data.videoUrl!
-                        : null,
+                    data.type === GallerySlideType.VIDEO ? data.videoUrl! : "",
                 sortOrder: data.sortOrder,
                 visible,
             },
