@@ -120,9 +120,7 @@ export function AdminGallerySlideAdd() {
                         <Button
                             form={formId}
                             type="submit"
-                            disabled={
-                                !form.formState.isDirty || submitting
-                            }
+                            disabled={!form.formState.isDirty || submitting}
                         >
                             {mutation.isPending ? "Adding..." : "Add Slide"}
                         </Button>

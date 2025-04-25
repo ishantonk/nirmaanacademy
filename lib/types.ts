@@ -224,10 +224,10 @@ export const zGallerySchema = z
         title: z.string().max(100).optional(),
         subtitle: z.string().max(200).optional(),
         type: z.nativeEnum(GallerySlideType),
-        imageUrl: z.string().url().optional().nullable(),
-        videoUrl: z.string().url().optional().nullable(),
-        sortOrder: z.number().int().nonnegative(),
-        visible: z.boolean().optional(),
+        imageUrl: z.string().optional(),
+        videoUrl: z.string().optional(),
+        sortOrder: z.number().int().nonnegative().default(0),
+        visible: z.boolean().optional().default(true),
     })
     .refine(
         (data) =>

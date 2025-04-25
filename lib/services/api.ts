@@ -365,9 +365,8 @@ export async function uploadToBlob(
 export async function fetchVisitors(): Promise<number> {
     const data = await safeFetch<{ count: number }>(
         `${BASE}/api/visitors`,
-        { method: "POST" },
+        { method: "GET" },
         "Failed to track visitor",
-        true
     );
     return data.count;
 }
@@ -375,8 +374,8 @@ export async function fetchVisitors(): Promise<number> {
 export async function registerVisitor(): Promise<number> {
     const data = await safeFetch<{ count: number }>(
         `${BASE}/api/visitors`,
-        { method: "GET" },
-        "Failed to track visitor",
+        { method: "POST" },
+        "Failed to register visitor",
         true
     );
     return data.count;
