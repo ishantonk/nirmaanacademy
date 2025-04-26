@@ -1,7 +1,6 @@
-import Image from "next/image";
 import { Star } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { CourseFacultyInfoCard } from "../course/course-faculty-info-card";
+import { CourseFacultyInfoCard } from "@/components/course/course-faculty-info-card";
 
 export function TestimonialCard({
     testimonial,

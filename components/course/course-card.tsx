@@ -18,7 +18,7 @@ import { formatPrice } from "@/lib/format";
 import { CourseBuyNow } from "./course-buy-now";
 import { fetchEnrollments } from "@/lib/services/api";
 import { Button } from "../ui/button";
-import { ArrowRight, Check, CornerRightUp } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 interface CourseCardProps {
     course: CourseType;
