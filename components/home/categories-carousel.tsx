@@ -55,12 +55,12 @@ export function CategoriesCarousel({
                             courseCount={category._count?.courses ?? 0}
                             color={
                                 i % 4 === 0
-                                    ? "bg-blue-50"
+                                    ? "bg-blue-800/10"
                                     : i % 4 === 1
-                                    ? "bg-green-50"
+                                    ? "bg-green-800/10"
                                     : i % 4 === 2
-                                    ? "bg-red-50"
-                                    : "bg-yellow-50"
+                                    ? "bg-red-800/10"
+                                    : "bg-yellow-800/10"
                             }
                         />
                     </CarouselItem>

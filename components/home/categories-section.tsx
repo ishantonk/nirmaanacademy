@@ -8,7 +8,7 @@ export async function CategoriesSection() {
     const categories = await fetchCategories(8);
 
     return (
-        <section className="bg-gradient-to-t from-neutral-100 via-neutral-50 to-muted pt-12 pb-8">
+        <section className="bg-gradient-to-t from-background via-background to-muted pt-12 pb-8">
             <div className="container mx-auto px-4">
                 {/* Heading */}
                 <div className="flex items-center justify-between mb-8">
@@ -20,10 +20,14 @@ export async function CategoriesSection() {
                             Find the perfect course by exploring our categories
                         </p>
                     </div>
-                    <Button variant="secondary" className="bg-opacity hover:bg-neutral-200" asChild>
+                    <Button
+                        variant="secondary"
+                        className="bg-opacity hover:text-background hover:bg-foreground group transition-all duration-300"
+                        asChild
+                    >
                         <Link href="/categories">
                             All Categories
-                            <ArrowRight className="ml-2 h-4 w-4" />
+                            <ArrowRight className="group-hover:translate-x-1 h-4 w-4" />
                         </Link>
                     </Button>
                 </div>

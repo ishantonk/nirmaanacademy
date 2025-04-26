@@ -20,21 +20,21 @@ export function CategoryCard({
     color?: string;
 }) {
     const iconColor =
-        color === "bg-blue-50"
+        color === "bg-blue-800/10"
             ? "text-blue-500"
-            : color === "bg-green-50"
+            : color === "bg-green-800/10"
             ? "text-green-500"
-            : color === "bg-yellow-50"
+            : color === "bg-yellow-800/10"
             ? "text-yellow-500"
             : "text-red-500";
     const iconBgColor =
-        color === "bg-blue-50"
-            ? "bg-blue-100"
-            : color === "bg-green-50"
-            ? "bg-green-100"
-            : color === "bg-yellow-50"
-            ? "bg-yellow-100"
-            : "bg-red-100";
+        color === "bg-blue-800/10"
+            ? "bg-blue-500/20"
+            : color === "bg-green-800/10"
+            ? "bg-green-500/20"
+            : color === "bg-yellow-800/10"
+            ? "bg-yellow-500/20"
+            : "bg-red-500/20";
     return (
         <Link href={`/courses?category=${category.slug}`}>
             <Card

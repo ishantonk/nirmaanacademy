@@ -13,7 +13,7 @@ export async function CoursesSection() {
     const courses = await fetchCourses(queryString);
 
     return (
-        <section className="bg-gradient-to-tl from-primary/50 via-neutral-100 to-neutral-100 py-8">
+        <section className="bg-gradient-to-tl from-primary/50 via-background to-background py-8">
             <div className="container mx-auto px-4">
                 {/* Heading */}
                 <div className="flex items-center justify-between mb-8">

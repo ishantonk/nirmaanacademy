@@ -8,7 +8,7 @@ export async function FacultySection() {
     const faculties = await fetchFaculties();
 
     return (
-        <section className="bg-gradient-to-tr from-white via-neutral-100 to-primary/50 py-8">
+        <section className="bg-gradient-to-tr from-background via-background to-primary/50 py-8">
             <div className="container mx-auto px-4">
                 {/* Heading */}
                 <div className="flex items-center justify-between mb-8">

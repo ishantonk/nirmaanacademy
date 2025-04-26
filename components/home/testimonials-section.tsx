@@ -2,7 +2,7 @@ import { TestimonialsCarousel } from "./testimonials-carousel";
 
 export function TestimonialsSection() {
     return (
-        <section className="bg-gradient-to-tr from-white via-white to-primary/5 py-8">
+        <section className="bg--background py-8">
             <div className="container mx-auto px-4">
                 {/* Heading */}
                 <div className="flex flex-col items-start mb-12">

@@ -77,9 +77,9 @@ export function CourseCard({ course, actions }: CourseCardProps) {
 
             {/* Course Info Header */}
             <CardHeader className="space-y-1">
-                <div className="flex items-center justify-between">
+                <div className="flex justify-between">
                     {course.category && (
-                        <Badge variant="secondary">
+                        <Badge variant="secondary" className="scale-75">
                             {course.category.name}
                         </Badge>
                     )}
@@ -105,7 +105,7 @@ export function CourseCard({ course, actions }: CourseCardProps) {
 
                 {/* Course Title */}
                 <Link href={`/courses/${course.slug}`} className="block">
-                    <h3 className="line-clamp-2 text-lg font-semibold group-hover:text-primary">
+                    <h3 className="line-clamp-1 text-lg font-semibold group-hover:text-primary">
                         {course.title}
                     </h3>
                 </Link>
