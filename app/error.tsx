@@ -6,7 +6,6 @@ import { AlertTriangle } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { APP_ROUTES } from "@/data/routes-names";
 
 export default function Error({
     error,
@@ -36,7 +35,7 @@ export default function Error({
                 <div className="flex gap-2">
                     <Button onClick={() => reset()}>Try again</Button>
                     <Button variant="outline" asChild>
-                        <Link href={APP_ROUTES.home}>Go to Home</Link>
+                        <Link href={"/"}>Go to Home</Link>
                     </Button>
                 </div>
             </div>

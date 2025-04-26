@@ -17,6 +17,8 @@ import { CourseType } from "@/lib/types";
 import { formatPrice } from "@/lib/format";
 import { CourseBuyNow } from "./course-buy-now";
 import { fetchEnrollments } from "@/lib/services/api";
+import { Button } from "../ui/button";
+import { ArrowRight, Check, CornerRightUp } from "lucide-react";
 
 interface CourseCardProps {
     course: CourseType;
@@ -54,7 +56,7 @@ export function CourseCard({ course, actions }: CourseCardProps) {
     }, [session, course.id]);
 
     return (
-        <Card className="pt-0 h-full">
+        <Card className="pt-0 h-full max-w-sm md:max-w-fit">
             {/* Course Thumbnail with Sale Badge */}
             <Link href={`/courses/${course.slug}`} className="block">
                 <CardImage
@@ -110,7 +112,7 @@ export function CourseCard({ course, actions }: CourseCardProps) {
             </CardHeader>
 
             {/* Faculty Info & Description */}
-            <CardContent>
+            <CardContent className="mt-auto">
                 {course.faculties?.[0] && (
                     <CourseFacultyInfoCard
                         faculty={course.faculties[0]}
@@ -125,16 +127,25 @@ export function CourseCard({ course, actions }: CourseCardProps) {
             </CardContent>
 
             {/* Add to Cart / Custom Actions */}
-            <CardFooter className="flex justify-end gap-2 mt-auto">
-                {!isEnrolled && (
-                    <CourseAddCartButton
-                        size="icon"
-                        courseId={course.id}
-                        attemptId={course.availableAttempts[0].id}
-                        modeId={course.availableModes[0].id}
-                    />
+            <CardFooter className="flex justify-end gap-2">
+                {!isEnrolled ? (
+                    <>
+                        <CourseAddCartButton
+                            size="icon"
+                            courseId={course.id}
+                            attemptId={course.availableAttempts[0].id}
+                            modeId={course.availableModes[0].id}
+                        />
+                        <CourseBuyNow courseId={course.id} />
+                    </>
+                ) : (
+                    <Button variant="outline" className="gap-x-2 group" asChild>
+                        <Link href={`/courses/${course.slug}`}>
+                            Go to Course
+                            <ArrowRight className="group-hover:translate-x-1 transition-transform h-4 w-4" />
+                        </Link>
+                    </Button>
                 )}
-                {!isEnrolled && <CourseBuyNow courseId={course.id} />}
                 {actions}
             </CardFooter>
         </Card>

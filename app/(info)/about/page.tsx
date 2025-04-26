@@ -30,41 +30,41 @@ export default function AboutPage() {
 
             {/* Values */}
             <div className="grid md:grid-cols-3 gap-6">
-                <Card>
+                <Card className="bg-yellow-100 border-2 border-yellow-300 hover:bg-yellow-200">
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
+                        <CardTitle className="flex items-center gap-2 text-yellow-600">
                             <Lightbulb className="w-5 h-5" />
                             Engaging
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <p className="text-muted-foreground">
+                        <p className="text-yellow-700">
                             {aboutUsData.values.engaging}
                         </p>
                     </CardContent>
                 </Card>
-                <Card>
+                <Card className="bg-green-100 border-2 border-green-300 hover:bg-green-200">
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
+                        <CardTitle className="flex items-center gap-2 text-green-600">
                             <GraduationCap className="w-5 h-5" />
                             Innovative
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <p className="text-muted-foreground">
+                        <p className="text-green-700">
                             {aboutUsData.values.innovative}
                         </p>
                     </CardContent>
                 </Card>
-                <Card>
+                <Card className="bg-blue-100 border-2 border-blue-300 hover:bg-blue-200">
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
+                        <CardTitle className="flex items-center gap-2 text-blue-600">
                             <Target className="w-5 h-5" />
                             Practical
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <p className="text-muted-foreground">
+                        <p className="text-blue-700">
                             {aboutUsData.values.practical}
                         </p>
                     </CardContent>
@@ -73,7 +73,7 @@ export default function AboutPage() {
 
             {/* Why Choose Us */}
             <div className="space-y-6">
-                <h2 className="text-3xl font-bold text-center">
+                <h2 className="text-3xl font-bold text-center text-indigo-600">
                     Why Choose Us
                 </h2>
                 <div className="grid md:grid-cols-2 gap-6">
@@ -88,22 +88,26 @@ export default function AboutPage() {
 
             {/* Vision & Mission */}
             <div className="grid md:grid-cols-2 gap-6">
-                <Card>
+                <Card className="bg-purple-100 border-2 border-purple-300 hover:bg-purple-200">
                     <CardHeader>
-                        <CardTitle>Our Vision</CardTitle>
+                        <CardTitle className="text-purple-600">
+                            Our Vision
+                        </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <p className="text-muted-foreground">
+                        <p className="text-purple-700">
                             {aboutUsData.vision_mission.vision}
                         </p>
                     </CardContent>
                 </Card>
-                <Card>
+                <Card className="bg-teal-100 border-2 border-teal-300 hover:bg-teal-200">
                     <CardHeader>
-                        <CardTitle>Our Mission</CardTitle>
+                        <CardTitle className="text-teal-600">
+                            Our Mission
+                        </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <p className="text-muted-foreground">
+                        <p className="text-teal-700">
                             {aboutUsData.vision_mission.mission}
                         </p>
                     </CardContent>
@@ -112,10 +116,14 @@ export default function AboutPage() {
 
             {/* Founder */}
             <div className="space-y-6">
-                <h2 className="text-3xl font-bold text-center">Our Founder</h2>
-                <Card>
+                <h2 className="text-3xl font-bold text-center text-pink-600">
+                    Our Founder
+                </h2>
+                <Card className="bg-fuchsia-100 border-2 border-fuchsia-300 hover:bg-fuchsia-200">
                     <CardHeader>
-                        <CardTitle>{aboutUsData.founder.name}</CardTitle>
+                        <CardTitle className="text-fuchsia-600">
+                            {aboutUsData.founder.name}
+                        </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-6">
                         <div>
@@ -152,7 +160,9 @@ export default function AboutPage() {
 
             {/* Contact */}
             <div className="text-center space-y-4">
-                <h2 className="text-3xl font-bold">Get in Touch</h2>
+                <h2 className="text-3xl font-bold text-red-600">
+                    Get in Touch
+                </h2>
                 <div className="text-muted-foreground space-y-2">
                     <p>{aboutUsData.contact.address}</p>
                     <p>{aboutUsData.contact.email}</p>

@@ -1,6 +1,5 @@
 "use client";
 
-import { APP_ROUTES } from "@/data/routes-names";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -15,12 +14,12 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
             <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
                 <div className="flex flex-col space-y-2 text-center">
                     <h1 className="text-2xl font-semibold tracking-tight">
-                        {pathname === APP_ROUTES.login
+                        {pathname === "/login"
                             ? "Welcome back"
                             : "Create an account"}
                     </h1>
                     <p className="text-sm text-muted-foreground">
-                        {pathname === APP_ROUTES.login
+                        {pathname === "/login"
                             ? "Enter your email to sign in to your account"
                             : "Enter your details below to create your account"}
                     </p>
@@ -29,13 +28,13 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
                 <p className="px-8 text-center text-sm text-muted-foreground">
                     <Link
                         href={
-                            pathname === APP_ROUTES.login
-                                ? APP_ROUTES.register
-                                : APP_ROUTES.login
+                            pathname === "/login"
+                                ? "/register"
+                                : "/login"
                         }
                         className="hover:text-brand underline underline-offset-4"
                     >
-                        {pathname === APP_ROUTES.login
+                        {pathname === "/login"
                             ? "Don't have an account? Sign Up"
                             : "Already have an account? Sign In"}
                     </Link>

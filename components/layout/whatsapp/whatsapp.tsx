@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { NirmaanSocialLink } from "@/data/links-name";
 
 export function Whatsapp() {
     return (
@@ -10,7 +11,7 @@ export function Whatsapp() {
                 size={"icon"}
                 className="h-12 lg:h-14 w-full bg-green-400 hover:bg-green-500 p-2 hover:scale-105 active:scale-95 active:shadow-sm transition-all"
             >
-                <Link href="https://wa.me/message/S56WRTWK7EW4H1">
+                <Link href={NirmaanSocialLink.whatsapp}>
                     <div className="relative h-full w-full aspect-square">
                         <Image
                             src="/whatsapp.svg"

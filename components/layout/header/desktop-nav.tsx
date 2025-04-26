@@ -126,7 +126,14 @@ function ListItem({
                     )}
                 />
             )}
-            {item.title}
+            <div className="flex flex-col">
+                {item.title}
+                {isSubItem && (
+                    <span className="text-xs text-neutral-200 line-clamp-2 max-w-48">
+                        {item.description}
+                    </span>
+                )}
+            </div>
             {isTrigger && (
                 <ChevronDownIcon
                     className={cn(

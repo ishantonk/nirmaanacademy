@@ -1,6 +1,7 @@
 "use client";
 
 import { BookOpen } from "lucide-react";
+import Autoplay from "embla-carousel-autoplay";
 import {
     Carousel,
     CarouselContent,
@@ -25,6 +26,7 @@ export function CoursesCarousel({ courses }: { courses: CourseType[] }) {
     }
     return (
         <Carousel
+            plugins={[Autoplay({ delay: 3500, stopOnMouseEnter: true })]}
             opts={{
                 align: "start",
                 loop: true,
@@ -36,7 +38,7 @@ export function CoursesCarousel({ courses }: { courses: CourseType[] }) {
                 {courses.map((course) => (
                     <CarouselItem
                         key={course.id}
-                        className="md:basis-1/2 lg:basis-1/4"
+                        className="flex justify-center md:basis-1/2 lg:basis-1/4"
                     >
                         <CourseCard course={course} />
                     </CarouselItem>

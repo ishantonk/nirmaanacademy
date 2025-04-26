@@ -1,5 +1,10 @@
 "use client";
 
+import { useState } from "react";
+import Image from "next/image";
+import dynamic from "next/dynamic";
+import { useQuery } from "@tanstack/react-query";
+import Autoplay from "embla-carousel-autoplay";
 import {
     Carousel,
     CarouselContent,
@@ -8,15 +13,30 @@ import {
     CarouselNext,
     CarouselPrevious,
 } from "@/components/ui/carousel";
-import Autoplay from "embla-carousel-autoplay";
-import Image from "next/image";
+import { fetchGallerySlides } from "@/lib/services/api";
+import { GalleryItemType } from "@/lib/types";
+import { Loader2 } from "lucide-react";
+
+// dynamic import so SSR doesn't try to render it
+const ReactPlayer = dynamic(() => import("react-player/lazy"), { ssr: false });
 
 export function HeroCarousel() {
+    const [isReady, setIsReady] = useState(false);
+    const {
+        data: slides,
+        isLoading,
+        isError,
+    } = useQuery<GalleryItemType[]>({
+        queryKey: ["gallerySlides"],
+        queryFn: fetchGallerySlides,
+    });
+
     return (
         <Carousel
             plugins={[
                 Autoplay({
-                    delay: 2000,
+                    delay: 4000,
+                    stopOnMouseEnter: true,
                 }),
             ]}
             opts={{
@@ -27,21 +47,94 @@ export function HeroCarousel() {
             className="w-full"
         >
             <CarouselContent>
-                {Array.from({ length: 5 }, (_, index) => (
+                {slides?.map((slides) => (
                     <CarouselItem
-                        key={index}
+                        key={slides.id}
                         className="relative flex h-full w-full items-center justify-center"
+                        data-state={
+                            isLoading ? "loading" : isError ? "error" : ""
+                        }
+                        data-type={slides.type}
+                        data-visible={slides.visible ? "true" : "false"}
+                        data-sort-order={slides.sortOrder}
                     >
-                        <div className="relative aspect-video overflow-hidden rounded-lg">
+                        <div className="relative aspect-video w-full overflow-hidden rounded-lg">
+                            <div className="absolute inset-x-0 bottom-0 p-2 z-10">
+                                {slides.type === "IMAGE" && (
+                                    <>
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 to-transparent" />
+                                        {slides.title && (
+                                            <h2 className="px-4 text-xl font-bold text-white drop-shadow-lg">
+                                                {slides.title}
+                                            </h2>
+                                        )}
+                                        {slides.subtitle && (
+                                            <p className="px-4 mt-1 text-base text-white drop-shadow">
+                                                {slides.subtitle}
+                                            </p>
+                                        )}
+                                    </>
+                                )}
+                            </div>
                             <div className="flex h-full w-full items-center justify-center bg-muted">
-                                <Image
-                                    src="/placeholder.svg"
-                                    alt={"Students learning online " + index}
-                                    height={300}
-                                    width={600}
-                                    className="h-full w-full object-cover"
-                                    priority
-                                />
+                                {slides.type === "VIDEO" ? (
+                                    slides.videoUrl &&
+                                    slides.videoUrl !== "" ? (
+                                        <>
+                                            {!isReady && (
+                                                <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+                                                    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                                                    <p className="text-sm text-muted-foreground">
+                                                        Loading video...
+                                                    </p>
+                                                </div>
+                                            )}
+                                            <div className="sr-only hidden">
+                                                {slides.title}
+                                            </div>
+                                            <ReactPlayer
+                                                url={slides.videoUrl}
+                                                width="100%"
+                                                height="100%"
+                                                controls
+                                                playing={false}
+                                                onReady={() => setIsReady(true)}
+                                                config={{
+                                                    file: {
+                                                        attributes: {
+                                                            controlsList:
+                                                                "nodownload",
+                                                            disablePictureInPicture:
+                                                                true,
+                                                        },
+                                                    },
+                                                }}
+                                            />
+                                        </>
+                                    ) : (
+                                        <div className="absolute inset-0 flex items-center justify-center">
+                                            <p className="text-sm text-muted-foreground">
+                                                No video URL provided
+                                            </p>
+                                        </div>
+                                    )
+                                ) : slides.imageUrl &&
+                                  slides.imageUrl !== "" ? (
+                                    <Image
+                                        src={slides.imageUrl}
+                                        alt={slides.title ?? "Gallery Slide"}
+                                        height={300}
+                                        width={600}
+                                        className="h-full w-full object-cover"
+                                        priority
+                                    />
+                                ) : (
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                        <p className="text-sm text-muted-foreground">
+                                            No image URL provided
+                                        </p>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </CarouselItem>
