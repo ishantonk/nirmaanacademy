@@ -22,7 +22,7 @@ export function SiteFooter() {
                     </div>
                 </div>
             </div>
-            <div className="flex flex-col md:flex-row items-center justify-between mt-8 border-t p-4 text-center text-sm text-muted-foreground space-x-1 mb-14 md:mb-0">
+            <div className="flex flex-col md:flex-row items-center justify-between mt-8 border-t border-primary/60 p-4 text-center text-sm text-muted-foreground space-x-1 mb-14 md:mb-0">
                 <p>
                     © {new Date().getFullYear()} {brandName}. All rights
                     reserved.
