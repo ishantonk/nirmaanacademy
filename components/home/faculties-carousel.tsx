@@ -1,6 +1,7 @@
 "use client";
 
 import { User } from "lucide-react";
+import Autoplay from "embla-carousel-autoplay";
 import {
     Carousel,
     CarouselContent,
@@ -26,6 +27,7 @@ export function FacultiesCarousel({ faculties }: { faculties: FacultyType[] }) {
 
     return (
         <Carousel
+            plugins={[Autoplay({ delay: 2500, stopOnMouseEnter: true })]}
             opts={{
                 align: "start",
                 loop: true,

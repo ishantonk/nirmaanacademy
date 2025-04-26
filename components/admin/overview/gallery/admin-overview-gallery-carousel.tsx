@@ -1,6 +1,10 @@
 "use client";
 
-// import ReactPlayer from "react-player";
+import { useState } from "react";
+import Image from "next/image";
+import dynamic from "next/dynamic";
+import { Loader2 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import {
     Carousel,
     CarouselContent,
@@ -9,14 +13,9 @@ import {
     CarouselNext,
     CarouselPrevious,
 } from "@/components/ui/carousel";
-import Image from "next/image";
-import { AdminGallerySlideEdit } from "./admin-overview-gallery-slide-edit";
-import { useQuery } from "@tanstack/react-query";
-import { GalleryItemType } from "@/lib/types";
+import { AdminGallerySlideEdit } from "@/components/admin/overview/gallery/admin-overview-gallery-slide-edit";
 import { fetchAdminGallerySlides } from "@/lib/services/api";
-import { useState } from "react";
-import { Loader2 } from "lucide-react";
-import dynamic from "next/dynamic";
+import { GalleryItemType } from "@/lib/types";
 
 // dynamic import so SSR doesn't try to render it
 const ReactPlayer = dynamic(() => import("react-player/lazy"), { ssr: false });
@@ -140,7 +139,7 @@ export function AdminGalleryCarousel() {
             </CarouselContent>
             <CarouselPrevious />
             <CarouselNext />
-            <CarouselDots />
+            <CarouselDots className="lg:flex" />
         </Carousel>
     );
 }

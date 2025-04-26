@@ -8,28 +8,24 @@ import { useIsMobile } from "@/hooks/use-mobile";
 
 export function HeroSection() {
     const isMobile = useIsMobile();
+    const isDesktop = !isMobile;
 
     return (
-        <section className="relative w-full overflow-hidden py-4 lg:py-12">
+        <section className="relative w-full overflow-hidden py-4 lg:py-12 bg-gradient-to-t from-muted via-transparent to-transparent">
             {/* Background Image */}
-            <div className="absolute inset-0 z-[-1]">
+            <div className="absolute inset-0 -z-10">
                 <Image
                     src="/bg-hero.jpg" // Update this path with your background image
                     alt="Hero Background"
                     fill
-                    className="object-cover"
-                    style={{
-                        objectPosition: "center",
-                        backgroundAttachment: "fixed",
-                    }}
+                    className="object-cover object-center brightness-50"
+                    priority
                 />
             </div>
-            {/* Overlay for better text contrast */}
-            <div className="absolute inset-0 bg-black/50" />
 
             {/* Content */}
             <div className="relative z-10 h-full grid grid-cols-2 lg:grid-cols-4 items-center justify-center">
-                {!isMobile && (
+                {isDesktop && (
                     <div className="hidden md:flex col-span-1 p-4 items-center justify-center">
                         <NoticeCard />
                     </div>

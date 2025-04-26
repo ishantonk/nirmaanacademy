@@ -16,13 +16,13 @@ export function SiteFooter() {
                     </div>
                     <FooterNav heading="Platform" links={platformLinks} />
                     <FooterNav heading="Legal" links={legalLinks} />
-                    <div className="md:col-span-2 flex flex-col justify-between items-end">
+                    <div className="md:col-span-2 flex flex-col justify-between lg:items-end space-y-4">
                         <FooterNewsletter />
                         <FooterVisitorsCount />
                     </div>
                 </div>
             </div>
-            <div className="flex flex-col md:flex-row items-center justify-between mt-8 border-t border-primary/60 p-4 text-center text-sm text-muted-foreground space-x-1 mb-14 md:mb-0">
+            <div className="flex flex-col md:flex-row items-center justify-between mt-8 bg-primary p-4 px-12 text-center text-sm text-primary-foreground space-x-1 mb-14 md:mb-0">
                 <p>
                     © {new Date().getFullYear()} {brandName}. All rights
                     reserved.
@@ -31,7 +31,7 @@ export function SiteFooter() {
                     Designed & Developed by{" "}
                     <Link
                         href={DeveloperProfile.github}
-                        className="text-primary hover:underline"
+                        className="text-neutral-300 hover:underline"
                     >
                         {DeveloperProfile.name}
                     </Link>
@@ -53,6 +53,10 @@ const platformLinks = [
     {
         href: "/about",
         label: "About Us",
+    },
+    {
+        href: "/faq",
+        label: "FAQs",
     },
     {
         href: "/contact",

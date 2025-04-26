@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
+    BadgeHelp,
     BookOpen,
     FileChartLine,
     GraduationCap,
@@ -23,11 +24,20 @@ import { MobileNav } from "@/components/layout/header/mobile-nav";
 import { UserNav } from "@/components/layout/header/user-nav";
 import { ToggleTheme } from "@/components/theme/toggle-theme";
 import { Input } from "@/components/ui/input";
+import { CategoryType } from "@/lib/types";
+import { useQuery } from "@tanstack/react-query";
+import { fetchCategories } from "@/lib/services/api";
 
 export function SiteHeader() {
     // State to track whether the user has scrolled
     const [isScrolled, setIsScrolled] = useState(false);
     const isMobile = useIsMobile();
+    const [navItems, setNavItems] = useState<NavItems[]>(initialNavItems);
+
+    const { data: categories } = useQuery<CategoryType[]>({
+        queryKey: ["categories"],
+        queryFn: () => fetchCategories(),
+    });
 
     useEffect(() => {
         // Radix gives the viewport a data attribute by default:
@@ -41,14 +51,39 @@ export function SiteHeader() {
         return () => viewport.removeEventListener("scroll", onScroll);
     }, []);
 
+    useEffect(() => {
+        if (categories) {
+            setNavItems((prev) => {
+                return prev.map((item) => {
+                    if (item.title === "Video Courses") {
+                        return {
+                            ...item,
+                            subItems: [
+                                ...(item.subItems || []),
+                                ...categories.map((category) => ({
+                                    title: category.name,
+                                    href: `/courses?category=${category.slug}`,
+                                    icon: BookOpen,
+                                    description: category.description || "",
+                                })),
+                            ],
+                        };
+                    }
+                    return item;
+                });
+            });
+        }
+    }, [categories]);
+
     return (
         <header
             className={cn(
-                "sticky top-0 z-50 w-full bg-transparent backdrop-blur supports-[backdrop-filter]:bg-transparent transition-all duration-300",
-                isScrolled && "drop-shadow-sm"
+                "sticky top-0 z-50 w-full transition-all duration-300",
+                isScrolled &&
+                    "drop-shadow-sm bg-transparent backdrop-blur-2xl supports-[backdrop-filter]:bg-transparent"
             )}
         >
-            <div className="bg-background/70">
+            <div className={isScrolled ? "bg-muted/60" : "bg-muted"}>
                 <div className="mx-auto px-4 max-w-7xl flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         {
@@ -106,7 +141,7 @@ interface NavItems {
     }>;
 }
 
-const navItems: NavItems[] = [
+const initialNavItems: NavItems[] = [
     {
         title: "Home",
         href: "/",
@@ -121,21 +156,7 @@ const navItems: NavItems[] = [
                 title: "View All Courses",
                 href: "/courses",
                 icon: BookOpen,
-            },
-            {
-                title: "Class 11th",
-                href: "/courses",
-                icon: BookOpen,
-            },
-            {
-                title: "Class 12th",
-                href: "/courses",
-                icon: BookOpen,
-            },
-            {
-                title: "Class 10th",
-                href: "/courses",
-                icon: BookOpen,
+                description: "Explore all available courses",
             },
         ],
     },
@@ -158,6 +179,11 @@ const navItems: NavItems[] = [
         title: "Blog",
         href: "/blogs",
         icon: Newspaper,
+    },
+    {
+        title: "FAQs",
+        href: "/faq",
+        icon: BadgeHelp,
     },
     {
         title: "About",

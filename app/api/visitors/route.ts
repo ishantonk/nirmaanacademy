@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getAuthSession } from "@/lib/auth";
 import { getVisitorCount, registerVisitor } from "@/lib/services/visitors";
 
@@ -26,17 +26,18 @@ export async function GET() {
     }
 }
 
-export async function POST() {
+export async function POST(request: NextRequest) {
     try {
-        let userName = "Anonymous";
-
         // Check for user session
         const session = await getAuthSession();
-        if (session) {
-            userName = session.user.name!;
-        }
+        const userName = session?.user?.name ?? "Anonymous";
 
-        await registerVisitor({ user: userName });
+        // Get the visitor's IP address
+        const xForwardedFor = request.headers.get("x-forwarded-for");
+        const visitorIp = xForwardedFor ? xForwardedFor.split(",")[0].trim() : "Unknown IP";
+
+        // Register the visitor
+        await registerVisitor({ user: userName, ip: visitorIp });
         const visitorsCount = await getVisitorCount();
         return NextResponse.json(visitorsCount, { status: 200 });
     } catch (error) {

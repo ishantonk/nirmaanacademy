@@ -46,7 +46,7 @@ export function CourseBuyNow({ courseId, className }: CourseBuyNowProps) {
         <Button
             onClick={handleBuyNow}
             disabled={isLoading}
-            className={"gap-x-2" + className}
+            className={"gap-x-2 group" + className}
         >
             {isLoading ? (
                 <>
@@ -55,7 +55,7 @@ export function CourseBuyNow({ courseId, className }: CourseBuyNowProps) {
                 </>
             ) : (
                 <>
-                    <ShoppingBag className="h-4 w-4" />
+                    <ShoppingBag className="h-4 w-4 group-hover:animate-bounce" />
                     Buy Now
                 </>
             )}

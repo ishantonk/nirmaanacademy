@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Star } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { CourseFacultyInfoCard } from "../course/course-faculty-info-card";
 
 export function TestimonialCard({
     testimonial,
@@ -14,25 +15,24 @@ export function TestimonialCard({
     };
 }) {
     return (
-        <Card className="hover:shadow-md transition-shadow h-full">
+        <Card className="bg-muted/50 border border-muted hover:shadow-md transition-shadow h-full">
             <CardContent>
                 <div className="flex items-center gap-4 mb-4">
-                    <div className="relative h-12 w-12 rounded-full overflow-hidden">
-                        <Image
-                            src={testimonial.image}
-                            alt={testimonial.name}
-                            fill
-                            className="object-cover"
-                        />
-                    </div>
-                    <div>
-                        <h4 className="font-semibold">{testimonial.name}</h4>
-                        <p className="text-sm text-muted-foreground">
-                            {testimonial.role}
-                        </p>
-                    </div>
+                    <CourseFacultyInfoCard
+                        faculty={{
+                            id: testimonial.name + testimonial.role,
+                            name: testimonial.name,
+                            image: testimonial.image,
+                            designation: testimonial.role,
+                            email: "",
+                            bio: "", 
+                            phone: "",
+                            createdAt: new Date(Date.now()),
+                            updatedAt: new Date(Date.now()),
+                        }}
+                    />
                 </div>
-                <p className="text-muted-foreground italic mb-4">
+                <p className="text-muted-foreground italic mb-4 line-clamp-6">
                     {testimonial.content}
                 </p>
                 <div className="flex items-center gap-1">

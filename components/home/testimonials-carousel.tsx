@@ -17,7 +17,8 @@ export function TestimonialsCarousel() {
         <Carousel
             plugins={[
                 Autoplay({
-                    delay: 2000,
+                    delay: 2500,
+                    stopOnMouseEnter: true,
                 }),
             ]}
             opts={{
