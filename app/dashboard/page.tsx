@@ -1,10 +1,11 @@
 import { CourseCard } from "@/components/course/course-card";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { brandName } from "@/data/contact-info";
 import { getAuthSession } from "@/lib/auth";
 import { fetchEnrollments } from "@/lib/services/api";
-import { BookOpen } from "lucide-react";
+import { BookOpen, Newspaper } from "lucide-react";
 import { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -23,47 +24,96 @@ export default async function DashboardPage() {
     }
 
     const enrollments = await fetchEnrollments();
+    // You can fetch blogs here if needed
+    const blogs = []; // TODO: fetch user's blogs or saved blogs.
 
     return (
         <div className="container py-8 mx-auto px-4">
             <div className="mb-10">
                 <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
                 <p className="text-sm lg:text-base mt-2 text-muted-foreground">
-                    View your purchased or enrolled courses.
+                    Manage your courses and blogs.
                 </p>
             </div>
 
-            <div className="mt-8">
-                <h2 className="text-2xl lg:text-xl font-semibold mb-4">
-                    Your Courses
-                </h2>
-            </div>
+            {/* Tabs Section */}
+            <Tabs defaultValue="courses" className="space-y-6">
+                {/* Tabs List */}
+                <TabsList>
+                    <TabsTrigger value="courses">Your Courses</TabsTrigger>
+                    <TabsTrigger value="blogs">Your Blogs</TabsTrigger>
+                </TabsList>
 
-            {/* Course grid */}
-            {enrollments.length === 0 ? (
-                <EmptyState
-                    icon={BookOpen}
-                    title="No courses found"
-                    description="You haven't enrolled in any courses yet. Browse our courses to get started."
-                    action={
-                        <Button asChild>
-                            <Link href="/courses">Browse Courses</Link>
-                        </Button>
-                    }
-                />
-            ) : (
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {enrollments.map((enroll) => {
-                        if (enroll.course)
-                            return (
-                                <CourseCard
-                                    key={enroll.course?.id}
-                                    course={enroll.course}
-                                />
-                            );
-                    })}
-                </div>
-            )}
+                {/* Courses Tab */}
+                <TabsContent value="courses">
+                    {enrollments.length === 0 ? (
+                        <EmptyState
+                            icon={BookOpen}
+                            title="No courses found"
+                            description="You haven't enrolled in any courses yet. Browse our courses to get started."
+                            action={
+                                <Button asChild>
+                                    <Link href="/courses">Browse Courses</Link>
+                                </Button>
+                            }
+                        />
+                    ) : (
+                        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
+                            {enrollments.map(
+                                (enroll) =>
+                                    enroll.course && (
+                                        <CourseCard
+                                            key={enroll.course.id}
+                                            course={enroll.course}
+                                        />
+                                    )
+                            )}
+                        </div>
+                    )}
+                </TabsContent>
+
+                {/* Blogs Tab */}
+                <TabsContent value="blogs">
+                    {blogs.length === 0 ? (
+                        <EmptyState
+                            icon={Newspaper}
+                            title="No blogs found"
+                            description="You haven't posted or saved any blogs yet."
+                            action={
+                                <Button asChild>
+                                    <Link href="/blogs">Browse Blogs</Link>
+                                </Button>
+                            }
+                        />
+                    ) : (
+                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+                            {/* Map your blogs here */}
+                            {blogs.map((blog) => (
+                                <div
+                                    key={blog.id}
+                                    className="border p-4 rounded-lg shadow-sm hover:shadow-md transition"
+                                >
+                                    <h3 className="font-semibold text-lg">
+                                        {blog.title}
+                                    </h3>
+                                    <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
+                                        {blog.excerpt}
+                                    </p>
+                                    <Link href={`/blogs/${blog.slug}`}>
+                                        <Button
+                                            variant="link"
+                                            size="sm"
+                                            className="mt-3 p-0"
+                                        >
+                                            Read More
+                                        </Button>
+                                    </Link>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </TabsContent>
+            </Tabs>
         </div>
     );
 }

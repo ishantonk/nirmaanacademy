@@ -82,6 +82,18 @@ export function serializeDecimal(decimal: Decimal | null): number | null {
 }
 
 /**
+ * Calculates the reading time of a given text
+ */
+export function calculateReadingTime(content: string): number {
+    const words = content.split(/\s+/).length; // Split by spaces to count words
+    const wordsPerMinute = 200; // Average reading speed
+    
+    const minutes = Math.ceil(words / wordsPerMinute);
+    
+    return minutes;
+  }
+
+/**
  * Convert a string to a slug
  */
 export function slugify(text: string) {

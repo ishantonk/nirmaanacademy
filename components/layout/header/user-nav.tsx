@@ -8,6 +8,7 @@ import {
     LayoutDashboard,
     LifeBuoy,
     LogOut,
+    NotebookPen,
     Settings,
     User,
 } from "lucide-react";
@@ -179,6 +180,21 @@ export function UserNavMobile({
                             </Link>
                         </Button>
                     </DrawerClose>
+                    <DrawerClose asChild className="px-4">
+                        <Button
+                            variant={"ghost"}
+                            size={"lg"}
+                            className="w-full"
+                            asChild
+                        >
+                            <Link href={"/blogs/create"}>
+                                <div className="flex items-start w-full">
+                                    <NotebookPen className="mr-8 h-8 w-8" />
+                                    <span>Create Blog</span>
+                                </div>
+                            </Link>
+                        </Button>
+                    </DrawerClose>
                     {user.role === "ADMIN" && (
                         <DrawerClose asChild className="px-4">
                             <Button
@@ -289,6 +305,13 @@ export function UserNavDesktop({
                             <span>Dashboard</span>
                         </Link>
                     </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                        <Link href={"/blogs/create"}>
+                            <NotebookPen className="mr-2 h-4 w-4" />
+                            <span>Create Blog</span>
+                        </Link>
+                    </DropdownMenuItem>
+                    {/* Only show admin dashboard if user is admin */}
                     {user.role === "ADMIN" && (
                         <DropdownMenuItem asChild>
                             <Link href={"/admin"}>
