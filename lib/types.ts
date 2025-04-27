@@ -124,7 +124,13 @@ export type BlogPostType = Post & {
         image: string | null;
     };
     category?: CategoryType;
-    tags?: Tag[];
+    tags?: TagType[];
+};
+
+export type TagType = Tag & {
+    _count?: {
+        posts: number;
+    };
 };
 
 export const zCourseSchema = z
@@ -245,3 +251,57 @@ export const zGallerySchema = z
     );
 
 export type AdminGalleryFormValues = z.infer<typeof zGallerySchema>;
+
+
+
+export const zBlogSchema = z
+    .object({
+        title: z
+            .string()
+            .min(3, { message: "Title must have at least 3 characters." }),
+        slug: z
+            .string()
+            .min(3, { message: "Slug must have at least 3 characters." })
+            .regex(
+                /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+                "Slug must be URL-friendly (lowercase, dashes only)"
+            ),
+        excerpt: z.string().max(300).optional(),
+        content: z
+            .string()
+            .min(10, { message: "Content must have at least 10 characters." }),
+        featuredImage: z
+            .string()
+            .url({ message: "Featured Image must be a valid URL." })
+            .optional(),
+        featuredImageAlt: z.string().optional(),
+        status: z.enum(["DRAFT", "PUBLISHED"]).default("DRAFT"),
+        publishedAt: z
+            .preprocess(
+                (val) => (typeof val === "string" ? new Date(val) : val),
+                z.date()
+            )
+            .optional(),
+        readTimeMinutes: z.coerce
+            .number()
+            .min(1, { message: "Read time must be at least 1 minute." })
+            .optional(),
+        metaTitle: z.string().max(60).optional(),
+        metaDescription: z.string().max(160).optional(),
+        categoryId: z.string().min(1, { message: "Please select a category." }),
+        tags: z.array(z.string()).optional(),
+    })
+    .refine(
+        (data) =>
+            data.status === "DRAFT" ||
+            (data.status === "PUBLISHED" && !!data.publishedAt),
+        {
+            message: "Publish date is required when status is PUBLISHED.",
+            path: ["publishedAt"],
+        }
+    );
+
+export type AdminBlogFormValues = z.infer<typeof zBlogSchema>;
+
+
+

@@ -1,4 +1,5 @@
 import {
+    AdminBlogFormValues,
     AdminCategoriesFormValues,
     AdminCourseFormValues,
     AdminGalleryFormValues,
@@ -14,6 +15,7 @@ import {
     GalleryItemType,
     ModeType,
     NoticeType,
+    TagType,
     UserType,
 } from "@/lib/types";
 import { safeFetch } from "@/lib/utils";
@@ -34,6 +36,62 @@ export async function fetchBlogBySlug(slug: string): Promise<BlogPostType> {
         `${BASE}/api/blogs/${encodeURIComponent(slug)}`,
         { method: "GET" },
         `Failed to fetch blog "${slug}"`
+    );
+}
+
+export async function createBlog(
+    data: AdminBlogFormValues
+): Promise<BlogPostType> {
+    return safeFetch<BlogPostType>(
+        `${BASE}/api/blogs`,
+        {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+        },
+        `Failed to create blog "${data.title}"`,
+        true
+    );
+}
+
+export async function updateBlog(
+    slug: string,
+    data: AdminBlogFormValues
+): Promise<BlogPostType> {
+    return safeFetch<BlogPostType>(
+        `${BASE}/api/blogs/${slug}`,
+        {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+        },
+        `Failed to update blog "${data.title}"`,
+        true
+    );
+}
+
+export async function updateBlogStatus(
+    slug: string,
+    data: { published: boolean }
+): Promise<BlogPostType> {
+    return safeFetch<BlogPostType>(
+        `${BASE}/api/blogs/${slug}`,
+        {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+        },
+        `Failed to update blog "${slug}" status`,
+        true
+    );
+}
+
+export async function removeBlog(slug: string): Promise<BlogPostType> {
+    return safeFetch<BlogPostType>(
+        `${BASE}/api/blogs/${slug}`,
+        { method: "DELETE" },
+        `Failed to delete blog "${slug}"`,
+        true
     );
 }
 
@@ -366,7 +424,7 @@ export async function fetchVisitors(): Promise<number> {
     const data = await safeFetch<{ count: number }>(
         `${BASE}/api/visitors`,
         { method: "GET" },
-        "Failed to track visitor",
+        "Failed to track visitor"
     );
     return data.count;
 }
@@ -523,6 +581,53 @@ export async function deleteGallerySlide(id: string): Promise<GalleryItemType> {
         `${BASE}/api/gallery/${id}`,
         { method: "DELETE" },
         "Failed to delete gallery slide",
+        true
+    );
+}
+
+// Tags
+export async function fetchTags(): Promise<TagType[]> {
+    return safeFetch<TagType[]>(
+        `${BASE}/api/tags`,
+        { method: "GET" },
+        "Failed to fetch tags"
+    );
+}
+
+export async function createTag(data: { name: string }): Promise<TagType> {
+    return safeFetch<TagType>(
+        `${BASE}/api/tags`,
+        {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+        },
+        "Failed to create tag",
+        true
+    );
+}
+
+export async function updateTag(data: {
+    id: string;
+    name: string;
+}): Promise<TagType> {
+    return safeFetch<TagType>(
+        `${BASE}/api/tags/${data.id}`,
+        {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+        },
+        "Failed to update tag",
+        true
+    );
+}
+
+export async function deleteTag(id: string): Promise<TagType> {
+    return safeFetch<TagType>(
+        `${BASE}/api/tags/${id}`,
+        { method: "DELETE" },
+        "Failed to delete tag",
         true
     );
 }
