@@ -139,7 +139,11 @@ export const zCourseSchema = z
             .string()
             .min(3, { message: "Title must have at least 3 characters." }),
         description: z.string().optional(),
-        thumbnail: z.string().optional(),
+        thumbnail: z
+            .string()
+            .url({ message: "Thumbnail must be a valid URL." })
+            .or(z.literal(""))
+            .optional(),
         price: z.coerce.number().min(1, { message: "Price must be positive" }),
         discountPrice: z.coerce
             .number()
@@ -212,7 +216,11 @@ export const zFacultySchema = z.object({
     email: z.string().email({ message: "Invalid email address" }),
     phone: z.string().optional(),
     bio: z.string().optional(),
-    image: z.string().optional(),
+    image: z
+        .string()
+        .url({ message: "Image must be a valid URL." })
+        .or(z.literal(""))
+        .optional(),
     designation: z.string().optional(),
 });
 
@@ -230,8 +238,16 @@ export const zGallerySchema = z
         title: z.string().max(100).optional(),
         subtitle: z.string().max(200).optional(),
         type: z.nativeEnum(GallerySlideType),
-        imageUrl: z.string().optional(),
-        videoUrl: z.string().optional(),
+        imageUrl: z
+            .string()
+            .url({ message: "Image must be a valid URL." })
+            .or(z.literal(""))
+            .optional(),
+        videoUrl: z
+            .string()
+            .url({ message: "Video must be a valid URL." })
+            .or(z.literal(""))
+            .optional(),
         sortOrder: z.number().int().nonnegative().default(0),
         visible: z.boolean().optional().default(true),
     })
@@ -252,28 +268,16 @@ export const zGallerySchema = z
 
 export type AdminGalleryFormValues = z.infer<typeof zGallerySchema>;
 
-
-
 export const zBlogSchema = z
     .object({
         title: z
             .string()
             .min(3, { message: "Title must have at least 3 characters." }),
-        slug: z
-            .string()
-            .min(3, { message: "Slug must have at least 3 characters." })
-            .regex(
-                /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
-                "Slug must be URL-friendly (lowercase, dashes only)"
-            ),
         excerpt: z.string().max(300).optional(),
         content: z
             .string()
             .min(10, { message: "Content must have at least 10 characters." }),
-        featuredImage: z
-            .string()
-            .url({ message: "Featured Image must be a valid URL." })
-            .optional(),
+        featuredImage: z.string().optional(),
         featuredImageAlt: z.string().optional(),
         status: z.enum(["DRAFT", "PUBLISHED"]).default("DRAFT"),
         publishedAt: z
@@ -281,10 +285,6 @@ export const zBlogSchema = z
                 (val) => (typeof val === "string" ? new Date(val) : val),
                 z.date()
             )
-            .optional(),
-        readTimeMinutes: z.coerce
-            .number()
-            .min(1, { message: "Read time must be at least 1 minute." })
             .optional(),
         metaTitle: z.string().max(60).optional(),
         metaDescription: z.string().max(160).optional(),
@@ -303,5 +303,10 @@ export const zBlogSchema = z
 
 export type AdminBlogFormValues = z.infer<typeof zBlogSchema>;
 
+export const zTagSchema = z.object({
+    name: z
+        .string()
+        .min(3, { message: "Tag name must have at least 3 characters." }),
+});
 
-
+export type AdminTagFormValues = z.infer<typeof zTagSchema>;
