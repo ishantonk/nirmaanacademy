@@ -106,24 +106,8 @@ export async function POST(request: NextRequest) {
 
         // Validate request body
         const body = await request.json();
-        const {
-            title,
-            description,
-            thumbnail,
-            price,
-            discountPrice,
-            onSale,
-            durationInMin,
-            featured,
-            videoLanguage,
-            courseMaterialLanguage,
-            demoVideoUrl,
-            categoryId,
-            facultyIds,
-            modeIds,
-            attemptIds,
-        } = zCourseSchema.parse(body);
-        const slug = slugify(title);
+        const data = zCourseSchema.parse(body);
+        const slug = slugify(data.title);
 
         // Checking for admin user.
         if (userRole !== "ADMIN") {
@@ -140,24 +124,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Creating new course.
-        const course = await createCourse({
-            title: title,
-            slug: slug,
-            description: description,
-            thumbnail: thumbnail,
-            price: price,
-            discountPrice: discountPrice,
-            onSale: onSale,
-            durationInMin: durationInMin,
-            featured: featured,
-            videoLanguage: videoLanguage,
-            courseMaterialLanguage: courseMaterialLanguage,
-            demoVideoUrl: demoVideoUrl,
-            categoryId: categoryId,
-            modeIds: modeIds,
-            attemptIds: attemptIds,
-            facultyIds: facultyIds,
-        });
+        const course = await createCourse({ ...data, slug });
         if (!course) {
             return NextResponse.json(
                 { message: "Unable to creating new course." },

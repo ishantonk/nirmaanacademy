@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { BlogCreate } from "@/components/blog/blog-create";
-import { brandName } from "@/data/contact-info";
 import { BlogMyList } from "@/components/blog/blog-my-list";
+import { brandName } from "@/data/contact-info";
 
 export const metadata: Metadata = {
     title: `Create Blog | ${brandName}`,

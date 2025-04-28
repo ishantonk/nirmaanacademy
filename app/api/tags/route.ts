@@ -1,12 +1,12 @@
 import { getAuthSession } from "@/lib/auth";
-import { getAllTags, createTag } from "@/lib/services/tag";
+import { getTags, createTag } from "@/lib/services/tag";
 import { zTagSchema } from "@/lib/types";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET() {
     try {
         // Fetch all tags from the database
-        const tags = await getAllTags();
+        const tags = await getTags();
 
         // If no tags exist, return an empty list instead of 404
         if (!tags) {

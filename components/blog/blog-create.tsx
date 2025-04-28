@@ -4,6 +4,7 @@ import {
     Card,
     CardContent,
     CardDescription,
+    CardFooter,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
@@ -62,6 +63,7 @@ export function BlogCreate() {
             featuredImageAlt: "",
             metaTitle: "",
             metaDescription: "",
+            status: "DRAFT",
         },
     });
 
@@ -170,29 +172,17 @@ export function BlogCreate() {
                     tags={tags}
                     uploadMutation={uploadMutation}
                     onSubmit={onSubmit}
-                    onCreateTag={(tag: string) => {
-                        queryClient.setQueryData<TagType[]>(["tags"], (old) => [
-                            ...(old || []),
-                            {
-                                id: tag,
-                                name: tag,
-                                slug: tag,
-                                createdAt: new Date(),
-                                updatedAt: new Date(),
-                            },
-                        ]);
-                    }}
                 />
-                <div className="flex flex-row items-center justify-end mt-6">
-                    <Button
-                        form={formId}
-                        type="submit"
-                        disabled={!form.formState.isDirty || submitting}
-                    >
-                        {submitting ? "Creating..." : "Create Blog"}
-                    </Button>
-                </div>
             </CardContent>
+            <CardFooter className="flex items-center justify-end gap-x-2">
+                <Button
+                    form={formId}
+                    type="submit"
+                    disabled={!form.formState.isDirty || submitting}
+                >
+                    {submitting ? "Creating..." : "Create Blog"}
+                </Button>
+            </CardFooter>
         </Card>
     );
 }
