@@ -23,23 +23,22 @@ async function fetchWithAuth(
     const isServer = typeof window === "undefined";
 
     if (isServer) {
-      const cookie = await getCookieHeader();
-      return fetch(input, {
-          ...init,
-          headers: {
-              "Content-Type": "application/json",
-              ...(init.headers as Record<string, string>),
-              cookie,
-          },
-          cache: "no-store",
-      });
+        const cookie = await getCookieHeader();
+        return fetch(input, {
+            ...init,
+            headers: {
+                "Content-Type": "application/json",
+                ...(init.headers as Record<string, string>),
+                cookie,
+            },
+            cache: "no-store",
+        });
     } else {
-      return fetch(input, {
-        ...init,
-        credentials: "include",
-      })
+        return fetch(input, {
+            ...init,
+            credentials: "include",
+        });
     }
-
 }
 
 // Function for handling fetch error effectively.
@@ -74,24 +73,95 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
- * Serializes a Prisma Decimal to a number
- */
-export function serializeDecimal(decimal: Decimal | null): number | null {
-    if (!decimal) return null;
-    return Number(decimal);
-}
-
-/**
- * Calculates the reading time of a given text
+ * Calculates the reading time of a given text in minutes.
  */
 export function calculateReadingTime(content: string): number {
     const words = content.split(/\s+/).length; // Split by spaces to count words
     const wordsPerMinute = 200; // Average reading speed
-    
+
     const minutes = Math.ceil(words / wordsPerMinute);
-    
+
     return minutes;
-  }
+}
+
+/**
+ * Capitalizes the first character of a given word.
+ *
+ * @param word - The input string to capitalize
+ * @returns The word with its first letter capitalized
+ */
+export function capitalize(word: string): string {
+    if (!word) return ""; // Return an empty string if input is falsy (e.g., null, undefined, empty)
+
+    // Uppercase the first character and append the rest of the word
+    return word.charAt(0).toUpperCase() + word.slice(1);
+}
+
+/**
+ * Turn a camelCase or PascalCase identifier into a human-readable phrase:
+ * - Inserts a space before each uppercase letter (except at index 0)
+ * - Capitalizes the first character of the whole phrase
+ *
+ * @param text - e.g. "helloWorldAgain" or "MyTestString"
+ * @returns e.g. "Hello world again" or "My test string"
+ */
+export function humanize(text: string): string {
+    if (!text) return "";
+
+    // 1. Insert spaces before uppercase letters (but not at start)
+    //    (?<!^) = negative lookbehind for start of string
+    const spaced = text.replace(/(?<!^)([A-Z])/g, " $1").replace(/^ /, "");
+
+    // 2. Capitalize just the first character of the entire phrase
+    return capitalize(spaced);
+}
+
+interface ExcerptOptions {
+    content: string;
+    wordCount?: number;
+    maxChars?: number;
+    suffix?: string;
+}
+
+/**
+ * Returns an excerpt up to `wordCount` words **and** up to `maxChars` characters,
+ * stripping any HTML, never cutting words in half, and appending a suffix if truncated.
+ *
+ * @param content   The raw HTML or plain text
+ * @param wordCount Maximum number of words to include (default 30)
+ * @param maxChars  Maximum number of characters to include (default 200)
+ * @param suffix    What to append when truncated (default "…")
+ */
+export function excerptByWords({
+    content,
+    wordCount = 30,
+    maxChars = 200,
+    suffix = "…",
+}: ExcerptOptions): string {
+    if (!content) return "";
+
+    // 1. Strip HTML tags
+    const text = content.replace(/<[^>]+>/g, "").trim();
+
+    // 2. Split on whitespace and filter out empty strings
+    const words = text.split(/\s+/).filter(Boolean);
+
+    // 3. Build a word-limited excerpt (without suffix for now)
+    let excerpt =
+        words.length > wordCount ? words.slice(0, wordCount).join(" ") : text;
+
+    // 4. If it’s still too long in characters, cut at maxChars without breaking words
+    if (excerpt.length > maxChars) {
+        const cut = excerpt.slice(0, maxChars);
+        const lastSpace = cut.lastIndexOf(" ");
+        excerpt = lastSpace > 0 ? cut.slice(0, lastSpace) : cut;
+    }
+
+    // 5. If we truncated by words OR by chars, append the suffix
+    const wasTruncated =
+        words.length > wordCount || excerpt.length < text.length;
+    return wasTruncated ? excerpt + suffix : excerpt;
+}
 
 /**
  * Convert a string to a slug
