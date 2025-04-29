@@ -49,7 +49,7 @@ export function ImageField<TFieldValues extends FieldValues>({
 
     const onFileSelect = (
         file: File,
-        field: ControllerRenderProps<any, string>
+        field: ControllerRenderProps<TFieldValues, Path<TFieldValues>>
     ) => {
         const preview = URL.createObjectURL(file);
         // Set the preview URL to the form state

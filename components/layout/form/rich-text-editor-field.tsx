@@ -111,7 +111,7 @@ export function RichTextEditorField<TFieldValues extends FieldValues>({
             }
         });
         return () => subscription.unsubscribe();
-    }, [control, editor, name]);
+    }, [control, editor, name, watch]);
 
     return (
         <FormField
@@ -198,7 +198,7 @@ function EditorMenuBar({ editor }: { editor: Editor | null }) {
                 .extendMarkRange("link")
                 .setLink({ href: url })
                 .run();
-        } catch (error) {
+        } catch {
             toast.error("Failed to set link", {
                 description:
                     "An error occurred while setting the link. Please try again.",
