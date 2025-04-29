@@ -12,9 +12,13 @@ export async function middleware(req: NextRequest) {
 
     const isAdminPage = req.nextUrl.pathname.startsWith("/admin");
     const isCheckoutPage = req.nextUrl.pathname.startsWith("/checkout");
+    const isBlogCreatePage = req.nextUrl.pathname.startsWith("/blog/create");
 
     // Redirect unauthenticated users from protected routes to login
-    if (!isAuthenticated && (isAdminPage || isCheckoutPage)) {
+    if (
+        !isAuthenticated &&
+        (isAdminPage || isCheckoutPage || isBlogCreatePage)
+    ) {
         return NextResponse.redirect(new URL("/login", req.url));
     }
 
@@ -28,11 +32,7 @@ export async function middleware(req: NextRequest) {
         return NextResponse.redirect(new URL("/dashboard", req.url));
     }
 
-    if (
-        isAuthenticated &&
-        token.role !== "INSTRUCTOR" &&
-        token.role !== "ADMIN"
-    ) {
+    if (isAuthenticated && token.role !== "ADMIN") {
         return NextResponse.redirect(new URL("/dashboard", req.url));
     }
 
@@ -43,6 +43,7 @@ export const config = {
     matcher: [
         "/login",
         "/register",
+        "/blog/create",
         "/admin/:path*",
         "/checkout/:path*",
         "/dashboard/:path*",

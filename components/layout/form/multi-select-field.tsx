@@ -2,7 +2,7 @@
 
 import { JSX, useState } from "react";
 import { Search } from "lucide-react";
-import { Control } from "react-hook-form";
+import { Control, FieldValues, Path } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -24,8 +24,8 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { humanize } from "@/lib/utils";
 
-interface MultiSelectFieldProps {
-    name: string;
+interface MultiSelectFieldProps<TFieldValues extends FieldValues> {
+    name: Path<TFieldValues>;
     label?: string;
     multiSelectOptions: {
         value: string;
@@ -35,13 +35,13 @@ interface MultiSelectFieldProps {
     searchInput?: boolean;
     placeholder?: string;
     description?: string;
-    control: Control<any, any, any> | undefined;
+    control: Control<TFieldValues>;
     isRequired?: boolean;
     className?: string;
     width?: string;
 }
 
-export function MultiSelectField({
+export function MultiSelectField<TFieldValues extends FieldValues>({
     name,
     label = humanize(name),
     multiSelectOptions,
@@ -52,7 +52,7 @@ export function MultiSelectField({
     isRequired = false,
     className,
     width = "w-full",
-}: MultiSelectFieldProps) {
+}: MultiSelectFieldProps<TFieldValues>) {
     const [filter, setFilter] = useState("");
 
     const filteredOptions = multiSelectOptions.filter((t) =>

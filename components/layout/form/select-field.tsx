@@ -2,7 +2,7 @@
 
 import { JSX, useState } from "react";
 import { Search } from "lucide-react";
-import { Control } from "react-hook-form";
+import { Control, FieldValues, Path } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import {
     FormControl,
@@ -22,8 +22,8 @@ import {
 } from "@/components/ui/select";
 import { humanize } from "@/lib/utils";
 
-interface SelectFieldProps {
-    name: string;
+interface SelectFieldProps<TFieldValues extends FieldValues> {
+    name: Path<TFieldValues>;
     label?: string;
     selectOptions: {
         value: string;
@@ -33,12 +33,12 @@ interface SelectFieldProps {
     searchInput?: boolean;
     placeholder?: string;
     description?: string;
-    control: Control<any, any, any> | undefined;
+    control: Control<TFieldValues>;
     isRequired?: boolean;
     className?: string;
 }
 
-export function SelectField({
+export function SelectField<TFieldValues extends FieldValues>({
     name,
     label = humanize(name),
     selectOptions,
@@ -49,7 +49,7 @@ export function SelectField({
     control,
     isRequired = false,
     className,
-}: SelectFieldProps) {
+}: SelectFieldProps<TFieldValues>) {
     const [filter, setFilter] = useState("");
 
     const filteredOptions = selectOptions.filter((t) =>

@@ -27,6 +27,7 @@ import {
     fetchTags,
     uploadToBlob,
 } from "@/lib/services/api";
+import { useEffect } from "react";
 
 export function BlogCreate() {
     const queryClient = useQueryClient();
@@ -66,6 +67,19 @@ export function BlogCreate() {
             status: "DRAFT",
         },
     });
+
+    // 1) watch status
+    const status = form.watch("status");
+
+    // 2) set publishedAt the moment it flips to PUBLISHED
+    useEffect(() => {
+        if (status === "PUBLISHED" && !form.getValues("publishedAt")) {
+            form.setValue("publishedAt", new Date(), {
+                shouldValidate: true,
+                shouldTouch: true,
+            });
+        }
+    }, [status, form]);
 
     // Create blog mutation
     const mutation = useMutation<BlogPostType, Error, AdminBlogFormValues>({

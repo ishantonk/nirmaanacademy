@@ -1,6 +1,6 @@
 "use client";
 
-import { Control } from "react-hook-form";
+import { Control, FieldValues, Path } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import {
     FormControl,
@@ -12,17 +12,17 @@ import {
 } from "@/components/ui/form";
 import { humanize } from "@/lib/utils";
 
-interface TextFieldProps {
-    name: string;
+interface TextFieldProps<TFieldValues extends FieldValues> {
+    name: Path<TFieldValues>;
     label?: string;
     placeholder?: string;
     description?: string;
-    control: Control<any, any, any> | undefined;
+    control: Control<TFieldValues>;
     isRequired?: boolean;
     className?: string;
 }
 
-export function TextField({
+export function TextField<TFieldValues extends FieldValues>({
     name,
     label = humanize(name),
     placeholder = `Enter ${name}`,
@@ -30,7 +30,7 @@ export function TextField({
     control,
     isRequired = false,
     className,
-}: TextFieldProps) {
+}: TextFieldProps<TFieldValues>) {
     return (
         <FormField
             control={control}
@@ -50,7 +50,7 @@ export function TextField({
                             id={name}
                             {...field}
                             placeholder={placeholder}
-                            {...(isRequired ? { "aria-required": "true" } : {})}
+                            {...(isRequired && { "aria-required": "true" })}
                             className={className}
                         />
                     </FormControl>

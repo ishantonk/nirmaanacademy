@@ -13,13 +13,18 @@ import { ImageDropzone } from "@/components/ui/image-drop-zone";
 import { humanize } from "@/lib/utils";
 import { UseMutationResult } from "@tanstack/react-query";
 import Image from "next/image";
-import { Control, ControllerRenderProps } from "react-hook-form";
+import {
+    Control,
+    ControllerRenderProps,
+    FieldValues,
+    Path,
+} from "react-hook-form";
 
-interface ImageFieldProps {
-    name: string;
+interface ImageFieldProps<TFieldValues extends FieldValues> {
+    name: Path<TFieldValues>;
     label?: string;
     description?: string;
-    control: Control<any, any, any> | undefined;
+    control: Control<TFieldValues>;
     uploadMutation: UseMutationResult<
         { url: string; success: boolean },
         Error,
@@ -30,7 +35,7 @@ interface ImageFieldProps {
     className?: string;
 }
 
-export function ImageField({
+export function ImageField<TFieldValues extends FieldValues>({
     name,
     label = humanize(name),
     description = "",
@@ -38,7 +43,7 @@ export function ImageField({
     uploadMutation,
     isRequired = false,
     className,
-}: ImageFieldProps) {
+}: ImageFieldProps<TFieldValues>) {
     const isUploading = uploadMutation.isPending;
     const isError = uploadMutation.isError;
 

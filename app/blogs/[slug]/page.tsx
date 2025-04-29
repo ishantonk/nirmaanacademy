@@ -140,7 +140,7 @@ export default async function BlogPost({
                     <div className="space-y-8">
                         {/* Article Content */}
                         <div
-                            className="prose dark:prose-invert max-w-none"
+                            className="editor prose dark:prose-invert max-w-none space-y-2"
                             dangerouslySetInnerHTML={{ __html: post.content }}
                         />
 

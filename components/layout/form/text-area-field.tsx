@@ -1,6 +1,6 @@
 "use client";
 
-import { Control } from "react-hook-form";
+import { Control, FieldValues, Path } from "react-hook-form";
 import { Textarea } from "@/components/ui/textarea";
 import {
     FormControl,
@@ -12,17 +12,17 @@ import {
 } from "@/components/ui/form";
 import { humanize } from "@/lib/utils";
 
-interface TextAreaFieldProps {
-    name: string;
+interface TextAreaFieldProps<TFieldValues extends FieldValues> {
+    name: Path<TFieldValues>;
     label?: string;
     placeholder?: string;
     description?: string;
-    control: Control<any, any, any> | undefined;
+    control: Control<TFieldValues>;
     isRequired?: boolean;
     className?: string;
 }
 
-export function TextAreaField({
+export function TextAreaField<TFieldValues extends FieldValues>({
     name,
     label = humanize(name),
     placeholder = `Enter ${name}`,
@@ -30,7 +30,7 @@ export function TextAreaField({
     control,
     isRequired = false,
     className,
-}: TextAreaFieldProps) {
+}: TextAreaFieldProps<TFieldValues>) {
     return (
         <FormField
             control={control}

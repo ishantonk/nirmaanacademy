@@ -2,6 +2,7 @@ import { getAuthSession } from "@/lib/auth";
 import { getTags, createTag } from "@/lib/services/tag";
 import { zTagSchema } from "@/lib/types";
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 
 export async function GET() {
     try {
@@ -79,18 +80,10 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Handle duplicate tag error (e.g., unique constraint violation)
-        if ((error as any).code === "P2002") {
-            return NextResponse.json(
-                { error: "Tag already exists." },
-                { status: 409 }
-            );
-        }
-
         // Zod validation errors
-        if (error instanceof Error && error.name === "ZodError") {
+        if (error instanceof z.ZodError) {
             return NextResponse.json(
-                { error: "Invalid tag data.", details: (error as any).errors },
+                { error: "Invalid tag data.", details: error.errors },
                 { status: 400 }
             );
         }

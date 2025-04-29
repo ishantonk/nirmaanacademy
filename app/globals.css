@@ -120,4 +120,78 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  .editor h1 {
+    @apply font-bold text-4xl pb-6 text-primary;
+  }
+
+  .editor h2 {
+    @apply font-semibold text-2xl pb-4 text-primary;
+  }
+
+  .editor h3 {
+    @apply font-medium text-lg pb-2 text-primary;
+  }
+
+  .editor code {
+    @apply bg-muted text-muted-foreground px-1 py-0.5 m-0.5 border border-muted font-mono font-light;
+  }
+
+  /* Editor list base styling */
+  .editor ol {
+    @apply list-decimal ml-4 pl-4 py-4 text-muted-foreground;
+  }
+
+  .editor ul {
+    @apply list-disc ml-4 pl-4 py-4 text-muted-foreground;
+  }
+
+  .editor ol ol {
+    @apply list-[lower-alpha] py-2;
+  }
+
+  .editor ul ul {
+    @apply list-[circle] py-2;
+  }
+
+  .editor li {
+    @apply mx-1 leading-6 pb-1;
+  }
+
+  .editor blockquote {
+    @apply relative border-l-4 border-l-muted-foreground pl-4 m-4 font-[italic] bg-muted/80 py-4;
+  }
+
+  .editor blockquote::before,
+  blockquote::after {
+    @apply flex flex-row items-center text-5xl leading-4;
+  }
+
+  .editor blockquote::before {
+    @apply content-['“'] justify-start align-text-top mr-1;
+  }
+
+  .editor blockquote::after {
+    @apply content-['”'] justify-end align-text-bottom ml-1;
+  }
+
+  .editor a {
+    @apply underline hover:text-primary cursor-pointer;
+  }
+
+  .editor mark {
+    @apply bg-amber-400/60 text-neutral-800;
+  }
+
+  .editor p,
+  h1,
+  h2,
+  h3,
+  mark,
+  blockquote,
+  code,
+  li {
+    @apply break-words whitespace-pre-wrap;
+    word-break: break-word;
+  }
 }

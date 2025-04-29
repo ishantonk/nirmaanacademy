@@ -2,19 +2,20 @@
 
 import { UseMutationResult } from "@tanstack/react-query";
 import { UseFormReturn } from "react-hook-form";
-import { CategoryType, TagType } from "@/lib/types";
-import { Form } from "@/components/ui/form";
+import { AdminBlogFormValues, CategoryType, TagType } from "@/lib/types";
+import { Form, FormField, FormItem } from "@/components/ui/form";
 import { TextField } from "@/components/layout/form/text-field";
 import { ImageField } from "@/components/layout/form/image-field";
 import { TextAreaField } from "@/components/layout/form/text-area-field";
 import { SelectField } from "@/components/layout/form/select-field";
 import { MultiSelectField } from "@/components/layout/form/multi-select-field";
 import { BlogCreateTag } from "@/components/blog/blog-create-tag";
+import { RichTextEditorField } from "../layout/form/rich-text-editor-field";
 
 // Props definition for BlogForm component
 type BlogFormProps = {
     formId: string;
-    formProps: UseFormReturn<any>;
+    formProps: UseFormReturn<AdminBlogFormValues>;
     categories: CategoryType[];
     tags: TagType[];
     uploadMutation: UseMutationResult<
@@ -23,7 +24,7 @@ type BlogFormProps = {
         File,
         unknown
     >;
-    onSubmit: (values: any) => void;
+    onSubmit: (values: AdminBlogFormValues) => void;
 };
 
 export function BlogForm({
@@ -67,12 +68,11 @@ export function BlogForm({
                 />
 
                 {/* Blog Content Field */}
-                <TextAreaField
-                    control={formProps.control}
+                <RichTextEditorField
                     name="content"
                     placeholder="Full blog content"
                     description="Write your blog post here. You can use Markdown."
-                    className="resize-y min-h-52"
+                    className="min-h-52"
                     isRequired
                 />
 

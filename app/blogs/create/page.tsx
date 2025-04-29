@@ -1,6 +1,8 @@
 import { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { BlogCreate } from "@/components/blog/blog-create";
 import { BlogMyList } from "@/components/blog/blog-my-list";
+import { getAuthSession } from "@/lib/auth";
 import { brandName } from "@/data/contact-info";
 
 export const metadata: Metadata = {
@@ -8,7 +10,12 @@ export const metadata: Metadata = {
     description: "Create a new blog post",
 };
 
-export default function CreateBlogPage() {
+export default async function CreateBlogPage() {
+    const session = await getAuthSession();
+
+    if (!session) {
+        redirect("/login");
+    }
     return (
         <div className="container mx-auto py-10 px-4">
             {/* Header */}

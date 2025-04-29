@@ -277,7 +277,11 @@ export const zBlogSchema = z
         content: z
             .string()
             .min(10, { message: "Content must have at least 10 characters." }),
-        featuredImage: z.string().optional(),
+        featuredImage: z
+            .string()
+            .url({ message: "Featured Image must be a valid URL." })
+            .or(z.literal(""))
+            .optional(),
         featuredImageAlt: z.string().optional(),
         status: z.enum(["DRAFT", "PUBLISHED"]).default("DRAFT"),
         publishedAt: z
