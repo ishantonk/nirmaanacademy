@@ -10,7 +10,7 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import TipTapEditor from "../tiptap-editor/tiptap-editor";
-import { getEditor } from "../tiptap-editor/tiptap-editor-content";
+import { useGetEditor } from "../tiptap-editor/tiptap-editor-content";
 
 interface RichTextEditorFieldProps<TFieldValues extends FieldValues> {
     name: Path<TFieldValues>;
@@ -34,7 +34,7 @@ export function RichTextEditorField<TFieldValues extends FieldValues>({
     const { control, getValues, watch, setValue } =
         useFormContext<TFieldValues>();
 
-    const editor = getEditor({
+    const editor = useGetEditor({
         content: getValues(name) as string,
         onChange: (content: string) =>
             setValue(

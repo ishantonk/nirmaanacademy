@@ -19,7 +19,6 @@ import {
     zFacultySchema,
 } from "@/lib/types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQueryClient } from "@tanstack/react-query";
 import { Pencil } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { AdminFacultiesForm } from "@/components/admin/faculties/admin-faculties-form";
@@ -46,7 +45,7 @@ export function AdminFacultyEdit({ faculty }: { faculty: FacultyType }) {
     // Reset form values when faculty prop changes (e.g., reopening dialog)
     useEffect(() => {
         form.reset(formDefaultValues);
-    }, [faculty, formDefaultValues]);
+    }, [faculty, formDefaultValues, form]);
 
     // Mutation hook for editing faculty.
     const updateMutation = useGenericMutation<

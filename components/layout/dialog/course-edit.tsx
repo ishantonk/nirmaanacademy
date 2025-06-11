@@ -113,7 +113,7 @@ export function CourseEdit({
     };
 
     const onDelete = () => {
-        removeMutation.mutate;
+        removeMutation.mutate;({ ...form.getValues(), slug: course.slug });
     };
 
     return (
