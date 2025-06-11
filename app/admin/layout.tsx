@@ -1,9 +1,9 @@
-import { brandName } from "@/data/contact-info";
+import SiteInfo from "@/data/contact-info";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: `Admin | ${brandName}`,
-    description: `Manage users, courses, and view analytics of ${brandName}.`,
+    title: `Admin | ${SiteInfo.Title}`,
+    description: `Manage users, courses, and view analytics of ${SiteInfo.Title}.`,
 };
 
 interface AdminLayoutProps {

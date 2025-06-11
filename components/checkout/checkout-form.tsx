@@ -18,7 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { formatPrice } from "@/lib/format";
-import { brandName } from "@/data/contact-info";
+import SiteInfo from "@/data/contact-info";
 import { OrderType } from "@/lib/types";
 import { useSession } from "next-auth/react";
 
@@ -141,7 +141,7 @@ export function CheckoutForm(props: CheckoutFormProps) {
                 key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!, // Ensure environment variable is defined
                 amount: Number(orderData.amount), // should be in subunits (e.g., paise)
                 currency: "INR",
-                name: brandName,
+                name: SiteInfo.Title,
                 description: "Course Purchase",
                 order_id: orderData.razorpayOrderId!, // order id from Razorpay order creation
                 handler: async (response) => {

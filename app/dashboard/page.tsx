@@ -6,7 +6,7 @@ import CourseCard, {
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { brandName } from "@/data/contact-info";
+import SiteInfo from "@/data/contact-info";
 import { getAuthSession } from "@/lib/auth";
 import { fetchAuthorBlogsAdmin, fetchEnrollments } from "@/lib/services/api";
 import { BookOpen, Newspaper } from "lucide-react";
@@ -16,7 +16,7 @@ import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
-    title: "Dashboard | " + brandName,
+    title: "Dashboard | " + SiteInfo.Title,
     description:
         "Access all the courses you've enrolled in, track your learning progress, and manage your educational journey with ease on your personal dashboard.",
 };

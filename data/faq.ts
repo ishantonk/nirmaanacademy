@@ -1,7 +1,7 @@
-import { brandName, contactInfo } from "@/data/contact-info";
+import SiteInfo, { contactInfo } from "@/data/contact-info";
 
 export const faqData = {
-    title: "FAQs | " + brandName,
+    title: "FAQs | " + SiteInfo.Title,
     tagline: "Frequently Asked Questions",
     description:
         "Get quick answers to common questions about our courses, materials, exams, and enrollment process at Nirmaan Academy.",

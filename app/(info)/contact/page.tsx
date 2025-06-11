@@ -1,9 +1,9 @@
 import { Metadata } from "next";
 import { ContactForm } from "@/components/contact/contact-form";
-import { brandName } from "@/data/contact-info";
+import SiteInfo from "@/data/contact-info";
 
 export const metadata: Metadata = {
-    title: "Contact Us | " + brandName,
+    title: "Contact Us | " + SiteInfo.Title,
     description: "Get in touch with us for any questions or support.",
 };
 

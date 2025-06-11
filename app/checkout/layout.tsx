@@ -1,15 +1,15 @@
-import { brandName } from "@/data/contact-info";
+import SiteInfo from "@/data/contact-info";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: `Checkout | ${brandName}`,
-    description: `Review your order summary and securely complete your payment to enroll in your selected courses at ${brandName}.`,
+    title: `Checkout | ${SiteInfo.Title}`,
+    description: `Review your order summary and securely complete your payment to enroll in your selected courses at ${SiteInfo.Title}.`,
     keywords: [
         "Checkout",
         "Payment",
         "Enroll",
         "Courses",
-        `${brandName}`,
+        `${SiteInfo.Title}`,
         "Secure Payment",
     ],
 };

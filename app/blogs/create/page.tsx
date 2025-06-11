@@ -3,10 +3,10 @@ import { redirect } from "next/navigation";
 import { BlogCreate } from "@/components/blog/blog-create";
 import { BlogMyList } from "@/components/blog/blog-my-list";
 import { getAuthSession } from "@/lib/auth";
-import { brandName } from "@/data/contact-info";
+import SiteInfo from "@/data/contact-info";
 
 export const metadata: Metadata = {
-    title: `Create Blog | ${brandName}`,
+    title: `Create Blog | ${SiteInfo.Title}`,
     description: "Create a new blog post",
 };
 

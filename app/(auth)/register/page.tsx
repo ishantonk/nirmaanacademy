@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { RegisterForm } from "@/components/auth/register-form";
-import { brandName } from "@/data/contact-info";
+import SiteInfo from "@/data/contact-info";
 
 export const metadata: Metadata = {
-    title: "Register | " + brandName,
-    description: `Create an ${brandName} account`,
+    title: "Register | " + SiteInfo.Title,
+    description: `Create an ${SiteInfo.Title} account`,
 };
 
 export default function RegisterPage() {

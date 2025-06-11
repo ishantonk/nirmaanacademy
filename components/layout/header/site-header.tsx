@@ -28,7 +28,7 @@ import { usePathname } from "next/navigation";
 import { fetchCategories } from "@/lib/services/api";
 import { useQuery } from "@tanstack/react-query";
 import { CategoryType } from "@/lib/types";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { UserAction } from "./user-action";
 import ToggleTheme from "@/components/theme/toggle-theme";
 import { Button } from "@/components/ui/button";
@@ -120,7 +120,9 @@ function MainHeader({ items = initialNavItems }: HeaderProps) {
                 {/* Search */}
                 <div className="relative col-span-3">
                     {!isMobile && (
-                        <SearchInput className="bg-primary/10 border-surface/30" />
+                        <Suspense fallback={<div className="h-10" />}>
+                            <SearchInput className="bg-primary/10 border-surface/30" />
+                        </Suspense>
                     )}
                 </div>
 

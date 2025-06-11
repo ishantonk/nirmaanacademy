@@ -1,8 +1,8 @@
-import { brandName } from "@/data/contact-info";
+import SiteInfo from "@/data/contact-info";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Shopping Cart | " + brandName,
+    title: "Shopping Cart | " + SiteInfo.Title,
     description: "Your shopping cart",
 };
 

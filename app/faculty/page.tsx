@@ -1,10 +1,10 @@
 import { Metadata } from "next";
 import { FacultyCard } from "@/components/faculty/faculty-card";
-import { brandName } from "@/data/contact-info";
+import SiteInfo from "@/data/contact-info";
 import { fetchFaculties } from "@/lib/services/api";
 
 export const metadata: Metadata = {
-    title: `Our Faculty | ${brandName}`,
+    title: `Our Faculty | ${SiteInfo.Title}`,
     description:
         "Meet our expert instructors who are passionate about teaching business and corporate law.",
 };

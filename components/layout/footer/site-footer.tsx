@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { brandName } from "@/data/contact-info";
+import SiteInfo from "@/data/contact-info";
 import { DeveloperProfile } from "@/data/links-name";
 import { FooterLogoAndInfo } from "@/components/layout/footer/footer-logo-and-info";
 import { FooterNav } from "@/components/layout/footer/footer-nav";
@@ -24,7 +24,7 @@ export function SiteFooter() {
             </div>
             <div className="flex flex-col md:flex-row items-center justify-between mt-8 bg-primary p-4 px-12 text-center text-sm text-primary-foreground space-x-1 mb-14 md:mb-0">
                 <p>
-                    © {new Date().getFullYear()} {brandName}. All rights
+                    © {new Date().getFullYear()} {SiteInfo.Title}. All rights
                     reserved.
                 </p>
                 <p>

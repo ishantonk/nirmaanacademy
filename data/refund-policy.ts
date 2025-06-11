@@ -1,7 +1,7 @@
-import { brandName, contactInfo } from "./contact-info";
+import SiteInfo, { contactInfo } from "./contact-info";
 
 export const refundPolicyData = {
-    title: "Return and Refund Policy for " + brandName,
+    title: "Return and Refund Policy for " + SiteInfo.Title,
     overview:
         "At Nirmaan Academy, we are committed to ensuring customer satisfaction with our educational services and products. This Return and Refund Policy outlines the terms under which refunds may be granted for purchased courses, study materials, and other digital content.",
     refund_eligibility: {
@@ -22,7 +22,9 @@ export const refundPolicyData = {
     ],
     refund_request_process: {
         submission:
-            "Users must submit a refund request via email at " + contactInfo.email + " with the following details:",
+            "Users must submit a refund request via email at " +
+            contactInfo.email +
+            " with the following details:",
         required_details: [
             "Full name",
             "Order ID or receipt number",

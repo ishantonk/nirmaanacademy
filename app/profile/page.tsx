@@ -2,12 +2,12 @@ import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getAuthSession } from "@/lib/auth";
-import { brandName } from "@/data/contact-info";
+import SiteInfo from "@/data/contact-info";
 import { ProfileForm } from "@/components/profile/profile-form";
 import { ProfilePasswordForm } from "@/components/profile/profile-password-form";
 
 export const metadata: Metadata = {
-    title: "Profile | " + brandName,
+    title: "Profile | " + SiteInfo.Title,
     description: "Manage your profile",
 };
 

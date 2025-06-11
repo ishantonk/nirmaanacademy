@@ -1,12 +1,12 @@
 import { Metadata } from "next";
 import { PostCard } from "@/components/blog/post-card";
 import { BlogGrid } from "@/components/blog/blog-grid";
-import { brandName } from "@/data/contact-info";
+import SiteInfo from "@/data/contact-info";
 import { BlogPostType } from "@/lib/types";
 import { fetchBlogs } from "@/lib/services/api";
 
 export const metadata: Metadata = {
-    title: "Blog | " + brandName,
+    title: "Blog | " + SiteInfo.Title,
     description:
         "Latest articles, tutorials, and updates from Nirmaan Academy.",
 };

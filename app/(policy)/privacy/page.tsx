@@ -1,11 +1,11 @@
 import { Metadata } from "next";
 import { privacyPolicyData } from "@/data/privacy-policy";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { brandName } from "@/data/contact-info";
+import SiteInfo from "@/data/contact-info";
 
 export const metadata: Metadata = {
-    title: `${privacyPolicyData.title} | ${brandName}`,
-    description: brandName,
+    title: `${privacyPolicyData.title} | ${SiteInfo.Title}`,
+    description: SiteInfo.Title,
 };
 
 export default function PrivacyPolicyPage() {
@@ -28,7 +28,9 @@ export default function PrivacyPolicyPage() {
                     <p className="text-lg font-semibold text-muted-foreground">
                         {privacyPolicyData.introduction}
                     </p>
-                    <p className="text-muted-foreground">{privacyPolicyData.scope}</p>
+                    <p className="text-muted-foreground">
+                        {privacyPolicyData.scope}
+                    </p>
 
                     {/* Information We Collect */}
                     <h2 className="text-2xl font-semibold mt-8 text-blue-600">

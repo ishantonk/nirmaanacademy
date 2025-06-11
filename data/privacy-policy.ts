@@ -1,8 +1,8 @@
-import { brandName, contactInfo } from "./contact-info";
+import SiteInfo, { contactInfo } from "./contact-info";
 
 export const privacyPolicyData = {
     title: "Privacy Policy",
-    organization: brandName,
+    organization: SiteInfo.Title,
     introduction:
         "Welcome to Nirmaan Academy. Your privacy is critically important to us. Nirmaan Academy is committed to respecting and protecting your privacy regarding any information we may collect while operating our website.",
     scope: "This Privacy Policy applies to www.nirmaanacademy.com and outlines how we collect, use, and safeguard your information.",
@@ -77,6 +77,10 @@ export const privacyPolicyData = {
         email: contactInfo.email,
         phone: contactInfo.phone,
         address: contactInfo.address,
-        last_updated: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+        last_updated: new Date().toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+        }),
     },
 };

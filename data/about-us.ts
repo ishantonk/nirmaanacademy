@@ -1,7 +1,7 @@
-import { brandName, contactInfo } from "@/data/contact-info";
+import SiteInfo, { contactInfo } from "@/data/contact-info";
 
 export const aboutUsData = {
-    title: "About Us | " + brandName,
+    title: "About Us | " + SiteInfo.Title,
     tagline: "Empowering Learners, Transforming Careers",
     description:
         "Nirmaan Academy is a premier education and e-learning platform dedicated to providing high-quality, career-oriented learning experiences. Founded by Prof. Nitin Bhardwaj, a seasoned educator with 14+ years of teaching experience, our academy is committed to shaping the future of students and professionals through expert-led courses in Business Law, Company Law, Finance, and Commerce.",

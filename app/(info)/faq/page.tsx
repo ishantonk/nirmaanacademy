@@ -6,7 +6,7 @@ import {
     AccordionContent,
 } from "@/components/ui/accordion";
 import { faqData } from "@/data/faq";
-import { brandName } from "@/data/contact-info";
+import SiteInfo from "@/data/contact-info";
 
 export const metadata: Metadata = {
     title: faqData.title,
@@ -20,7 +20,7 @@ export default function FAQPage() {
             <div className="lg:text-center mb-10">
                 <h1 className="text-3xl font-bold tracking-tight">FAQs</h1>
                 <p className="text-sm lg:text-base mt-2 text-muted-foreground">
-                    {faqData.tagline} related to {brandName}
+                    {faqData.tagline} related to {SiteInfo.Title}
                 </p>
             </div>
 

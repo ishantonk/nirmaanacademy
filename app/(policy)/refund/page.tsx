@@ -1,11 +1,11 @@
 import { Metadata } from "next";
 import { refundPolicyData } from "@/data/refund-policy";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { brandName } from "@/data/contact-info";
+import SiteInfo from "@/data/contact-info";
 
 export const metadata: Metadata = {
-    title: `Return and Refund Policy | ${brandName}`,
-    description: brandName,
+    title: `Return and Refund Policy | ${SiteInfo.Title}`,
+    description: `Learn about our return and refund policy at ${SiteInfo.Title}. We aim to provide a clear and fair process for refunds, ensuring customer satisfaction while maintaining the integrity of our services.`,
 };
 
 export default function RefundPolicyPage() {
