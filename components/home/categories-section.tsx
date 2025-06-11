@@ -105,7 +105,7 @@ function CategoryCard({
                 </div>
 
                 {/* Description with line clamp */}
-                <p className="text-gray-600 text-sm leading-relaxed line-clamp-2 group-hover:text-gray-700 transition-colors duration-200">
+                <p className="text-gray-600 text-sm leading-relaxed line-clamp-2 group-hover:text-gray-700 transition-colors duration-200 text-wrap">
                     {category.description}
                 </p>
 
