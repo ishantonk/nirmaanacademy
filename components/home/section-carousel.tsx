@@ -11,7 +11,6 @@ import {
     CarouselPrevious,
 } from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
-import useIsMobile from "@/hooks/use-mobile";
 
 interface ItemsPerView {
     mobile?: number;
@@ -34,14 +33,14 @@ const DEFAULT_ITEMS_PER_VIEW: ItemsPerView = {
 };
 
 // Define mapping for basis classes to ensure they exist in the bundle
-const BASIS_CLASSES = {
-    1: "basis-full",
-    2: "basis-1/2",
-    3: "basis-1/3",
-    4: "basis-1/4",
-    5: "basis-1/5",
-    6: "basis-1/6",
-} as const;
+// const BASIS_CLASSES = {
+//     1: "basis-full",
+//     2: "basis-1/2",
+//     3: "basis-1/3",
+//     4: "basis-1/4",
+//     5: "basis-1/5",
+//     6: "basis-1/6",
+// } as const;
 
 const RESPONSIVE_BASIS_CLASSES = {
     1: {
@@ -63,8 +62,6 @@ export default function SectionCarousel({
     itemsPerView = DEFAULT_ITEMS_PER_VIEW,
     className = "",
 }: SectionCarouselProps) {
-    const isMobile = useIsMobile();
-
     // Memoize carousel plugins to prevent recreating on every render
     const plugins = useMemo(() => {
         if (!autoplay) return undefined;
