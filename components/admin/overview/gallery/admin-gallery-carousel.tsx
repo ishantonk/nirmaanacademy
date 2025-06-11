@@ -150,6 +150,12 @@ function EditButton({ slide }: { slide: GalleryItemType }) {
 
 // Handles rendering and loading state of video slides
 function VideoSlide({ slide }: { slide: GalleryItemType }) {
+    // Lazy-load ReactPlayer for client-side rendering
+    const ReactPlayer = dynamic(() => import("react-player/lazy"), {
+        ssr: false,
+    });
+    const [isVideoReady, setIsVideoReady] = useState(false);
+
     if (slide.type === "IMAGE") return null;
 
     const validVideoURL =
@@ -166,12 +172,6 @@ function VideoSlide({ slide }: { slide: GalleryItemType }) {
             </div>
         );
     }
-
-    // Lazy-load ReactPlayer for client-side rendering
-    const ReactPlayer = dynamic(() => import("react-player/lazy"), {
-        ssr: false,
-    });
-    const [isVideoReady, setIsVideoReady] = useState(false);
 
     return (
         <>

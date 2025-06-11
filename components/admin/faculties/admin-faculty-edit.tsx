@@ -12,23 +12,21 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { removeFaculty, updateFaculty, uploadToBlob } from "@/lib/services/api";
+import { removeFaculty, updateFaculty } from "@/lib/services/api";
 import {
     AdminFacultyFormValues,
     FacultyType,
     zFacultySchema,
 } from "@/lib/types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { Pencil } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 import { AdminFacultiesForm } from "@/components/admin/faculties/admin-faculties-form";
 import { useEffect } from "react";
 import { useGenericMutation } from "@/hooks/use-generic-mutation";
 
 export function AdminFacultyEdit({ faculty }: { faculty: FacultyType }) {
-    const queryClient = useQueryClient();
     const formId = "edit-faculty-form";
 
     const formDefaultValues = {
@@ -48,7 +46,7 @@ export function AdminFacultyEdit({ faculty }: { faculty: FacultyType }) {
     // Reset form values when faculty prop changes (e.g., reopening dialog)
     useEffect(() => {
         form.reset(formDefaultValues);
-    }, [faculty]);
+    }, [faculty, formDefaultValues]);
 
     // Mutation hook for editing faculty.
     const updateMutation = useGenericMutation<

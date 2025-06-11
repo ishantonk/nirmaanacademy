@@ -1,12 +1,6 @@
 "use client";
 
-// React & TipTap
-import {
-    ForwardRefExoticComponent,
-    JSX,
-    MemoExoticComponent,
-    RefAttributes,
-} from "react";
+import { JSX } from "react";
 import { type Editor, EditorContent, EditorContentProps } from "@tiptap/react";
 import { useEditor } from "@tiptap/react";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -22,7 +16,7 @@ import Highlight from "@tiptap/extension-highlight";
 /**
  * Props for TipTapEditorContent component.
  */
-type TipTapEditorContentProps = & EditorContentProps
+type TipTapEditorContentProps = EditorContentProps;
 
 /**
  * Renders the scrollable TipTap editor content area.
@@ -47,12 +41,14 @@ type EditorProps = {
 };
 
 /**
- * Initializes and returns a TipTap editor instance with optional root class.
+ * Custom hook that initializes and returns a TipTap editor instance.
  *
  * @param className - Optional CSS class applied to the editor's root element.
+ * @param onChange - Callback function called when editor content changes.
+ * @param content - Initial content for the editor.
  * @returns Editor instance or null if not initialized.
  */
-export function getEditor({
+export function useGetEditor({
     className,
     onChange,
     content,

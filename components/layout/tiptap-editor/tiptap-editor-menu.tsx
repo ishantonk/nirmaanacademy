@@ -57,9 +57,12 @@ interface TipTapEditorMenuProps {
  * Renders grouped control buttons and toggles.
  */
 export default function TipTapEditorMenu({ editor }: TipTapEditorMenuProps) {
+    // Move the hook call to component level
+    const addLink = useAddLink(editor);
+
     if (!editor) return null;
 
-    const controls = buildMenuList(editor);
+    const controls = buildMenuList(editor, addLink);
 
     // Split controls into logical groups for responsive layout
     const [history, headings, alignment, formatting, lists, others] = [
@@ -241,10 +244,9 @@ type MenuControl = {
 
 /**
  * Builds the list of menu controls based on editor instance state.
+ * Now accepts addLink function as a parameter instead of calling the hook.
  */
-function buildMenuList(editor: Editor): MenuControl[] {
-    const addLink = useAddLink(editor);
-
+function buildMenuList(editor: Editor, addLink: () => void): MenuControl[] {
     return [
         // History
         {
@@ -440,7 +442,7 @@ function useAddLink(editor: Editor | null) {
                 .extendMarkRange("link")
                 .setLink({ href: url })
                 .run();
-        } catch (e) {
+        } catch {
             toast.error("Failed to set link", {
                 description:
                     "An error occurred while setting the link. Please try again.",

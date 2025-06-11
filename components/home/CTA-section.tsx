@@ -8,6 +8,7 @@ import {
     Users,
     Zap,
 } from "lucide-react";
+import Link from "next/link";
 
 export async function CTASection() {
     const session = await getAuthSession();
@@ -83,29 +84,35 @@ export async function CTASection() {
 
                     {/* Action Buttons */}
                     <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                        <button className="group relative bg-background text-primary font-semibold px-8 py-4 rounded-2xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 overflow-hidden">
-                            <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                            <div className="relative z-10 flex items-center gap-2 group-hover:text-foreground transition-colors duration-300">
-                                <BookOpen size={20} />
-                                Browse Courses
-                                <ArrowRight
-                                    size={16}
-                                    className="group-hover:translate-x-1 transition-transform duration-300"
-                                />
-                            </div>
-                        </button>
+                        <Link href="/courses">
+                            <button className="group relative bg-background text-primary font-semibold px-8 py-4 rounded-2xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 overflow-hidden">
+                                <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                <div className="relative z-10 flex items-center gap-2 group-hover:text-foreground transition-colors duration-300">
+                                    <BookOpen size={20} />
+                                    Browse Courses
+                                    <ArrowRight
+                                        size={16}
+                                        className="group-hover:translate-x-1 transition-transform duration-300"
+                                    />
+                                </div>
+                            </button>
+                        </Link>
 
-                        <button className="group relative bg-transparent border-2 border-white text-white font-semibold px-8 py-4 rounded-xl hover:bg-background hover:text-primary transform hover:scale-105 transition-all duration-300 overflow-hidden">
-                            <div className="absolute inset-0 bg-background opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                            <div className="relative z-10 flex items-center gap-2">
-                                <GraduationCap size={20} />
-                                Sign Up for Free
-                                <ArrowRight
-                                    size={16}
-                                    className="group-hover:translate-x-1 transition-transform duration-300"
-                                />
-                            </div>
-                        </button>
+                        {session && (
+                            <Link href="/register">
+                                <button className="group relative bg-transparent border-2 border-white text-white font-semibold px-8 py-4 rounded-xl hover:bg-background hover:text-primary transform hover:scale-105 transition-all duration-300 overflow-hidden">
+                                    <div className="absolute inset-0 bg-background opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                    <div className="relative z-10 flex items-center gap-2">
+                                        <GraduationCap size={20} />
+                                        Sign Up for Free
+                                        <ArrowRight
+                                            size={16}
+                                            className="group-hover:translate-x-1 transition-transform duration-300"
+                                        />
+                                    </div>
+                                </button>
+                            </Link>
+                        )}
                     </div>
                 </div>
             </div>

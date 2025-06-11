@@ -7,7 +7,6 @@ import { TextField } from "@/components/layout/form/text-field";
 import { SelectField } from "@/components/layout/form/select-field";
 import { MultiSelectField } from "@/components/layout/form/multi-select-field";
 import { SwitchField } from "@/components/layout/form/switch-field";
-import { TextAreaField } from "@/components/layout/form/text-area-field";
 import { useUploadMutation } from "@/hooks/use-upload-mutation";
 import { humanize } from "@/lib/utils";
 import {

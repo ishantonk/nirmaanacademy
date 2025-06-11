@@ -3,14 +3,12 @@
 import { useEffect } from "react";
 import { FieldValues, Path, PathValue, useFormContext } from "react-hook-form";
 import {
-    FormControl,
     FormDescription,
     FormField,
     FormItem,
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
-import { humanize } from "@/lib/utils";
 import TipTapEditor from "../tiptap-editor/tiptap-editor";
 import { getEditor } from "../tiptap-editor/tiptap-editor-content";
 

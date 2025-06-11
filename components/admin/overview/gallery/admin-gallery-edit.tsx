@@ -41,7 +41,7 @@ export function AdminGalleryEdit({ slide }: { slide: GalleryItemType }) {
 
     useEffect(() => {
         form.reset();
-    }, [slide]);
+    }, [slide, form]);
 
     // Update mutation
     const updateMutation = useGenericMutation<

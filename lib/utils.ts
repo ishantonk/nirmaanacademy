@@ -129,30 +129,32 @@ export function humanize(text: string): string {
  * getDiscountPercent(100, 75);        // "25%"
  * getDiscountPercent(new Decimal(200), new Decimal(150), 1); // "25.0%"
  */
+interface DecimalLike {
+    toNumber(): number;
+}
+
 export function getDiscountPercent(
-    original: number | Decimal,
-    discounted: number | Decimal,
+    original: number | DecimalLike,
+    discounted: number | DecimalLike,
     fractionDigits = 0
 ): string {
-    // Convert to plain numbers (duck-typing for Decimal)
-    const orig =
-        typeof (original as any).toNumber === "function"
-            ? (original as any).toNumber()
-            : original;
-    const disc =
-        typeof (discounted as any).toNumber === "function"
-            ? (discounted as any).toNumber()
-            : discounted;
+    const orig = isDecimalLike(original) ? original.toNumber() : original;
+    const disc = isDecimalLike(discounted) ? discounted.toNumber() : discounted;
 
     if (orig <= 0) {
         throw new Error("Original price must be greater than zero");
     }
 
-    // compute percentage: ((orig - disc) / orig) * 100
     const percent = ((orig - disc) / orig) * 100;
-
-    // format with fixed decimals and append "%"
     return `${percent.toFixed(fractionDigits)}%`;
+}
+
+function isDecimalLike(value: unknown): value is DecimalLike {
+    return (
+        typeof value === "object" &&
+        value !== null &&
+        typeof (value as DecimalLike).toNumber === "function"
+    );
 }
 
 interface ExcerptOptions {

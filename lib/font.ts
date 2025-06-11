@@ -24,4 +24,9 @@ const geistMono = Geist_Mono({
     display: "swap",
 });
 
-export default { inter, lora, geistMono, geistSans };
+export default {
+    inter,
+    lora,
+    geistSans,
+    geistMono,
+} as const;

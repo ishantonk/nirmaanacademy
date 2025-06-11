@@ -33,7 +33,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { AlertCircle } from "lucide-react";
 import { useGenericMutation } from "@/hooks/use-generic-mutation";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { EditorMenuBar } from "@/components/layout/form/rich-text-editor-field";
 
 export function AdminCoursesCreate() {
     const formId = "create-course-form";
@@ -143,7 +142,7 @@ function AdminCourseCreateSkeleton() {
             <CardHeader>
                 <CardTitle>Creating Course… Hold Tight!</CardTitle>
                 <CardDescription>
-                    We're getting things ready. Just a moment!
+                    We&apos;re getting things ready. Just a moment!
                 </CardDescription>
             </CardHeader>
 

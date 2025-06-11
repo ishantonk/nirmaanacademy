@@ -1,4 +1,4 @@
-"use clients";
+"use client";
 
 import { AdminCoursesForm } from "@/components/admin/courses/admin-courses-form";
 import { Button } from "@/components/ui/button";
