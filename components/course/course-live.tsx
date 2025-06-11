@@ -8,9 +8,8 @@ import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { EmptyState } from "@/components/ui/empty-state";
 import { CourseGrid } from "@/components/course/course-grid";
-import { CourseCard } from "@/components/course/course-card";
-import { CourseCardSkeleton } from "@/components/course/course-card-skeleton";
 import { fetchCourses } from "@/lib/services/api";
+import CourseCard, { CourseCardSkeleton } from "./course-card";
 
 export function CoursesLive() {
     const searchParams = useSearchParams();
@@ -84,10 +83,7 @@ export function CoursesLive() {
             ) : (
                 <CourseGrid
                     courses={(data ?? []).map((course) => (
-                        <CourseCard
-                            key={course.id}
-                            course={course}
-                        />
+                        <CourseCard key={course.id} course={course} />
                     ))}
                 />
             )}

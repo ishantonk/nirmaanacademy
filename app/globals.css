@@ -1,5 +1,70 @@
 @import "tailwindcss";
-@import "tw-animate-css";
+@import 'tw-animate-css';
+
+/* Keyframes */
+@keyframes spinning-circle {
+  0% {
+    stroke-dashoffset: 0;
+    stroke-dasharray: 150.6 100.4;
+  }
+
+  50% {
+    stroke-dasharray: 1 250;
+  }
+
+  100% {
+    stroke-dashoffset: 502;
+    stroke-dasharray: 150.6 100.4;
+  }
+}
+
+@keyframes wiggle {
+
+  0%,
+  100% {
+    transform: rotate(-3deg);
+  }
+
+  50% {
+    transform: rotate(3deg);
+  }
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(100%);
+  }
+
+  100% {
+    transform: translateX(-200%);
+  }
+}
+
+@keyframes typing {
+
+  0% {
+    width: 0ch;
+    visibility: hidden;
+    overflow: hidden;
+    display: inline-block;
+    text-wrap-mode: nowrap;
+    border-right: 1px;
+  }
+
+  100% {
+    width: 100%;
+    overflow: hidden;
+    display: inline-block;
+    text-wrap-mode: nowrap;
+    border-right: 1px;
+  }
+}
+
+@keyframes blink {
+  50% {
+    border-color: transparent;
+  }
+}
 
 @custom-variant dark (&:is(.dark *));
 
@@ -24,6 +89,7 @@
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
+  --color-surface: var(--surface);
   --color-destructive: var(--destructive);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
@@ -45,19 +111,20 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  --background: oklch(0.98 0.01 270);
+  --foreground: oklch(0.30 0.01 270);
+  --surface: oklch(0.94 0.01 270);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: #3e4095;
+  --primary: oklch(0.44 0.22 286.2);
   --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
+  --secondary: oklch(0.63 0.23 27.1);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
+  --accent: oklch(0.75 0.23 206.6);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
@@ -79,19 +146,20 @@
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
+  --background: oklch(0.14 0.01 270);
+  --foreground: oklch(0.98 0.01 270);
   --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: #7879B4;
+  --surface: oklch(0.20 0.01 270);
+  --primary: oklch(0.52 0.13 286.2);
   --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
+  --secondary: oklch(0.50 0.20 27.1);
   --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
+  --muted: oklch(0.98 0.01 270);
+  --muted-foreground: oklch(0.78 0.01 270);
+  --accent: oklch(0.60 0.20 206.6);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
@@ -115,83 +183,18 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    transition-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
   }
 
   body {
     @apply bg-background text-foreground;
   }
+}
 
-  .editor h1 {
-    @apply font-bold text-4xl pb-6 text-primary;
-  }
-
-  .editor h2 {
-    @apply font-semibold text-2xl pb-4 text-primary;
-  }
-
-  .editor h3 {
-    @apply font-medium text-lg pb-2 text-primary;
-  }
-
-  .editor code {
-    @apply bg-muted text-muted-foreground px-1 py-0.5 m-0.5 border border-muted font-mono font-light;
-  }
-
-  /* Editor list base styling */
-  .editor ol {
-    @apply list-decimal ml-4 pl-4 py-4 text-muted-foreground;
-  }
-
-  .editor ul {
-    @apply list-disc ml-4 pl-4 py-4 text-muted-foreground;
-  }
-
-  .editor ol ol {
-    @apply list-[lower-alpha] py-2;
-  }
-
-  .editor ul ul {
-    @apply list-[circle] py-2;
-  }
-
-  .editor li {
-    @apply mx-1 leading-6 pb-1;
-  }
-
-  .editor blockquote {
-    @apply relative border-l-4 border-l-muted-foreground pl-4 m-4 font-[italic] bg-muted/80 py-4;
-  }
-
-  .editor blockquote::before,
-  blockquote::after {
-    @apply flex flex-row items-center text-5xl leading-4;
-  }
-
-  .editor blockquote::before {
-    @apply content-['“'] justify-start align-text-top mr-1;
-  }
-
-  .editor blockquote::after {
-    @apply content-['”'] justify-end align-text-bottom ml-1;
-  }
-
-  .editor a {
-    @apply underline hover:text-primary cursor-pointer;
-  }
-
-  .editor mark {
-    @apply bg-amber-400/60 text-neutral-800;
-  }
-
-  .editor p,
-  h1,
-  h2,
-  h3,
-  mark,
-  blockquote,
-  code,
-  li {
-    @apply break-words whitespace-pre-wrap;
-    word-break: break-word;
-  }
+@theme {
+  --animate-wiggle: wiggle 1s ease-in-out infinite;
+  --animate-typing: typing 2s steps(20) forwards infinite, blink 0.75s step-end infinite;
+  --animate-marquee: marquee 40s linear infinite, ;
+  --animate-blink: blink 0.75s step-end infinite;
+  --animate-spinner-circle: spinning-circle 40s linear infinite;
 }

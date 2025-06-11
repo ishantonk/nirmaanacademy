@@ -1,7 +1,7 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import { CourseCardSkeleton } from "@/components/course/course-card-skeleton";
 import { CourseFiltersSkeleton } from "@/components/course/course-filters-skeleton";
 import { CourseGrid } from "@/components/course/course-grid";
+import { CourseCardSkeleton } from "@/components/course/course-card";
 
 export default function Loading() {
     return (

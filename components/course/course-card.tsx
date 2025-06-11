@@ -1,152 +1,162 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
     Card,
     CardContent,
+    CardDescription,
     CardFooter,
     CardHeader,
-    CardImage,
+    CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { CourseAddCartButton } from "@/components/course/course-add-cart";
-import { CourseFacultyInfoCard } from "@/components/course/course-faculty-info-card";
+import ResponsiveImage from "@/components/ui/responsive-image";
+import FacultyTagCard, {
+    FacultyTagCardSkeleton,
+} from "@/components/layout/card/faculty-tag-card";
+import PriceDisplay from "@/components/course/price-display";
+import BuyButton from "@/components/course/buy-button";
+import CartButton from "@/components/course/cart-button";
+import { excerptByWords } from "@/lib/utils";
 import { CourseType } from "@/lib/types";
-import { formatPrice } from "@/lib/format";
-import { CourseBuyNow } from "./course-buy-now";
-import { fetchEnrollments } from "@/lib/services/api";
-import { Button } from "../ui/button";
-import { ArrowRight } from "lucide-react";
 
-interface CourseCardProps {
-    course: CourseType;
-    actions?: React.ReactNode;
-}
+/**
+ * Renders a styled card displaying course details, image, pricing, and action buttons.
+ */
+export default function CourseCard({ course }: { course: CourseType }) {
+    // Destructure necessary course properties
+    const {
+        id,
+        slug,
+        title,
+        description,
+        thumbnail,
+        price,
+        discountPrice,
+        category,
+        onSale,
+        faculties,
+        availableAttempts,
+        availableModes,
+    } = course;
 
-export function CourseCard({ course, actions }: CourseCardProps) {
-    const { data: session } = useSession();
-    const [isEnrolled, setIsEnrolled] = useState(false);
-
-    // Extract and normalize prices
-    const price = Number(course.price);
-    const discountPrice = Number(course.discountPrice);
-    const isOnSale =
-        course.onSale && discountPrice && price && discountPrice < price;
-
-    // Check if the user is enrolled in the course
-    useEffect(() => {
-        const checkEnrollment = async () => {
-            if (!session) return;
-
-            try {
-                const enrollments = await fetchEnrollments();
-                const enrolled = enrollments?.some(
-                    (e) =>
-                        e.courseId === course.id && e.userId === session.user.id
-                );
-                setIsEnrolled(!!enrolled);
-            } catch (error) {
-                console.error("Failed to fetch enrollments:", error);
-            }
-        };
-
-        checkEnrollment();
-    }, [session, course.id]);
+    // Grab the first faculty if available
+    const mainFaculty = faculties?.[0];
 
     return (
-        <Card className="pt-0 h-full max-w-sm md:max-w-fit">
-            {/* Course Thumbnail with Sale Badge */}
-            <Link href={`/courses/${course.slug}`} className="block">
-                <CardImage
-                    thumbnail={course.thumbnail ?? ""}
-                    title={course.title}
-                    overlay={
-                        isOnSale && (
+        <Card className="cursor-default rounded-md w-full max-w-sm py-0">
+            <Link href={`courses/${slug}`}>
+                {/* Course image section with badges */}
+                <div className="relative m-2.5 overflow-hidden rounded">
+                    <div className="absolute inset-0 bg-gradient-to-t from-transparent group-hover:from-foreground/60 via-transparent to-transparent z-10 transition-colors duration-500" />
+                    {/* Category badge (top-left corner) */}
+                    <div className="absolute top-2 left-2 z-10">
+                        <Badge
+                            variant="secondary"
+                            className="bg-background/80 backdrop-blur-sm text-primary font-medium rounded-full"
+                        >
+                            {category?.name ?? "No category"}
+                        </Badge>
+                    </div>
+
+                    {/* On Sale badge (top-right corner) */}
+                    {onSale && (
+                        <div className="absolute top-2 right-2 z-10">
                             <Badge
                                 variant="destructive"
-                                className="absolute top-2 right-2 opacity-65"
+                                className="rounded-full"
                             >
                                 On Sale
                             </Badge>
-                        )
-                    }
-                />
-            </Link>
-
-            {/* Course Info Header */}
-            <CardHeader className="space-y-1">
-                <div className="flex justify-between">
-                    {course.category && (
-                        <Badge variant="secondary" className="scale-75">
-                            {course.category.name}
-                        </Badge>
+                        </div>
                     )}
 
-                    {/* Price Display (with discount logic) */}
-                    <span className="flex items-center gap-2">
-                        {isOnSale ? (
-                            <>
-                                <span className="text-sm md:text-xs text-red-500 line-through">
-                                    {formatPrice(price)}
-                                </span>
-                                <span className="font-semibold text-base md:text-sm text-green-500">
-                                    {formatPrice(discountPrice)}
-                                </span>
-                            </>
-                        ) : (
-                            <span className="font-semibold text-base md:text-sm text-green-500">
-                                {formatPrice(price || 0)}
-                            </span>
-                        )}
-                    </span>
+                    {/* Thumbnail image of the course */}
+                    <ResponsiveImage
+                        src={thumbnail!}
+                        alt={title}
+                        ratio={16 / 9}
+                        loading="lazy"
+                        className="transition-transform duration-500 transform group-hover:scale-110"
+                    />
                 </div>
 
-                {/* Course Title */}
-                <Link href={`/courses/${course.slug}`} className="block">
-                    <h3 className="line-clamp-1 text-lg font-semibold group-hover:text-primary">
-                        {course.title}
-                    </h3>
-                </Link>
+                {/* Title and faculty tag */}
+                <CardHeader className="py-2">
+                    <CardTitle className="text-lg md:text-xl line-clamp-1 mb-1 animate-blink">
+                        <h3>{title}</h3>
+                    </CardTitle>
+                    {/* Display faculty tag if available */}
+                    {mainFaculty && <FacultyTagCard faculty={mainFaculty} />}
+                </CardHeader>
+
+                {/* Description and price block */}
+                <CardContent className="py-2.5">
+                    <CardDescription className="line-clamp-3 mb-2 text-pretty">
+                        {/* Shortened description */}
+                        {excerptByWords({ content: description! })}
+                    </CardDescription>
+
+                    {/* Price section */}
+                    <div className="flex items-center">
+                        <PriceDisplay
+                            price={price}
+                            discountPrice={discountPrice}
+                        />
+                    </div>
+                </CardContent>
+            </Link>
+            {/* Action buttons: Add to Cart / Buy Now */}
+            <CardFooter className="pb-6 pt-2">
+                <div className="flex flex-col md:flex-row flex-1 items-center justify-center gap-2">
+                    <CartButton
+                        courseId={id}
+                        attemptId={availableAttempts?.[0].id}
+                        modeId={availableModes?.[0].id}
+                    />
+                    <BuyButton courseId={id} />
+                </div>
+            </CardFooter>
+        </Card>
+    );
+}
+
+/**
+ * Placeholder skeleton UI for the course card, shown during loading states.
+ */
+export function CourseCardSkeleton() {
+    return (
+        <Card className="cursor-default rounded-md gap-2.5 w-full max-w-sm h-full animate-pulse py-0">
+            {/* Skeleton for image and badges */}
+            <div className="relative m-2.5 overflow-hidden rounded bg-muted">
+                <Skeleton className="absolute top-2 left-2 h-6 w-20 rounded-full" />
+                <Skeleton className="absolute top-2 right-2 h-6 w-14 rounded-full" />
+                <Skeleton className="h-40 w-full" />
+            </div>
+
+            {/* Skeleton for header: title and faculty */}
+            <CardHeader>
+                <Skeleton className="h-6 w-32 mb-2" />
+                <FacultyTagCardSkeleton />
             </CardHeader>
 
-            {/* Faculty Info & Description */}
-            <CardContent className="mt-auto">
-                {course.faculties?.[0] && (
-                    <CourseFacultyInfoCard
-                        faculty={course.faculties[0]}
-                        size="sm"
-                    />
-                )}
-                {course.description && (
-                    <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
-                        {course.description}
-                    </p>
-                )}
+            {/* Skeleton for description and pricing */}
+            <CardContent className="pb-2">
+                <Skeleton className="h-4 w-full mb-2" />
+                <Skeleton className="h-4 w-11/12 mb-2" />
+                <Skeleton className="h-4 w-10/12 mb-4" />
+                <div className="flex items-center space-x-2">
+                    <Skeleton className="h-6 w-20 rounded-md" />
+                    <Skeleton className="h-4 w-16 rounded-md" />
+                    <Skeleton className="h-5 w-14 rounded-full" />
+                </div>
             </CardContent>
 
-            {/* Add to Cart / Custom Actions */}
-            <CardFooter className="flex justify-end gap-2">
-                {!isEnrolled ? (
-                    <>
-                        <CourseAddCartButton
-                            size="icon"
-                            courseId={course.id}
-                            attemptId={course.availableAttempts[0].id}
-                            modeId={course.availableModes[0].id}
-                        />
-                        <CourseBuyNow courseId={course.id} />
-                    </>
-                ) : (
-                    <Button variant="outline" className="gap-x-2 group" asChild>
-                        <Link href={`/courses/${course.slug}`}>
-                            Go to Course
-                            <ArrowRight className="group-hover:translate-x-1 transition-transform h-4 w-4" />
-                        </Link>
-                    </Button>
-                )}
-                {actions}
+            {/* Skeleton for action buttons */}
+            <CardFooter className="pb-6">
+                <div className="flex gap-2 w-full">
+                    <Skeleton className="h-10 flex-1 rounded-md" />
+                    <Skeleton className="h-10 flex-1 rounded-md" />
+                </div>
             </CardFooter>
         </Card>
     );

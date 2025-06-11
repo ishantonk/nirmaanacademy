@@ -31,6 +31,15 @@ export async function fetchBlogs(): Promise<BlogPostType[]> {
     );
 }
 
+export async function fetchAuthorBlogsAdmin(): Promise<BlogPostType[]> {
+    return safeFetch<BlogPostType[]>(
+        `${BASE}/api/blogs/author`,
+        { method: "GET" },
+        "Failed to fetch author blogs.",
+        true
+    );
+}
+
 export async function fetchBlogBySlug(slug: string): Promise<BlogPostType> {
     return safeFetch<BlogPostType>(
         `${BASE}/api/blogs/${encodeURIComponent(slug)}`,
@@ -72,7 +81,7 @@ export async function updateBlog(
 
 export async function updateBlogStatus(
     slug: string,
-    data: { published: boolean }
+    data: { status: AdminBlogFormValues["status"] }
 ): Promise<BlogPostType> {
     return safeFetch<BlogPostType>(
         `${BASE}/api/blogs/${slug}`,
@@ -221,7 +230,7 @@ export async function checkoutSession(): Promise<{ sessionId: string }> {
 // Courses
 export async function fetchCourses(query?: string): Promise<CourseType[]> {
     return safeFetch<CourseType[]>(
-        `${BASE}/api/courses/${query ? `?${query}` : ""}`,
+        `${BASE}/api/courses${query ? `?${query}` : ""}`,
         { method: "GET" },
         "Failed to fetch courses"
     );
@@ -367,12 +376,88 @@ export async function fetchModes(): Promise<ModeType[]> {
     );
 }
 
+export async function createMode(data: Partial<ModeType>): Promise<ModeType> {
+    return safeFetch<ModeType>(
+        `${BASE}/api/modes`,
+        {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+        },
+        "Failed to create mode",
+        true
+    );
+}
+
+export async function updateMode(
+    data: { id: string } & Partial<ModeType>
+): Promise<ModeType> {
+    return safeFetch<ModeType>(
+        `${BASE}/api/modes/${data.id}`,
+        {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+        },
+        "Failed to update mode",
+        true
+    );
+}
+
+export async function deleteMode(id: string): Promise<ModeType> {
+    return safeFetch<ModeType>(
+        `${BASE}/api/modes/${id}`,
+        { method: "DELETE" },
+        "Failed to delete mode",
+        true
+    );
+}
+
 // Attempts
 export async function fetchAttempts(): Promise<AttemptType[]> {
     return safeFetch<AttemptType[]>(
         `${BASE}/api/attempts`,
         { method: "GET" },
         "Failed to fetch attempts"
+    );
+}
+
+export async function createAttempt(
+    data: Partial<AttemptType>
+): Promise<AttemptType> {
+    return safeFetch<AttemptType>(
+        `${BASE}/api/attempts`,
+        {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+        },
+        "Failed to create attempt",
+        true
+    );
+}
+
+export async function updateAttempt(
+    data: { id: string } & Partial<AttemptType>
+): Promise<AttemptType> {
+    return safeFetch<AttemptType>(
+        `${BASE}/api/attempts/${data.id}`,
+        {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+        },
+        "Failed to update attempt",
+        true
+    );
+}
+
+export async function deleteAttempt(id: string): Promise<AttemptType> {
+    return safeFetch<AttemptType>(
+        `${BASE}/api/attempts/${id}`,
+        { method: "DELETE" },
+        "Failed to delete attempt",
+        true
     );
 }
 

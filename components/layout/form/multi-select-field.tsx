@@ -30,6 +30,7 @@ interface MultiSelectFieldProps<TFieldValues extends FieldValues> {
     multiSelectOptions: {
         value: string;
         label: string;
+        item?: JSX.Element;
     }[];
     createNew?: JSX.Element;
     searchInput?: boolean;
@@ -43,7 +44,7 @@ interface MultiSelectFieldProps<TFieldValues extends FieldValues> {
 
 export function MultiSelectField<TFieldValues extends FieldValues>({
     name,
-    label = humanize(name),
+    label = name,
     multiSelectOptions,
     createNew,
     searchInput = false,
@@ -53,6 +54,8 @@ export function MultiSelectField<TFieldValues extends FieldValues>({
     className,
     width = "w-full",
 }: MultiSelectFieldProps<TFieldValues>) {
+    label = humanize(label);
+
     const [filter, setFilter] = useState("");
 
     const filteredOptions = multiSelectOptions.filter((t) =>
@@ -110,7 +113,10 @@ export function MultiSelectField<TFieldValues extends FieldValues>({
 
                             {/* List of options */}
                             <div className="flex flex-col flex-1 overflow-hidden h-full">
-                                <ScrollArea className="flex-1 h-full space-y-2 p-2">
+                                <ScrollArea
+                                    showShadow
+                                    className="flex-1 h-full space-y-2 p-2"
+                                >
                                     {filteredOptions.length > 0 ? (
                                         filteredOptions.map((option) => (
                                             <DropdownMenuCheckboxItem
@@ -143,7 +149,9 @@ export function MultiSelectField<TFieldValues extends FieldValues>({
                                                     }
                                                 }}
                                             >
-                                                {option.label}
+                                                {option.item
+                                                    ? option.item
+                                                    : humanize(option.label)}
                                             </DropdownMenuCheckboxItem>
                                         ))
                                     ) : (
@@ -171,7 +179,9 @@ export function MultiSelectField<TFieldValues extends FieldValues>({
                     ) : (
                         // Otherwise show the normal helper text
                         description && (
-                            <FormDescription>{description}</FormDescription>
+                            <FormDescription className="line-clamp-1">
+                                {description}
+                            </FormDescription>
                         )
                     )}
                 </FormItem>

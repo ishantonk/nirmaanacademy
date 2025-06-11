@@ -1,36 +1,30 @@
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { FacultiesCarousel } from "@/components/home/faculties-carousel";
+import SectionHeading from "@/components/home/section-heading";
 import { fetchFaculties } from "@/lib/services/api";
+import SectionCarousel from "@/components/home/section-carousel";
+import { FacultyCard } from "@/components/faculty/faculty-card";
 
 export async function FacultySection() {
     const faculties = await fetchFaculties();
+    const facultiesItems = faculties.map((faculty, idx) => (
+        <FacultyCard faculty={faculty} key={faculty.id || idx} />
+    ));
 
     return (
         <section className="bg-gradient-to-tr from-background via-background to-primary/50 py-8">
             <div className="container mx-auto px-4">
                 {/* Heading */}
-                <div className="flex items-center justify-between mb-8">
-                    <div>
-                        <h2 className="text-2xl lg:text-3xl font-bold">
-                            Our Expert Faculties
-                        </h2>
-                        <p className="text-sm lg:text-base mt-2 text-muted-foreground">
-                            Learn from experienced professionals in business
-                            law, corporate governance, and finance law.
-                        </p>
-                    </div>
-                    <Button variant="secondary" className="bg-opacity" asChild>
-                        <Link href="/faculty">
-                            All Faculties
-                            <ArrowRight className="ml-2 h-4 w-4" />
-                        </Link>
-                    </Button>
-                </div>
+                <SectionHeading
+                    title="Our Expert Faculties"
+                    description="Learn from experienced professionals in business
+                            law, corporate governance, and finance law."
+                    buttonLink={{
+                        label: "View All Faculties",
+                        link: "/faculty",
+                    }}
+                />
 
                 {/* carousel */}
-                <FacultiesCarousel faculties={faculties} />
+                <SectionCarousel autoplay items={facultiesItems} />
             </div>
         </section>
     );

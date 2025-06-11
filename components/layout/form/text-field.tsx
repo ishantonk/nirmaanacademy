@@ -12,7 +12,8 @@ import {
 } from "@/components/ui/form";
 import { humanize } from "@/lib/utils";
 
-interface TextFieldProps<TFieldValues extends FieldValues> {
+interface TextFieldProps<TFieldValues extends FieldValues>
+    extends React.ComponentProps<"input"> {
     name: Path<TFieldValues>;
     label?: string;
     placeholder?: string;
@@ -24,13 +25,16 @@ interface TextFieldProps<TFieldValues extends FieldValues> {
 
 export function TextField<TFieldValues extends FieldValues>({
     name,
-    label = humanize(name),
+    label = name,
     placeholder = `Enter ${name}`,
     description = "",
     control,
     isRequired = false,
     className,
+    ...props
 }: TextFieldProps<TFieldValues>) {
+    label = humanize(label);
+
     return (
         <FormField
             control={control}
@@ -38,7 +42,7 @@ export function TextField<TFieldValues extends FieldValues>({
             render={({ field, fieldState }) => (
                 <FormItem>
                     <FormLabel htmlFor={name}>
-                        {label}
+                        <span className="line-clamp-1">{label}</span>
                         {!isRequired && (
                             <span className="text-muted-foreground">
                                 (optional)
@@ -47,7 +51,9 @@ export function TextField<TFieldValues extends FieldValues>({
                     </FormLabel>
                     <FormControl>
                         <Input
+                            {...props}
                             id={name}
+                            aria-label={label}
                             {...field}
                             placeholder={placeholder}
                             {...(isRequired && { "aria-required": "true" })}
@@ -60,7 +66,7 @@ export function TextField<TFieldValues extends FieldValues>({
                     ) : (
                         // Otherwise show the normal helper text
                         description && (
-                            <FormDescription>{description}</FormDescription>
+                            <FormDescription className="line-clamp-1">{description}</FormDescription>
                         )
                     )}
                 </FormItem>

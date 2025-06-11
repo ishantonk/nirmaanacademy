@@ -18,6 +18,8 @@ import {
 } from "@prisma/client";
 import { z } from "zod";
 
+export type SizeVariant = "sm" | "default" | "lg" | "xl";
+
 export type CourseWhereType = Prisma.CourseWhereInput & {
     status: string;
     count?: number;
@@ -225,6 +227,18 @@ export const zFacultySchema = z.object({
 });
 
 export type AdminFacultyFormValues = z.infer<typeof zFacultySchema>;
+
+export const zAttemptSchema = z.object({
+    name: z.string().min(3, "Attempt name must have at least 3 characters"),
+});
+
+export type AdminAttemptFormValues = z.infer<typeof zAttemptSchema>;
+
+export const zModeSchema = z.object({
+    name: z.string().min(3, "Mode name must have at least 3 characters"),
+});
+
+export type AdminModeFormValues = z.infer<typeof zModeSchema>;
 
 export const zNoticeSchema = z.object({
     content: z.string().max(300, "Content must be at most 300 characters"),

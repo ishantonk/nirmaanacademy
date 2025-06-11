@@ -12,7 +12,7 @@ export default function CoursesLayout({
     children: React.ReactNode;
 }) {
     return (
-        <div className="container py-8 mx-auto px-4">
+        <div className="container py-8 mx-auto px-4 bg-background">
             {children}
         </div>
     );

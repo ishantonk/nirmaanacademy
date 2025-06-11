@@ -14,7 +14,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { useIsMobile } from "@/hooks/use-mobile";
+import useIsMobile from "@/hooks/use-mobile";
 import {
     Sheet,
     SheetClose,
@@ -138,7 +138,7 @@ export function CourseFilters({ categories }: { categories: CategoryType[] }) {
 }
 
 interface MobileFiltersProps {
-    categories: CategoryType[],
+    categories: CategoryType[];
     currentCategory: string;
     handleCategoryChange: (value: string) => void;
     handleResetFilters: () => void;

@@ -1,14 +1,19 @@
-import { CourseCard } from "@/components/course/course-card";
+import { PostCard } from "@/components/blog/post-card";
+import { PostCardSkeleton } from "@/components/blog/post-card-skeleton";
+import CourseCard, {
+    CourseCardSkeleton,
+} from "@/components/course/course-card";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { brandName } from "@/data/contact-info";
 import { getAuthSession } from "@/lib/auth";
-import { fetchEnrollments } from "@/lib/services/api";
+import { fetchAuthorBlogsAdmin, fetchEnrollments } from "@/lib/services/api";
 import { BookOpen, Newspaper } from "lucide-react";
 import { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
     title: "Dashboard | " + brandName,
@@ -23,9 +28,10 @@ export default async function DashboardPage() {
         redirect("/login");
     }
 
-    const enrollments = await fetchEnrollments();
-    // You can fetch blogs here if needed
-    const blogs = []; // TODO: fetch user's blogs or saved blogs.
+    const [enrollments, authorBlogs] = await Promise.all([
+        fetchEnrollments(),
+        fetchAuthorBlogsAdmin(),
+    ]);
 
     return (
         <div className="container py-8 mx-auto px-4">
@@ -62,10 +68,14 @@ export default async function DashboardPage() {
                             {enrollments.map(
                                 (enroll) =>
                                     enroll.course && (
-                                        <CourseCard
+                                        <Suspense
                                             key={enroll.course.id}
-                                            course={enroll.course}
-                                        />
+                                            fallback={<CourseCardSkeleton />}
+                                        >
+                                            <CourseCard
+                                                course={enroll.course}
+                                            />
+                                        </Suspense>
                                     )
                             )}
                         </div>
@@ -74,7 +84,7 @@ export default async function DashboardPage() {
 
                 {/* Blogs Tab */}
                 <TabsContent value="blogs">
-                    {blogs.length === 0 ? (
+                    {authorBlogs.length === 0 ? (
                         <EmptyState
                             icon={Newspaper}
                             title="No blogs found"
@@ -88,27 +98,13 @@ export default async function DashboardPage() {
                     ) : (
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
                             {/* Map your blogs here */}
-                            {blogs.map((blog) => (
-                                <div
+                            {authorBlogs.map((blog) => (
+                                <Suspense
                                     key={blog.id}
-                                    className="border p-4 rounded-lg shadow-sm hover:shadow-md transition"
+                                    fallback={PostCardSkeleton()}
                                 >
-                                    <h3 className="font-semibold text-lg">
-                                        {blog.title}
-                                    </h3>
-                                    <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
-                                        {blog.excerpt}
-                                    </p>
-                                    <Link href={`/blogs/${blog.slug}`}>
-                                        <Button
-                                            variant="link"
-                                            size="sm"
-                                            className="mt-3 p-0"
-                                        >
-                                            Read More
-                                        </Button>
-                                    </Link>
-                                </div>
+                                    <PostCard {...blog} />
+                                </Suspense>
                             ))}
                         </div>
                     )}

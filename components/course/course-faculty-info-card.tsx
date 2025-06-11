@@ -6,7 +6,7 @@ export function CourseFacultyInfoCard({
     faculty,
     size = "md",
 }: {
-    faculty: FacultyType | null;
+    faculty: Partial<FacultyType> | null;
     size?: "sm" | "md" | "lg";
 }) {
     if (!faculty) {

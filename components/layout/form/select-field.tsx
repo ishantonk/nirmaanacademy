@@ -2,6 +2,7 @@
 
 import { JSX, useState } from "react";
 import { Search } from "lucide-react";
+import * as SelectPrimitive from "@radix-ui/react-select";
 import { Control, FieldValues, Path } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import {
@@ -22,7 +23,8 @@ import {
 } from "@/components/ui/select";
 import { humanize } from "@/lib/utils";
 
-interface SelectFieldProps<TFieldValues extends FieldValues> {
+interface SelectFieldProps<TFieldValues extends FieldValues>
+    extends React.ComponentProps<typeof SelectPrimitive.Root> {
     name: Path<TFieldValues>;
     label?: string;
     selectOptions: {
@@ -40,36 +42,40 @@ interface SelectFieldProps<TFieldValues extends FieldValues> {
 
 export function SelectField<TFieldValues extends FieldValues>({
     name,
-    label = humanize(name),
+    label = name,
     selectOptions,
     handleCreateNew,
     searchInput = false,
-    placeholder = `Enter ${name}`,
+    placeholder = `Select ${label}`,
     description = "",
     control,
     isRequired = false,
     className,
+    ...props
 }: SelectFieldProps<TFieldValues>) {
     const [filter, setFilter] = useState("");
+    label = humanize(label);
 
     const filteredOptions = selectOptions.filter((t) =>
         t.label.toLowerCase().includes(filter.toLowerCase())
     );
+
     return (
         <FormField
             control={control}
             name={name}
             render={({ field, fieldState }) => (
                 <FormItem>
-                    <FormLabel htmlFor={name}>
+                    <FormLabel className="line-clamp-1" htmlFor={name}>
                         {label}
                         {!isRequired && (
                             <span className="text-muted-foreground">
-                                (optional)
+                                 (optional)
                             </span>
                         )}
                     </FormLabel>
                     <Select
+                        {...props}
                         {...field}
                         onValueChange={field.onChange}
                         defaultValue={field.value}
@@ -137,7 +143,9 @@ export function SelectField<TFieldValues extends FieldValues>({
                     ) : (
                         // Otherwise show the normal helper text
                         description && (
-                            <FormDescription>{description}</FormDescription>
+                            <FormDescription className="line-clamp-1">
+                                {description}
+                            </FormDescription>
                         )
                     )}
                 </FormItem>

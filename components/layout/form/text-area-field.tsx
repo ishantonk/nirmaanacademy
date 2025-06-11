@@ -12,7 +12,8 @@ import {
 } from "@/components/ui/form";
 import { humanize } from "@/lib/utils";
 
-interface TextAreaFieldProps<TFieldValues extends FieldValues> {
+interface TextAreaFieldProps<TFieldValues extends FieldValues>
+    extends React.ComponentProps<"textarea"> {
     name: Path<TFieldValues>;
     label?: string;
     placeholder?: string;
@@ -24,13 +25,16 @@ interface TextAreaFieldProps<TFieldValues extends FieldValues> {
 
 export function TextAreaField<TFieldValues extends FieldValues>({
     name,
-    label = humanize(name),
+    label = name,
     placeholder = `Enter ${name}`,
     description = "",
     control,
     isRequired = false,
     className,
+    ...props
 }: TextAreaFieldProps<TFieldValues>) {
+    label = humanize(label);
+
     return (
         <FormField
             control={control}
@@ -47,6 +51,7 @@ export function TextAreaField<TFieldValues extends FieldValues>({
                     </FormLabel>
                     <FormControl>
                         <Textarea
+                            {...props}
                             id={name}
                             {...field}
                             {...(isRequired ? { "aria-required": "true" } : {})}

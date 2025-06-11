@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
 import {
     BadgeHelp,
     BookOpen,
+    ChevronDownIcon,
     FileChartLine,
     GraduationCap,
     Home,
@@ -12,48 +11,42 @@ import {
     MessageSquareWarning,
     Newspaper,
     NotebookPen,
-    Search,
     ShoppingCart,
 } from "lucide-react";
+import Logo from "@/components/ui/logo";
+import SearchInput from "@/components/layout/search/search-input";
+import useIsMobile from "@/hooks/use-mobile";
+import useScrolled from "@/hooks/use-scrolled";
 import { cn } from "@/lib/utils";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { Logo } from "@/components/ui/logo";
-import { Button } from "@/components/ui/button";
-import { DesktopNav } from "@/components/layout/header/desktop-nav";
-import { MobileNav } from "@/components/layout/header/mobile-nav";
-import { UserNav } from "@/components/layout/header/user-nav";
-import { ToggleTheme } from "@/components/theme/toggle-theme";
-import { Input } from "@/components/ui/input";
-import { CategoryType } from "@/lib/types";
-import { useQuery } from "@tanstack/react-query";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { fetchCategories } from "@/lib/services/api";
+import { useQuery } from "@tanstack/react-query";
+import { CategoryType } from "@/lib/types";
+import { useEffect, useState } from "react";
+import { UserAction } from "./user-action";
+import ToggleTheme from "@/components/theme/toggle-theme";
+import { Button } from "@/components/ui/button";
+import { MobileNav } from "./mobile-nav";
 
-export function SiteHeader() {
-    // State to track whether the user has scrolled
-    const [isScrolled, setIsScrolled] = useState(false);
-    const isMobile = useIsMobile();
-    const [navItems, setNavItems] = useState<NavItems[]>(initialNavItems);
+export default function SiteHeader() {
+    const isScrolled = useScrolled();
+    const [items, setItems] = useState(initialNavItems);
 
     const { data: categories } = useQuery<CategoryType[]>({
         queryKey: ["categories"],
         queryFn: () => fetchCategories(),
     });
 
-    useEffect(() => {
-        // Radix gives the viewport a data attribute by default:
-        const viewport = document.querySelector<HTMLElement>(
-            "[data-radix-scroll-area-viewport]"
-        );
-        if (!viewport) return;
-
-        const onScroll = () => setIsScrolled(viewport.scrollTop > 0);
-        viewport.addEventListener("scroll", onScroll);
-        return () => viewport.removeEventListener("scroll", onScroll);
-    }, []);
-
+    // Add categories dynamically if needed
     useEffect(() => {
         if (categories) {
-            setNavItems((prev) => {
+            setItems((prev) => {
                 return prev.map((item) => {
                     if (item.title === "Video Courses") {
                         return {
@@ -78,70 +71,177 @@ export function SiteHeader() {
     return (
         <header
             className={cn(
-                "sticky top-0 z-50 w-full transition-all duration-300",
-                isScrolled &&
-                    "drop-shadow-sm bg-transparent backdrop-blur-2xl supports-[backdrop-filter]:bg-transparent"
+                "sticky top-0 flex flex-col justify-center items-center z-50 bg-transparent transition-all",
+                isScrolled ? "drop-shadow-sm backdrop-blur-2xl" : ""
             )}
         >
-            <div className={isScrolled ? "bg-muted/60" : "bg-muted"}>
-                <div className="mx-auto px-4 max-w-7xl flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                        {
-                            /* Mobile menu */
-                            isMobile && <MobileNav items={navItems} />
-                        }
-                        <Logo
-                            size={isMobile ? "sm" : isScrolled ? "sm" : "md"}
-                        />
-                    </div>
-                    {!isMobile && (
-                        // todo: Add search functionality
-                        <div className="hidden md:flex flex-1 items-center justify-center space-x-4">
-                            <div className="relative w-10/12">
-                                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                                <Input
-                                    name="headerSearch"
-                                    placeholder="Search courses..."
-                                    className="pl-10 border border-muted-foreground/20 focus-visible:border-primary focus-visible:ring-0 focus-visible:outline-none focus-visible:ring-offset-0"
-                                />
-                            </div>
-                        </div>
-                    )}
-                    <div className="flex items-center justify-end space-x-4">
-                        <Link href="/cart">
-                            <Button variant="ghost" size="icon">
-                                <ShoppingCart className="h-5 w-5" />
-                                <span className="sr-only">Shopping Cart</span>
-                            </Button>
-                        </Link>
-                        {!isMobile && <ToggleTheme /> /* Dark Mode Toggle */}
-                        <UserNav /> {/* User Navigation */}
-                    </div>
-                </div>
-            </div>
-
-            {
-                /* Navigation for desktop */
-                !isMobile && <DesktopNav items={navItems} />
-            }
+            <MainHeader items={items} />
+            <NavHeader items={items} />
         </header>
     );
 }
 
-interface NavItems {
-    title: string;
-    href: string;
-    icon?: React.ElementType;
-    description?: string;
-    subItems?: Array<{
+interface HeaderProps {
+    items?: {
         title: string;
         href: string;
         icon?: React.ElementType;
         description?: string;
-    }>;
+        subItems?: {
+            title: string;
+            href: string;
+            icon?: React.ElementType;
+            description?: string;
+        }[];
+    }[];
 }
 
-const initialNavItems: NavItems[] = [
+function MainHeader({ items = initialNavItems }: HeaderProps) {
+    const isMobile = useIsMobile();
+    const isScrolled = useScrolled();
+
+    return (
+        <div
+            className={cn(
+                "flex flex-col items-center justify-center w-full",
+                isScrolled ? "bg-surface/60" : "bg-surface"
+            )}
+        >
+            <div className="container max-w-7xl grid grid-cols-7 items-center gap-x-2 px-2 md:px-0">
+                {/* Logo */}
+                <div className="col-span-2 flex items-center justify-start">
+                    {isMobile && <MobileNav items={items} />}
+                    <Logo
+                        size={isMobile ? "sm" : isScrolled ? "sm" : "lg"}
+                        label={isMobile ? false : true}
+                    />
+                </div>
+
+                {/* Search */}
+                <div className="relative col-span-3">
+                    {!isMobile && (
+                        <SearchInput className="bg-primary/10 border-surface/30" />
+                    )}
+                </div>
+
+                <div className="col-span-2 flex flex-row items-center justify-end gap-x-2">
+                    <Link href="/cart">
+                        <Button variant="ghost" className="relative">
+                            <ShoppingCart className="size-4" />
+                        </Button>
+                    </Link>
+                    <ToggleTheme />
+                    <UserAction />
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function NavHeader({ items = initialNavItems }: HeaderProps) {
+    const isMobile = useIsMobile();
+    const isScrolled = useScrolled();
+
+    return !isMobile ? (
+        <nav
+            className={cn(
+                "flex flex-col items-center justify-center w-full",
+                isScrolled ? "bg-primary/60" : "bg-primary"
+            )}
+        >
+            <menu className="container max-w-7xl flex flex-row justify-center items-center gap-x-2">
+                {items.map((item) =>
+                    item.subItems ? (
+                        <DropdownMenu key={item.title}>
+                            <DropdownMenuTrigger className="flex flex-row focus:outline-none group">
+                                <NavItem item={item} isTrigger />
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="grid grid-cols-2 gap-2 bg-primary/60 backdrop-blur supports-[backdrop-filter]:bg-primary/60 shadow-lg border-none">
+                                {item.subItems.map((sub, i) => (
+                                    <Link key={sub.href + i} href={sub.href}>
+                                        <NavItem item={sub} isSubItem />
+                                    </Link>
+                                ))}
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    ) : (
+                        <Link href={item.href} key={item.title}>
+                            <NavItem item={item} />
+                        </Link>
+                    )
+                )}
+            </menu>
+        </nav>
+    ) : null;
+}
+
+interface NavItemProps {
+    item: {
+        title: string;
+        href: string;
+        icon?: React.ElementType;
+        description?: string;
+    };
+    isSubItem?: boolean;
+    isTrigger?: boolean;
+}
+
+function NavItem({ item, isSubItem, isTrigger }: NavItemProps) {
+    const pathname = usePathname();
+
+    const iconItemClass = "size-4 stroke-2";
+    const iconSubItemClass = "size-14 bg-background/40 p-4 rounded";
+    return (
+        <div
+            className={cn(
+                "relative flex flex-row justify-center items-center gap-x-1 cursor-pointer  hover:text-accent transition-colors font-medium text-sm p-2 py-1.5 group",
+                pathname === item.href ? "text-accent" : "text-surface",
+                isSubItem ? "rounded hover:bg-primary/30 justify-start" : ""
+            )}
+        >
+            {item.icon && (
+                <item.icon
+                    className={cn(
+                        "group-data-[state=open]:text-accent",
+                        isSubItem ? iconSubItemClass : iconItemClass
+                    )}
+                />
+            )}
+            {/* Display title and description for sub-items */}
+            <div
+                className={cn(
+                    "flex flex-col gap-y-0.5",
+                    isSubItem ? "px-2" : ""
+                )}
+            >
+                <span className="text-sm font-semibold">{item.title}</span>
+                {isSubItem && (
+                    <span className="text-xs text-surface/70 group-hover:text-surface/90 line-clamp-1 max-w-[200px]">
+                        {item.description}
+                    </span>
+                )}
+            </div>
+            {!isSubItem && (
+                <div
+                    className={cn(
+                        "absolute inset-x-full bottom-0 h-[3px] rounded-full transition-all ease-in-out duration-300 group-hover:inset-x-0 group-data-[state=open]:inset-x-0 bg-accent",
+                        pathname === item.href ? "inset-x-0" : "inset-x-full"
+                    )}
+                />
+            )}
+            {isTrigger && (
+                <ChevronDownIcon
+                    className={cn(
+                        "relative top-0 size-4 transition-transform group-data-[state=open]:rotate-180 group-data-[state=open]:text-foreground"
+                    )}
+                    aria-hidden="true"
+                />
+            )}
+        </div>
+    );
+}
+
+const initialNavItems = [
     {
         title: "Home",
         href: "/",

@@ -25,129 +25,95 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { AdminFacultiesForm } from "@/components/admin/faculties/admin-faculties-form";
 import { useEffect } from "react";
+import { useGenericMutation } from "@/hooks/use-generic-mutation";
 
 export function AdminFacultyEdit({ faculty }: { faculty: FacultyType }) {
     const queryClient = useQueryClient();
     const formId = "edit-faculty-form";
 
+    const formDefaultValues = {
+        ...faculty,
+        phone: faculty.phone ?? undefined,
+        bio: faculty.bio ?? undefined,
+        image: faculty.image ?? undefined,
+        designation: faculty.designation ?? undefined,
+    };
+
     // Initialize React Hook Form with Zod resolver and default values.
     const form = useForm<AdminFacultyFormValues>({
         resolver: zodResolver(zFacultySchema),
-        defaultValues: {
-            name: faculty.name ?? "",
-            email: faculty.email ?? "",
-            phone: faculty.phone ?? "",
-            bio: faculty.bio ?? "",
-            image: faculty.image ?? "",
-            designation: faculty.designation ?? "",
-        },
+        defaultValues: formDefaultValues,
     });
 
     // Reset form values when faculty prop changes (e.g., reopening dialog)
     useEffect(() => {
-        form.reset({
-            name: faculty.name ?? "",
-            email: faculty.email ?? "",
-            phone: faculty.phone ?? "",
-            bio: faculty.bio ?? "",
-            image: faculty.image ?? "",
-            designation: faculty.designation ?? "",
-        });
-    }, [faculty, form]);
+        form.reset(formDefaultValues);
+    }, [faculty]);
 
     // Mutation hook for editing faculty.
-    const mutation = useMutation<
+    const updateMutation = useGenericMutation<
         FacultyType,
-        Error,
-        { id: string } & AdminFacultyFormValues,
-        unknown
+        { id: string } & AdminFacultyFormValues
     >({
         mutationFn: updateFaculty,
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["faculty"] });
-
-            toast.success("Faculty updated successfully");
-            form.reset();
-        },
-        onError: (error: Error) => {
-            toast.error("Updating faculty failed", {
-                description:
-                    error instanceof Error
-                        ? error.message
-                        : "An unknown error occurred",
+        action: "update",
+        entityName: "Faculty",
+        queryKeyToInvalidate: ["faculty"],
+        onSuccess: (data) => {
+            form.reset({
+                ...data,
+                phone: data.phone ?? undefined,
+                bio: data.bio ?? undefined,
+                image: data.image ?? undefined,
+                designation: data.designation ?? undefined,
             });
-        },
-    });
-
-    // Mutation for uploading faculty image.
-    const uploadMutation = useMutation<
-        { url: string; success: boolean },
-        Error,
-        File,
-        unknown
-    >({
-        mutationFn: (file) => uploadToBlob(file),
-        onSuccess: (uploadedUrl) => {
-            toast.success("Faculty image successfully uploaded");
-            // Optionally update the form field with the new permanent URL after upload completes.
-            form.setValue("image", uploadedUrl.url.toString());
-        },
-        onError: (error: Error) => {
-            toast.error("Upload failed", { description: error.message });
         },
     });
 
     // Mutation hook for removing faculty.
-    const removeMutation = useMutation<FacultyType, Error, string, unknown>({
-        mutationFn: removeFaculty,
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["faculty"] });
-
-            toast.success("Faculty removed successfully");
-        },
-        onError: (error: Error) => {
-            toast.error("Removing faculty failed", {
-                description: error.message,
-            });
-        },
+    const removeMutation = useGenericMutation<FacultyType, { id: string }>({
+        mutationFn: ({ id }) => removeFaculty(id),
+        action: "delete",
+        entityName: "Faculty",
+        queryKeyToInvalidate: ["faculty"],
     });
 
     // Handler for removing faculty.
-    const handleRemoveFaculty = (facultyId: string) => {
-        removeMutation.mutate(facultyId);
+    const onDelete = () => {
+        removeMutation.mutate({ id: faculty.id });
     };
-
-    // Combined loading state: disable submit if profile update or image upload is pending.
-    const submitting = mutation.isPending || uploadMutation.isPending;
 
     // Form submission handler.
     const onSubmit = (data: AdminFacultyFormValues) => {
-        mutation.mutate({ ...data, id: faculty.id });
+        updateMutation.mutate({ ...data, id: faculty.id });
     };
 
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button size="icon" variant={"ghost"} aria-label="Edit faculty">
+                <Button
+                    onClick={() => form.reset(formDefaultValues)}
+                    size="icon"
+                    variant="outline"
+                    aria-label="Edit Notice"
+                >
                     <Pencil className="w-4 h-4" />
                 </Button>
             </DialogTrigger>
 
-            {/* Give the dialog a viewport‑relative height and hide overflow */}
-            <DialogContent className="p-0 py-6 w-screen md:max-w-xl lg:max-w-4xl h-[calc(100vh-4rem)]">
+            <DialogContent className="px-0 md:max-w-lg lg:max-w-2xl">
                 <DialogHeader className="px-6">
-                    <DialogTitle>Edit Faculty</DialogTitle>
+                    <DialogTitle>Edit Slide</DialogTitle>
                     <DialogDescription>
-                        Make changes in faculty details below.
+                        Update slide image and video below.
                     </DialogDescription>
                 </DialogHeader>
 
-                <div className="relative flex flex-col overflow-hidden">
-                    <ScrollArea showShadow className="flex-1 h-full px-6 py-1">
+                <div className="h-96 overflow-hidden">
+                    <ScrollArea showShadow className="px-4 h-full">
                         <AdminFacultiesForm
                             formId={formId}
                             formProps={form}
-                            uploadMutation={uploadMutation}
                             onSubmit={onSubmit}
                             isEdit
                         />
@@ -157,20 +123,27 @@ export function AdminFacultyEdit({ faculty }: { faculty: FacultyType }) {
                 <DialogFooter className="px-6">
                     <DialogClose asChild>
                         <Button
-                            variant={"destructive"}
-                            onClick={() => handleRemoveFaculty(faculty.id)}
+                            variant="destructive"
+                            onClick={onDelete}
+                            disabled={removeMutation.isPending}
                         >
-                            Delete Faculty
+                            {removeMutation.isPending
+                                ? "Removing..."
+                                : "Remove Faculty"}
                         </Button>
                     </DialogClose>
                     <DialogClose asChild>
-                        {/* Submit Button */}
                         <Button
                             form={formId}
                             type="submit"
-                            disabled={!form.formState.isDirty || submitting}
+                            disabled={
+                                !form.formState.isDirty ||
+                                updateMutation.isPending
+                            }
                         >
-                            {submitting ? "Updating..." : "Update Faculty"}
+                            {updateMutation.isPending
+                                ? "Updating..."
+                                : "Update Faculty"}
                         </Button>
                     </DialogClose>
                 </DialogFooter>

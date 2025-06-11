@@ -1,27 +1,27 @@
 "use client";
 
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "@/components/ui/button";
 import {
     Card,
+    CardAction,
     CardContent,
     CardDescription,
+    CardFooter,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { AdminCategoriesForm } from "./admin-categories-form";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { AdminCategoriesForm } from "@/components/admin/categories/admin-categories-form";
+import { useGenericMutation } from "@/hooks/use-generic-mutation";
+import { createCategory } from "@/lib/services/api";
 import {
     AdminCategoriesFormValues,
     CategoryType,
     zCategoriesSchema,
 } from "@/lib/types";
-import { createCategory } from "@/lib/services/api";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
 
 export function AdminCategoriesCreate() {
-    const queryClient = useQueryClient();
     const formId = "create-category-form";
 
     // Initialize React Hook Form with Zod resolver and default values.
@@ -34,29 +34,22 @@ export function AdminCategoriesCreate() {
     });
 
     // Mutation hook for creating category.
-    const mutation = useMutation<
+    const createMutation = useGenericMutation<
         CategoryType,
-        Error,
-        AdminCategoriesFormValues,
-        unknown
+        AdminCategoriesFormValues
     >({
         mutationFn: createCategory,
+        action: "create",
+        entityName: "Category",
+        queryKeyToInvalidate: ["categories"],
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["categories"] });
-
-            toast.success("Category created successfully");
             form.reset();
-        },
-        onError: (error: Error) => {
-            toast.error("Creating category failed", {
-                description: error.message,
-            });
         },
     });
 
     // Form submission handler.
     const onSubmit = (data: AdminCategoriesFormValues) => {
-        mutation.mutate(data);
+        createMutation.mutate(data);
     };
 
     return (
@@ -68,23 +61,27 @@ export function AdminCategoriesCreate() {
                 </CardDescription>
             </CardHeader>
             <CardContent>
+                {/* Category Form */}
                 <AdminCategoriesForm
                     formId={formId}
                     formProps={form}
                     onSubmit={onSubmit}
                 />
-
-                <div className="flex flex-row items-center justify-end">
-                    {/* Submit Button */}
-                    <Button
-                        form={formId}
-                        type="submit"
-                        disabled={!form.formState.isDirty || mutation.isPending}
-                    >
-                        {mutation.isPending ? "Creating..." : "Create Category"}
-                    </Button>
-                </div>
             </CardContent>
+            <CardFooter className="flex flex-col justify-center items-end">
+                {/* Submit Button */}
+                <Button
+                    form={formId}
+                    type="submit"
+                    disabled={
+                        !form.formState.isDirty || createMutation.isPending
+                    }
+                >
+                    {createMutation.isPending
+                        ? "Creating..."
+                        : "Create Category"}
+                </Button>
+            </CardFooter>
         </Card>
     );
 }

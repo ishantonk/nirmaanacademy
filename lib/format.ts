@@ -1,11 +1,26 @@
+import type { Decimal } from "@prisma/client/runtime/library";
+
 /**
- * Format a price in cents to a string with currency symbol
+ * Formats a price value (in cents or Decimal) into a localized currency string.
+ *
+ * @param {(number | Decimal | null)} value - The price to format. Can be a number, Decimal instance, or null/undefined.
+ * @returns {string} A string representing the formatted price in Indian Rupees (INR), according to the en-IN locale.
  */
-export function formatPrice(price: number) {
-    return new Intl.NumberFormat("en-US", {
+export function formatPrice(value: number | Decimal | null = 0): string {
+    // Ensure we have a numeric base value
+    if (value === null) {
+        value = 0;
+    } else if (typeof value === "object") {
+        value = Number(value);
+    }
+
+    // Format using Intl.NumberFormat for the en-IN locale
+    return new Intl.NumberFormat("en-IN", {
         style: "currency",
         currency: "INR",
-    }).format(price);
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    }).format(value);
 }
 
 /**

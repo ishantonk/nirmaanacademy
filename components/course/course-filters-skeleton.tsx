@@ -10,8 +10,15 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter } from "@/components/ui/sheet";
-import { useIsMobile } from "@/hooks/use-mobile";
+import {
+    Sheet,
+    SheetContent,
+    SheetHeader,
+    SheetTitle,
+    SheetDescription,
+    SheetFooter,
+} from "@/components/ui/sheet";
+import useIsMobile from "@/hooks/use-mobile";
 import { Filter } from "lucide-react";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 

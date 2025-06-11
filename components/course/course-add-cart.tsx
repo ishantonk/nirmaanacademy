@@ -1,11 +1,11 @@
 "use client";
 
+import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { ShoppingCart, Check, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
 import { addCartItem, fetchFindInCart } from "@/lib/services/api";
 
 interface AddToCartButtonProps {

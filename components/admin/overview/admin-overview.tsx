@@ -17,8 +17,8 @@ export function AdminOverview() {
                 <div className="lg:col-span-7">
                     <AdminOverviewAnalytics />
                 </div>
-                <div className="lg:col-span-5">
-                    <div className="grid gap-4 lg:grid-rows-2">
+                <div className="lg:col-span-5 sticky top-24">
+                    <div className="grid gap-4 lg:grid-rows-2 h-fit">
                         <div className="row-span-1">
                             <AdminOverviewNotice />
                         </div>

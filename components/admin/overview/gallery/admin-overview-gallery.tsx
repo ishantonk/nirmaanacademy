@@ -5,8 +5,8 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { AdminGalleryCarousel } from "./admin-overview-gallery-carousel";
-import { AdminGallerySlideAdd } from "./admin-overview-gallery-slide-add";
+import { AdminGalleryAdd } from "./admin-gallery-add";
+import { AdminGalleryCarousel } from "./admin-gallery-carousel";
 
 export function AdminOverviewGallery() {
     return (
@@ -20,7 +20,7 @@ export function AdminOverviewGallery() {
             <CardContent className="space-y-4">
                 {/* Add button */}
                 <div className="flex justify-end">
-                    <AdminGallerySlideAdd />
+                    <AdminGalleryAdd />
                 </div>
 
                 <AdminGalleryCarousel />

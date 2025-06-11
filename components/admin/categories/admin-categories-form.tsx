@@ -1,18 +1,10 @@
 "use client";
 
-import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { AdminCategoriesFormValues } from "@/lib/types";
 import { UseFormReturn } from "react-hook-form";
+import { FormGeneric } from "@/components/layout/form/form-generic";
+import { TextField } from "@/components/layout/form/text-field";
+import { TextAreaField } from "@/components/layout/form/text-area-field";
+import { AdminCategoriesFormValues } from "@/lib/types";
 
 interface AdminCategoriesFormProps {
     formId: string;
@@ -26,57 +18,24 @@ export function AdminCategoriesForm({
     onSubmit,
 }: AdminCategoriesFormProps) {
     return (
-        <Form {...formProps}>
-            <form
-                id={formId}
-                onSubmit={formProps.handleSubmit(onSubmit)}
-                className="space-y-6"
-            >
-                {/* Name Field */}
-                <FormField
-                    control={formProps.control}
-                    name="name"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Name</FormLabel>
-                            <FormControl>
-                                <Input
-                                    placeholder="Your category name"
-                                    {...field}
-                                />
-                            </FormControl>
-                            <FormDescription>
-                                This is your public display category name.
-                            </FormDescription>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+        <FormGeneric formId={formId} form={formProps} onSubmit={onSubmit}>
+            {/* Name Field */}
+            <TextField
+                control={formProps.control}
+                name="name"
+                placeholder="Your category name"
+                description="Give your category a clear, catchy name."
+                isRequired
+            />
 
-                {/* Description Field */}
-                <FormField
-                    control={formProps.control}
-                    name="description"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Description</FormLabel>
-                            <FormControl>
-                                <Textarea
-                                    className="resize-y min-h-24"
-                                    placeholder="Tell us a little about category"
-                                    {...field}
-                                    // Ensure that if field.value is null or undefined, we use an empty string.
-                                    // value={field.value ?? ""}
-                                />
-                            </FormControl>
-                            <FormDescription>
-                                Write a short description about category.
-                            </FormDescription>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-            </form>
-        </Form>
+            {/* Description Field */}
+            <TextAreaField
+                control={formProps.control}
+                name="description"
+                placeholder="Tell us a little about category"
+                description="Add a brief note about what this category is for."
+                className="resize-y min-h-24"
+            />
+        </FormGeneric>
     );
 }

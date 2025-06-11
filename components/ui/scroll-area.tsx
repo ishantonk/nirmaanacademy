@@ -16,22 +16,36 @@ function ScrollArea({
     children,
     ...props
 }: ScrollAreaProps) {
+    const [showTopShadow, setShowTopShadow] = React.useState(false);
+    const [showBottomShadow, setShowBottomShadow] = React.useState(false);
+    const viewportRef = React.useRef<HTMLDivElement | null>(null);
+
+    const handleScroll = () => {
+        const scrollTop = viewportRef.current?.scrollTop ?? 0;
+        const scrollBottom =
+            (viewportRef.current?.scrollHeight ?? 0) -
+            (viewportRef.current?.scrollTop ?? 0) -
+            (viewportRef.current?.clientHeight ?? 0);
+        setShowTopShadow(scrollTop > 0);
+        setShowBottomShadow(scrollBottom > 0);
+    };
+
     return (
         <ScrollAreaPrimitive.Root
             data-slot="scroll-area"
             className={cn("relative", className)}
             {...props}
         >
-            {showShadow && (
-                // Shadow at the top
-                <div className="pointer-events-none absolute top-0 inset-x-0 h-4 bg-gradient-to-b from-muted/75 to-transparent z-10" />
+            {showShadow && showTopShadow && (
+                <div className="pointer-events-none absolute top-0 inset-x-0 h-10 bg-gradient-to-b from-muted/70 to-transparent z-10 transition-colors" />
             )}
 
-            {showShadow && (
-                // Shadow at the bottom
-                <div className="pointer-events-none absolute bottom-0 inset-x-0 h-4 bg-gradient-to-t from-muted/75 to-transparent z-10" />
+            {showShadow && showBottomShadow && (
+                <div className="pointer-events-none absolute bottom-0 inset-x-0 h-10 bg-gradient-to-t from-muted/70 to-transparent z-10 transition-colors" />
             )}
             <ScrollAreaPrimitive.Viewport
+                ref={viewportRef}
+                onScroll={handleScroll}
                 data-slot="scroll-area-viewport"
                 className="focus-visible:ring-ring/50 size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:outline-1"
             >
@@ -53,7 +67,7 @@ function ScrollBar({
             data-slot="scroll-area-scrollbar"
             orientation={orientation}
             className={cn(
-                "flex touch-none p-px transition-colors select-none z-50",
+                "flex touch-none p-px transition-colors select-none z-20",
                 orientation === "vertical" &&
                     "h-full w-2 border-l border-l-transparent",
                 orientation === "horizontal" &&

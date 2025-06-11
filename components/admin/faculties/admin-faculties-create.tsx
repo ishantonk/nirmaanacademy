@@ -1,27 +1,26 @@
 "use client";
 
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "@/components/ui/button";
 import {
     Card,
     CardContent,
     CardDescription,
+    CardFooter,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
 import { AdminFacultiesForm } from "@/components/admin/faculties/admin-faculties-form";
-import { Button } from "@/components/ui/button";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
+import { useGenericMutation } from "@/hooks/use-generic-mutation";
+import { createFaculty } from "@/lib/services/api";
 import {
     AdminFacultyFormValues,
     FacultyType,
     zFacultySchema,
 } from "@/lib/types";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { createFaculty, uploadToBlob } from "@/lib/services/api";
-import { toast } from "sonner";
 
 export function AdminFacultiesCreate() {
-    const queryClient = useQueryClient();
     const formId = "create-faculty-form";
 
     // Initialize React Hook Form with Zod resolver and default values.
@@ -38,50 +37,22 @@ export function AdminFacultiesCreate() {
     });
 
     // Mutation hook for creating faculty.
-    const mutation = useMutation<
+    const createMutation = useGenericMutation<
         FacultyType,
-        Error,
-        AdminFacultyFormValues,
-        unknown
+        AdminFacultyFormValues
     >({
         mutationFn: createFaculty,
+        action: "create",
+        entityName: "Faculty",
+        queryKeyToInvalidate: ["faculty"],
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["faculty"] });
-
-            toast.success("Faculty created successfully");
             form.reset();
         },
-        onError: (error: Error) => {
-            toast.error("Creating faculty failed", {
-                description: error.message,
-            });
-        },
     });
-
-    // Mutation for uploading faculty image.
-    const uploadMutation = useMutation<
-        { url: string; success: boolean },
-        Error,
-        File,
-        unknown
-    >({
-        mutationFn: (file) => uploadToBlob(file),
-        onSuccess: (uploadedUrl) => {
-            toast.success("Faculty image successfully uploaded");
-            // Optionally update the form field with the new permanent URL after upload completes.
-            form.setValue("image", uploadedUrl.url.toString());
-        },
-        onError: (error: Error) => {
-            toast.error("Upload failed", { description: error.message });
-        },
-    });
-
-    // Combined loading state: disable submit if profile update or image upload is pending.
-    const submitting = mutation.isPending || uploadMutation.isPending;
 
     // Form submission handler.
     const onSubmit = (data: AdminFacultyFormValues) => {
-        mutation.mutate(data);
+        createMutation.mutate(data);
     };
 
     return (
@@ -97,19 +68,22 @@ export function AdminFacultiesCreate() {
                     formId={formId}
                     formProps={form}
                     onSubmit={onSubmit}
-                    uploadMutation={uploadMutation}
                 />
-                <div className="flex flex-row items-center justify-end">
-                    {/* Submit Button */}
-                    <Button
-                        type="submit"
-                        disabled={!form.formState.isDirty || submitting}
-                        form={formId}
-                    >
-                        {submitting ? "Creating..." : "Create Faculty"}
-                    </Button>
-                </div>
             </CardContent>
+            <CardFooter className="flex flex-col justify-center items-end">
+                {/* Submit Button */}
+                <Button
+                    type="submit"
+                    disabled={
+                        !form.formState.isDirty || createMutation.isPending
+                    }
+                    form={formId}
+                >
+                    {createMutation.isPending
+                        ? "Creating..."
+                        : "Create Faculty"}
+                </Button>
+            </CardFooter>
         </Card>
     );
 }

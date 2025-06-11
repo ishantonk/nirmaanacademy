@@ -72,7 +72,6 @@ export function BlogForm({
                     name="content"
                     placeholder="Full blog content"
                     description="Write your blog post here. You can use Markdown."
-                    className="min-h-52"
                     isRequired
                 />
 

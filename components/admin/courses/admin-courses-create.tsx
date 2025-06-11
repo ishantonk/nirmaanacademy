@@ -4,11 +4,12 @@ import {
     Card,
     CardContent,
     CardDescription,
+    CardFooter,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
 import { AdminCoursesForm } from "@/components/admin/courses/admin-courses-form";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import {
     AdminCourseFormValues,
     AttemptType,
@@ -18,7 +19,6 @@ import {
     ModeType,
     zCourseSchema,
 } from "@/lib/types";
-import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -28,42 +28,33 @@ import {
     fetchCategories,
     fetchFaculties,
     fetchModes,
-    uploadToBlob,
 } from "@/lib/services/api";
-import { useEffect, useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { AlertCircle } from "lucide-react";
+import { useGenericMutation } from "@/hooks/use-generic-mutation";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { EditorMenuBar } from "@/components/layout/form/rich-text-editor-field";
 
 export function AdminCoursesCreate() {
-    const queryClient = useQueryClient();
     const formId = "create-course-form";
 
-    const [categories, setCategories] = useState<CategoryType[]>([]);
-    const [faculties, setFaculties] = useState<FacultyType[]>([]);
-    const [modes, setModes] = useState<ModeType[]>([]);
-    const [attempts, setAttempts] = useState<AttemptType[]>([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const [cat, fac, mode, attempt] = await Promise.all([
-                    fetchCategories(),
-                    fetchFaculties(),
-                    fetchModes(),
-                    fetchAttempts(),
-                ]);
-                setCategories(cat);
-                setFaculties(fac);
-                setModes(mode);
-                setAttempts(attempt);
-            } catch {
-                toast.error("Failed to load course metadata.");
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchData();
-    }, []);
+    const { data, isLoading, isError, refetch } = useQuery<{
+        categories: CategoryType[];
+        faculties: FacultyType[];
+        modes: ModeType[];
+        attempts: AttemptType[];
+    }>({
+        queryKey: ["categories", "faculty", "modes", "attempts"],
+        queryFn: async () => {
+            const [categories, faculties, modes, attempts] = await Promise.all([
+                fetchCategories(),
+                fetchFaculties(),
+                fetchModes(),
+                fetchAttempts(),
+            ]);
+            return { categories, faculties, modes, attempts };
+        },
+    });
 
     // seed defaultValues
     const form = useForm<AdminCourseFormValues>({
@@ -88,75 +79,25 @@ export function AdminCoursesCreate() {
     });
 
     // Mutation hook for creating course.
-    const mutation = useMutation<
+    const createMutation = useGenericMutation<
         CourseType,
-        Error,
-        AdminCourseFormValues,
-        unknown
+        AdminCourseFormValues
     >({
         mutationFn: createCourse,
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["courses"] });
-
-            toast.success("Course created successfully!");
-            form.reset();
-        },
-        onError: (error: Error) => {
-            toast.error("Creating course failed", {
-                description: error.message,
-            });
-        },
+        action: "create",
+        entityName: "Course",
+        queryKeyToInvalidate: ["courses"],
+        form: form,
     });
-
-    // thumbnail upload
-    const uploadMutation = useMutation<
-        { url: string; success: boolean },
-        Error,
-        File,
-        unknown
-    >({
-        mutationFn: (file) => uploadToBlob(file),
-        onSuccess: (uploadedUrl) => {
-            toast.success("Course thumbnail successfully uploaded");
-            // Optionally update the form field with the new permanent URL after upload completes.
-            form.setValue("thumbnail", uploadedUrl.url.toString());
-        },
-        onError: (error: Error) => {
-            toast.error("Upload failed", { description: error.message });
-        },
-    });
-
-    // Combined loading state: disable submit if profile update or image upload is pending.
-    const submitting = mutation.isPending || uploadMutation.isPending;
 
     // Form submission handler.
     const onSubmit = (data: AdminCourseFormValues) => {
-        mutation.mutate(data);
+        createMutation.mutate(data);
     };
 
-    if (loading)
-        return (
-            <Card>
-                <CardHeader>
-                    <CardTitle className="h-6 w-48 bg-muted rounded animate-pulse" />
-                    <CardDescription className="mt-2 h-4 w-72 bg-muted rounded animate-pulse" />
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    {/* Simulating form inputs */}
-                    {[...Array(5)].map((_, i) => (
-                        <div key={i} className="space-y-1">
-                            <div className="h-4 w-24 bg-muted rounded animate-pulse" />
-                            <div className="h-10 w-full bg-muted rounded animate-pulse" />
-                        </div>
-                    ))}
+    if (isLoading) return <AdminCourseCreateSkeleton />;
 
-                    {/* Submit Button Skeleton */}
-                    <div className="flex justify-end pt-4">
-                        <div className="h-10 w-32 bg-muted rounded animate-pulse" />
-                    </div>
-                </CardContent>
-            </Card>
-        );
+    if (isError) return <AdminCourseCreateError onRetry={refetch} />;
 
     return (
         <Card>
@@ -170,26 +111,94 @@ export function AdminCoursesCreate() {
                 <AdminCoursesForm
                     formId={formId}
                     formProps={form}
-                    categories={categories}
-                    faculties={faculties}
-                    attempts={attempts}
-                    modes={modes}
-                    uploadMutation={uploadMutation}
-                    submitting={submitting}
+                    categories={data?.categories ?? []}
+                    faculties={data?.faculties ?? []}
+                    attempts={data?.attempts ?? []}
+                    modes={data?.modes ?? []}
                     onSubmit={onSubmit}
                 />
+            </CardContent>
+            <CardFooter className="justify-end">
+                {/* Submit Button */}
+                <Button
+                    form={formId}
+                    type="submit"
+                    aria-busy={createMutation.isPending}
+                    disabled={
+                        !form.formState.isDirty ||
+                        !form.formState.isValid ||
+                        createMutation.isPending
+                    }
+                >
+                    {createMutation.isPending ? "Creating..." : "Create Course"}
+                </Button>
+            </CardFooter>
+        </Card>
+    );
+}
 
-                <div className="flex flex-row items-center justify-end">
-                    {/* Submit Button */}
-                    <Button
-                        form={formId}
-                        type="submit"
-                        disabled={!form.formState.isDirty || submitting}
-                    >
-                        {submitting ? "Creating..." : "Create Course"}
-                    </Button>
+function AdminCourseCreateSkeleton() {
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Creating Course… Hold Tight!</CardTitle>
+                <CardDescription>
+                    We're getting things ready. Just a moment!
+                </CardDescription>
+            </CardHeader>
+
+            <CardContent className="space-y-6">
+                {/* Simulated input fields */}
+                {[...Array(6)].map((_, i) => (
+                    <div key={i} className="space-y-2">
+                        <Skeleton className="h-4 w-24" />
+                        <Skeleton className="h-10 w-full" />
+                    </div>
+                ))}
+
+                {/* Simulated textarea or multiselect */}
+                <div className="space-y-2">
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-20 w-full" />
                 </div>
             </CardContent>
+
+            <CardFooter className="justify-end">
+                <Skeleton className="h-10 w-32" />
+            </CardFooter>
+        </Card>
+    );
+}
+
+function AdminCourseCreateError({ onRetry }: { onRetry?: () => void }) {
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Something went wrong</CardTitle>
+                <CardDescription>
+                    We couldn’t load the course creation form.
+                </CardDescription>
+            </CardHeader>
+
+            <CardContent>
+                <Alert variant="destructive">
+                    <AlertCircle className="h-5 w-5" />
+                    <AlertTitle>Error loading data</AlertTitle>
+                    <AlertDescription>
+                        There was a problem fetching categories, faculties,
+                        modes, or attempts. Please check your connection or try
+                        again.
+                    </AlertDescription>
+                </Alert>
+            </CardContent>
+
+            <CardFooter className="justify-end">
+                {onRetry && (
+                    <Button variant="outline" onClick={onRetry}>
+                        Retry
+                    </Button>
+                )}
+            </CardFooter>
         </Card>
     );
 }

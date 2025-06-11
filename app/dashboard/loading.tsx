@@ -1,5 +1,4 @@
-// app/dashboard/loading.tsx
-import { CourseCardSkeleton } from "@/components/course/course-card-skeleton";
+import { CourseCardSkeleton } from "@/components/course/course-card";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Loading() {

@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
 
         // Generate a unique file name using slug, username, and timestamp
         const userName = session.user.name ?? "anonymous";
-        const timestamp = formatDate(new Date(Date.now()));
+        const timestamp = formatDate(new Date(Date.now())).replace(/\s+/g, "-");
         const fileName = `${slugify(file.name)}-${slugify(
             userName
         )}-${timestamp}.${extension}`;

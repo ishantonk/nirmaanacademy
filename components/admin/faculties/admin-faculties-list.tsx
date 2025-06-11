@@ -11,7 +11,10 @@ import {
 import { EmptyState } from "@/components/ui/empty-state";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
-import { AdminFacultyCard } from "@/components/admin/faculties/admin-faculty-card";
+import {
+    AdminFacultyCard,
+    AdminFacultyCardSkeleton,
+} from "@/components/admin/faculties/admin-faculty-card";
 import { fetchFaculties } from "@/lib/services/api";
 import { FacultyType } from "@/lib/types";
 import { useQuery } from "@tanstack/react-query";
@@ -31,35 +34,12 @@ export function AdminFacultiesList() {
                         Loading Faculties, please wait...
                     </CardDescription>
                 </CardHeader>
-                <CardContent className="h-[calc(100vh-14rem)] p-0">
-                    <ScrollArea className="h-full px-6 py-4">
-                        <div className="space-y-4">
-                            {Array.from({ length: 5 }).map((_, idx) => (
-                                <div
-                                    key={idx}
-                                    className="flex flex-row bg-muted/50 border border-muted rounded-lg p-3"
-                                >
-                                    {/* Simulated CourseFacultyInfoCard */}
-                                    <div className="flex flex-col gap-2 w-40">
-                                        <Skeleton className="h-6 w-32 rounded-md" />{" "}
-                                        {/* Name */}
-                                        <Skeleton className="h-4 w-24 rounded-md" />{" "}
-                                        {/* Title */}
-                                        <Skeleton className="h-4 w-20 rounded-md" />{" "}
-                                        {/* Department */}
-                                    </div>
-
-                                    {/* Simulated AdminFacultyEdit */}
-                                    <div className="flex flex-1 items-center justify-end">
-                                        <div className="flex flex-row gap-2 items-center justify-center">
-                                            <Skeleton className="h-10 w-24 rounded-md" />{" "}
-                                            {/* Edit button */}
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </ScrollArea>
+                <CardContent className="h-[calc(100vh-14rem)]">
+                    <div className="space-y-4">
+                        {Array.from({ length: 3 }).map((_, idx) => (
+                            <AdminFacultyCardSkeleton key={idx} />
+                        ))}
+                    </div>
                 </CardContent>
             </Card>
         );
@@ -70,10 +50,18 @@ export function AdminFacultiesList() {
             <Card className="sticky top-24">
                 <CardHeader>
                     <CardTitle>Faculties</CardTitle>
+                    <CardDescription>
+                        Loading Faculties failed, please try again later.
+                    </CardDescription>
                 </CardHeader>
-                <CardContent className="h-[calc(100vh-14rem)] p-0">
-                    <div className="text-center text-red-500">
-                        Failed to load courses. Please try again later.
+                <CardContent className="h-[calc(100vh-14rem)]">
+                    <div className="flex flex-col items-center justify-center gap-2 text-destructive bg-destructive/10 p-4 rounded-md px-4 py-16">
+                        <span className="font-semibold">
+                            Failed to load faculties.
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                            Please try again later.
+                        </span>
                     </div>
                 </CardContent>
             </Card>
@@ -88,7 +76,7 @@ export function AdminFacultiesList() {
             </CardHeader>
             <CardContent className="h-[calc(100vh-14rem)] p-0">
                 {data?.length ? (
-                    <ScrollArea className="h-full px-6 py-4">
+                    <ScrollArea showShadow className="h-full px-6 py-4">
                         <div className="space-y-4">
                             {data.map((faculty) => (
                                 <AdminFacultyCard

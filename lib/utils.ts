@@ -1,3 +1,4 @@
+import type { Decimal } from "@prisma/client/runtime/library";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -113,6 +114,45 @@ export function humanize(text: string): string {
 
     // 2. Capitalize just the first character of the entire phrase
     return capitalize(spaced);
+}
+
+/**
+ * Calculates the discount percentage between an original price
+ * and a discounted price.
+ *
+ * @param {(number | Decimal)} original - The original price (must be > 0).
+ * @param {(number | Decimal)} discounted - The discounted price.
+ * @param {number} [fractionDigits=0] - How many decimal places in the output.
+ * @returns {string} The discount percentage formatted with a “%” sign.
+ *
+ * @example
+ * getDiscountPercent(100, 75);        // "25%"
+ * getDiscountPercent(new Decimal(200), new Decimal(150), 1); // "25.0%"
+ */
+export function getDiscountPercent(
+    original: number | Decimal,
+    discounted: number | Decimal,
+    fractionDigits = 0
+): string {
+    // Convert to plain numbers (duck-typing for Decimal)
+    const orig =
+        typeof (original as any).toNumber === "function"
+            ? (original as any).toNumber()
+            : original;
+    const disc =
+        typeof (discounted as any).toNumber === "function"
+            ? (discounted as any).toNumber()
+            : discounted;
+
+    if (orig <= 0) {
+        throw new Error("Original price must be greater than zero");
+    }
+
+    // compute percentage: ((orig - disc) / orig) * 100
+    const percent = ((orig - disc) / orig) * 100;
+
+    // format with fixed decimals and append "%"
+    return `${percent.toFixed(fractionDigits)}%`;
 }
 
 interface ExcerptOptions {

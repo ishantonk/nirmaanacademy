@@ -11,7 +11,10 @@ import {
 import { EmptyState } from "@/components/ui/empty-state";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
-import { AdminCategoryCard } from "@/components/admin/categories/admin-category-card";
+import {
+    AdminCategoryCard,
+    AdminCategoryCardSkeleton,
+} from "@/components/admin/categories/admin-category-card";
 import { fetchCategories } from "@/lib/services/api";
 import { CategoryType } from "@/lib/types";
 import { useQuery } from "@tanstack/react-query";
@@ -28,24 +31,19 @@ export function AdminCategoriesList() {
 
     if (isLoading) {
         return (
-            <Card className="sticky top-24">
+            <Card>
                 <CardHeader>
                     <CardTitle>Categories</CardTitle>
                     <CardDescription>
                         Loading categories, please wait...
                     </CardDescription>
                 </CardHeader>
-                <CardContent className="h-[calc(100vh-14rem)] p-0">
-                    <ScrollArea className="h-full px-6 py-4">
-                        <div className="space-y-4">
-                            {Array.from({ length: 5 }).map((_, idx) => (
-                                <Skeleton
-                                    key={idx}
-                                    className="h-8 w-full rounded-md"
-                                />
-                            ))}
-                        </div>
-                    </ScrollArea>
+                <CardContent className="h-[calc(100vh-14rem)]">
+                    <div className="space-y-4">
+                        {Array.from({ length: 5 }).map((_, idx) => (
+                            <AdminCategoryCardSkeleton key={idx} />
+                        ))}
+                    </div>
                 </CardContent>
             </Card>
         );
@@ -53,13 +51,21 @@ export function AdminCategoriesList() {
 
     if (isError) {
         return (
-            <Card className="sticky top-24">
+            <Card>
                 <CardHeader>
                     <CardTitle>Categories</CardTitle>
                 </CardHeader>
-                <CardContent className="h-[calc(100vh-14rem)] p-0">
-                    <div className="text-center text-red-500">
-                        Failed to load categories. Please try again later.
+                <CardDescription>
+                    Loading categories, please try again later.
+                </CardDescription>
+                <CardContent className="h-[calc(100vh-14rem)]">
+                    <div className="flex flex-col items-center justify-center gap-2 text-destructive bg-destructive/10 p-4 rounded-md px-4 py-16">
+                        <span className="font-semibold">
+                            Failed to load categories.
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                            Please try again later.
+                        </span>
                     </div>
                 </CardContent>
             </Card>
@@ -67,14 +73,14 @@ export function AdminCategoriesList() {
     }
 
     return (
-        <Card className="sticky top-24">
+        <Card>
             <CardHeader>
                 <CardTitle>Categories</CardTitle>
                 <CardDescription>List of all categories.</CardDescription>
             </CardHeader>
             <CardContent className="h-[calc(100vh-14rem)] p-0">
                 {categories && categories.length ? (
-                    <ScrollArea className="h-full px-6 py-4">
+                    <ScrollArea showShadow className="h-full px-6 py-4">
                         <div className="space-y-4">
                             {categories.map((category) => (
                                 <AdminCategoryCard

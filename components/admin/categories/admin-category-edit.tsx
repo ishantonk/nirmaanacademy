@@ -1,10 +1,8 @@
 "use client";
 
+import { Pencil } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Pencil } from "lucide-react";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -17,116 +15,110 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { AdminCategoriesForm } from "@/components/admin/categories/admin-categories-form";
+import { useGenericMutation } from "@/hooks/use-generic-mutation";
+import { removeCategory, updateCategory } from "@/lib/services/api";
 import {
     AdminCategoriesFormValues,
     CategoryType,
     zCategoriesSchema,
 } from "@/lib/types";
-import { removeCategory, updateCategory } from "@/lib/services/api";
 
 export function AdminCategoryEdit({ category }: { category: CategoryType }) {
-    const queryClient = useQueryClient();
     const formId = "edit-category-form";
 
     // Initialize React Hook Form with Zod resolver and default values.
     const form = useForm<AdminCategoriesFormValues>({
         resolver: zodResolver(zCategoriesSchema),
-        defaultValues: {
-            name: category.name ?? "",
-            description: category.description ?? "",
-        },
+        defaultValues: { ...category, description: category.description ?? "" },
     });
 
     // Mutation hook for updating category.
-    const mutation = useMutation<
+    const updateMutation = useGenericMutation<
         CategoryType,
-        Error,
-        { id: string } & AdminCategoriesFormValues,
-        unknown
+        { id: string } & AdminCategoriesFormValues
     >({
         mutationFn: updateCategory,
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["categories"] });
-
-            toast.success("Category updated successfully");
-            form.reset();
-        },
-        onError: (error: Error) => {
-            toast.error("Updating category failed", {
-                description: error.message,
-            });
+        action: "update",
+        entityName: "Category",
+        queryKeyToInvalidate: ["categories"],
+        onSuccess: (data) => {
+            form.reset({ ...data, description: data.description ?? "" });
         },
     });
 
     // Mutation hook for removing category.
-    const removeMutation = useMutation<CategoryType, Error, string, unknown>({
-        mutationFn: removeCategory,
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["categories"] });
-
-            toast.success("Category removed successfully");
-        },
-        onError: (error: Error) => {
-            toast.error("Removing category failed", {
-                description: error.message,
-            });
-        },
+    const removeMutation = useGenericMutation<CategoryType, { id: string }>({
+        mutationFn: ({ id }) => removeCategory(id),
+        action: "delete",
+        entityName: "Category",
+        queryKeyToInvalidate: ["categories"],
     });
 
-    const handleRemoveCategory = (categoryId: string) => {
-        removeMutation.mutate(categoryId);
+    const onDelete = () => {
+        removeMutation.mutate({ id: category.id });
     };
 
     // Form submission handler.
     const onSubmit = (data: AdminCategoriesFormValues) => {
-        mutation.mutate({ ...data, id: category.id });
+        updateMutation.mutate({ ...data, id: category.id });
     };
+
     return (
         <Dialog>
             <DialogTrigger asChild>
                 <Button
+                    onClick={() =>
+                        form.reset({
+                            ...category,
+                            description: category.description ?? "",
+                        })
+                    }
                     size="icon"
-                    variant={"ghost"}
+                    variant="outline"
                     aria-label="Edit Category"
                 >
                     <Pencil className="w-4 h-4" />
                 </Button>
             </DialogTrigger>
 
-            {/* Give the dialog a viewport‑relative height and hide overflow */}
-            <DialogContent className="p-6 w-screen md:max-w-xl lg:max-w-2xl">
-                <DialogHeader>
+            <DialogContent className="px-0 md:max-w-lg lg:max-w-2xl">
+                <DialogHeader className="px-6">
                     <DialogTitle>Edit Category</DialogTitle>
                     <DialogDescription>
                         Make changes in category details below.
                     </DialogDescription>
                 </DialogHeader>
 
-                <AdminCategoriesForm
-                    formId={formId}
-                    formProps={form}
-                    onSubmit={onSubmit}
-                />
+                <div className="px-4">
+                    <AdminCategoriesForm
+                        formId={formId}
+                        formProps={form}
+                        onSubmit={onSubmit}
+                    />
+                </div>
 
-                <DialogFooter>
+                <DialogFooter className="px-6">
                     <DialogClose asChild>
                         <Button
-                            variant={"destructive"}
-                            onClick={() => handleRemoveCategory(category.id)}
+                            variant="destructive"
+                            onClick={onDelete}
+                            disabled={removeMutation.isPending}
                         >
-                            Delete Faculty
+                            {removeMutation.isPending
+                                ? "Removing..."
+                                : "Delete Category"}
                         </Button>
                     </DialogClose>
                     <DialogClose asChild>
-                        {/* Submit Button */}
                         <Button
                             form={formId}
                             type="submit"
                             disabled={
-                                !form.formState.isDirty || mutation.isPending
+                                !form.formState.isDirty ||
+                                updateMutation.isPending
                             }
                         >
-                            {mutation.isPending
+                            {updateMutation.isPending
                                 ? "Updating..."
                                 : "Update Category"}
                         </Button>

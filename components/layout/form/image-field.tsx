@@ -10,7 +10,7 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { ImageDropzone } from "@/components/ui/image-drop-zone";
-import { humanize } from "@/lib/utils";
+import { humanize, isValidUrl } from "@/lib/utils";
 import { UseMutationResult } from "@tanstack/react-query";
 import Image from "next/image";
 import {
@@ -33,17 +33,20 @@ interface ImageFieldProps<TFieldValues extends FieldValues> {
     >;
     isRequired?: boolean;
     className?: string;
+    ratio?: number;
 }
 
 export function ImageField<TFieldValues extends FieldValues>({
     name,
-    label = humanize(name),
+    label = name,
     description = "",
     control,
     uploadMutation,
     isRequired = false,
     className,
+    ratio = 16 / 9,
 }: ImageFieldProps<TFieldValues>) {
+    label = humanize(label);
     const isUploading = uploadMutation.isPending;
     const isError = uploadMutation.isError;
 
@@ -73,7 +76,7 @@ export function ImageField<TFieldValues extends FieldValues>({
                         )}
                     </FormLabel>
                     <FormControl>
-                        <AspectRatio ratio={16 / 9}>
+                        <AspectRatio ratio={ratio}>
                             <ImageDropzone
                                 onFileSelect={(file) =>
                                     onFileSelect(file, field)
@@ -82,12 +85,18 @@ export function ImageField<TFieldValues extends FieldValues>({
                                 isUploading={isUploading}
                                 placeholder={
                                     field.value ? (
-                                        <Image
-                                            src={field.value}
-                                            alt="Featured Image"
-                                            fill
-                                            className="object-cover w-full h-full rounded"
-                                        />
+                                        isValidUrl(field.value) ? (
+                                            <Image
+                                                src={field.value}
+                                                alt="Featured Image"
+                                                fill
+                                                className="object-cover w-full h-full rounded"
+                                            />
+                                        ) : (
+                                            <div className="flex items-center w-full h-full justify-center rounded bg-muted text-sm text-muted-foreground">
+                                                No thumbnail
+                                            </div>
+                                        )
                                     ) : undefined
                                 }
                                 className={className}

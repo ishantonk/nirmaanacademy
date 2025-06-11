@@ -21,7 +21,7 @@ export function CourseGrid({ courses }: { courses: JSX.Element[] }) {
     }
 
     return (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 items-center justify-center">
             {courses}
         </div>
     );
