@@ -22,19 +22,19 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Pencil } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { AdminFacultiesForm } from "@/components/admin/faculties/admin-faculties-form";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useGenericMutation } from "@/hooks/use-generic-mutation";
 
 export function AdminFacultyEdit({ faculty }: { faculty: FacultyType }) {
     const formId = "edit-faculty-form";
 
-    const formDefaultValues = {
+    const formDefaultValues = useMemo(() => ({
         ...faculty,
         phone: faculty.phone ?? undefined,
         bio: faculty.bio ?? undefined,
         image: faculty.image ?? undefined,
         designation: faculty.designation ?? undefined,
-    };
+    }), [faculty]);
 
     // Initialize React Hook Form with Zod resolver and default values.
     const form = useForm<AdminFacultyFormValues>({

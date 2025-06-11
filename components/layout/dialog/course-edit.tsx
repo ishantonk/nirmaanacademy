@@ -99,9 +99,9 @@ export function CourseEdit({
 
     const removeMutation = useGenericMutation<
         CourseType,
-        AdminCourseFormValues
+        AdminCourseFormValues & { slug: string }
     >({
-        mutationFn: () => removeCourse(course.slug),
+        mutationFn: ({ slug }) => removeCourse(slug),
         action: "update",
         entityName: "Course",
         queryKeyToInvalidate: ["courses"],
@@ -113,7 +113,7 @@ export function CourseEdit({
     };
 
     const onDelete = () => {
-        removeMutation.mutate;({ ...form.getValues(), slug: course.slug });
+        removeMutation.mutate({ ...form.getValues(), slug: course.slug });
     };
 
     return (
