@@ -20,7 +20,9 @@ export default function SearchInput({
     const [debouncedSearch] = useDebounce(search, 500);
 
     useEffect(() => {
-        setSearch(searchFromUrl);
+        if (searchFromUrl !== search) {
+            setSearch(searchFromUrl);
+        }
     }, [searchFromUrl]);
 
     // Build query parameters based on the current URL and debounced input.
