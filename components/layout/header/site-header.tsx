@@ -104,7 +104,7 @@ function MainHeader({ items = initialNavItems }: HeaderProps) {
         <div
             className={cn(
                 "flex flex-col items-center justify-center w-full",
-                isScrolled ? "bg-surface/60" : "bg-surface"
+                isScrolled ? "bg-background/60" : "bg-background"
             )}
         >
             <div className="container max-w-7xl grid grid-cols-7 items-center gap-x-2 px-2 md:px-0">
@@ -216,7 +216,7 @@ function NavItem({ item, isSubItem, isTrigger }: NavItemProps) {
                     isSubItem ? "px-2" : ""
                 )}
             >
-                <span className="text-sm font-semibold">{item.title}</span>
+                <span className="text-sm font-semibold group-data-[state=open]:text-accent">{item.title}</span>
                 {isSubItem && (
                     <span className="text-xs text-surface/70 group-hover:text-surface/90 line-clamp-1 max-w-[200px]">
                         {item.description}
@@ -234,7 +234,7 @@ function NavItem({ item, isSubItem, isTrigger }: NavItemProps) {
             {isTrigger && (
                 <ChevronDownIcon
                     className={cn(
-                        "relative top-0 size-4 transition-transform group-data-[state=open]:rotate-180 group-data-[state=open]:text-foreground"
+                        "relative top-0 size-4 transition-transform group-data-[state=open]:rotate-180 group-data-[state=open]:text-accent",
                     )}
                     aria-hidden="true"
                 />

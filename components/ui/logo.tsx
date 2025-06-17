@@ -53,7 +53,7 @@ function getSizing(size: SizeVariant = "default") {
     switch (size) {
         case "sm":
             return {
-                image: "w-14",
+                image: "w-16",
                 text: "text-sm",
             };
         case "lg":
