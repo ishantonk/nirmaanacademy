@@ -1,5 +1,4 @@
 import { Metadata } from "next";
-import { PostCard } from "@/components/blog/post-card";
 import { BlogGrid } from "@/components/blog/blog-grid";
 import SiteInfo from "@/data/contact-info";
 import { BlogPostType } from "@/lib/types";

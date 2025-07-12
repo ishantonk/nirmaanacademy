@@ -23,7 +23,7 @@ export default function SearchInput({
         if (searchFromUrl !== search) {
             setSearch(searchFromUrl);
         }
-    }, [searchFromUrl]);
+    }, [searchFromUrl, search]);
 
     // Build query parameters based on the current URL and debounced input.
     const params = new URLSearchParams();
