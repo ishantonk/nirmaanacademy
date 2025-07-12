@@ -74,7 +74,6 @@ export default function CourseCard({ course }: { course: CourseType }) {
                     <ResponsiveImage
                         src={thumbnail!}
                         alt={title}
-                        ratio={16 / 9}
                         loading="lazy"
                         className="transition-transform duration-500 transform group-hover:scale-110"
                     />

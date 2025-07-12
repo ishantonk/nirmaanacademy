@@ -6,6 +6,7 @@ import { formatPrice } from "@/lib/format";
 interface PriceDisplayProps {
     price: number | Decimal;
     discountPrice?: number | Decimal | null;
+    onSale?: boolean;
 }
 
 /**
@@ -14,8 +15,9 @@ interface PriceDisplayProps {
 export default function PriceDisplay({
     price,
     discountPrice,
+    onSale = false,
 }: PriceDisplayProps) {
-    if (discountPrice) {
+    if (onSale && discountPrice && discountPrice < price) {
         const discountPercent = getDiscountPercent(price, discountPrice, 1);
         return (
             <div className="flex items-center gap-2">

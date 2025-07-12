@@ -11,6 +11,8 @@ import {
     CarouselPrevious,
 } from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
+import { EmptyState } from "../ui/empty-state";
+import { Book } from "lucide-react";
 
 interface ItemsPerView {
     mobile?: number;
@@ -106,9 +108,6 @@ export default function SectionCarousel({
         ].join(" ");
     }, [itemsPerView]);
 
-    // Early return if no items
-    if (!items?.length) return null;
-
     return (
         <Carousel
             plugins={plugins}
@@ -120,14 +119,22 @@ export default function SectionCarousel({
             className="w-full"
         >
             <CarouselContent className="py-6 px-2">
-                {items.map((item, idx) => (
-                    <CarouselItem
-                        key={item.key || idx}
-                        className={cn(responsiveClasses, className)}
-                    >
-                        {item}
-                    </CarouselItem>
-                ))}
+                {!items.length ? (
+                    <EmptyState
+                        title="No Items Available"
+                        description="There are currently no items to display in this carousel."
+                        icon={Book}
+                    />
+                ) : (
+                    items.map((item, idx) => (
+                        <CarouselItem
+                            key={item.key || idx}
+                            className={cn(responsiveClasses, className)}
+                        >
+                            {item}
+                        </CarouselItem>
+                    ))
+                )}
             </CarouselContent>
             <CarouselPrevious />
             <CarouselNext />

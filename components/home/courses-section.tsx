@@ -2,6 +2,7 @@ import SectionHeading from "@/components/home/section-heading";
 import SectionCarousel from "@/components/home/section-carousel";
 import { fetchCourses } from "@/lib/services/api";
 import CourseCard from "../course/course-card";
+import { CourseType } from "@/lib/types";
 
 export async function CoursesSection() {
     const params = new URLSearchParams();
@@ -9,7 +10,12 @@ export async function CoursesSection() {
     params.append("featured", "true");
     const queryString = params.toString();
 
-    const courses = await fetchCourses(queryString);
+    let courses: Array<CourseType> = [];
+    try {
+        courses = await fetchCourses(queryString);
+    } catch (error) {
+        console.error("Failed to fetch courses:", error);
+    }
 
     const courseItems = courses.map((course, idx) => (
         <CourseCard key={course.id || idx} course={course} />

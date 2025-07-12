@@ -17,6 +17,7 @@ import { CourseReviews } from "@/components/course/course-reviews";
 import { getAuthSession } from "@/lib/auth";
 import { notFound } from "next/navigation";
 import { fetchCourseBySlug } from "@/lib/services/api";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default async function CoursePage({
     params,
@@ -253,26 +254,41 @@ export default async function CoursePage({
                 <div className="mt-12 grid gap-8 lg:grid-cols-3">
                     <div className="lg:col-span-2">
                         <div className="space-y-8">
-                            {/* Course Description */}
-                            <div>
-                                <h2 className="text-2xl font-bold">
-                                    About this course
-                                </h2>
-                                <div className="mt-4 prose max-w-none">
-                                    <p>{course.description}</p>
-                                </div>
-                            </div>
-
-                            {/* Course Content Info */}
-                            <CourseContentInfo
-                                selectedMode={course.availableModes?.[0]}
-                                duration={course.durationInMin}
-                                enrollments={course.enrollments}
-                                videoLanguage={course.videoLanguage}
-                                courseMaterialLanguage={
-                                    course.courseMaterialLanguage
-                                }
-                            />
+                            <Tabs defaultValue="description" className="w-full">
+                                <TabsList>
+                                    <TabsTrigger value="description">
+                                        Description
+                                    </TabsTrigger>
+                                    <TabsTrigger value="content-info">
+                                        Content Info
+                                    </TabsTrigger>
+                                </TabsList>
+                                <TabsContent value="description">
+                                    {/* Course Description */}
+                                    <div>
+                                        <h2 className="text-2xl font-bold">
+                                            About this course
+                                        </h2>
+                                        <div className="mt-4 prose max-w-none">
+                                            <p>{course.description}</p>
+                                        </div>
+                                    </div>
+                                </TabsContent>
+                                <TabsContent value="content-info">
+                                    {/* Course Content Info */}
+                                    <CourseContentInfo
+                                        selectedMode={
+                                            course.availableModes?.[0]
+                                        }
+                                        duration={course.durationInMin}
+                                        enrollments={course.enrollments}
+                                        videoLanguage={course.videoLanguage}
+                                        courseMaterialLanguage={
+                                            course.courseMaterialLanguage
+                                        }
+                                    />
+                                </TabsContent>
+                            </Tabs>
 
                             {/* Faculty List */}
                             <div>

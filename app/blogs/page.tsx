@@ -4,6 +4,7 @@ import { BlogGrid } from "@/components/blog/blog-grid";
 import SiteInfo from "@/data/contact-info";
 import { BlogPostType } from "@/lib/types";
 import { fetchBlogs } from "@/lib/services/api";
+import BlogCard from "@/components/blog/blog-card";
 
 export const metadata: Metadata = {
     title: "Blog | " + SiteInfo.Title,
@@ -26,8 +27,9 @@ export default async function BlogsPage() {
             </div>
 
             <BlogGrid
-                blogs={posts.map((post: BlogPostType) => (
-                    <PostCard key={post.id} {...post} />
+                blogs={posts.map((blog: BlogPostType) => (
+                    // <PostCard key={post.id} {...post} />
+                    <BlogCard key={blog.id} blog={blog} />
                 ))}
             />
         </div>
