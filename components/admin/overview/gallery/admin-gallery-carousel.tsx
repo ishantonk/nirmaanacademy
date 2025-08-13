@@ -1,8 +1,6 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
-import dynamic from "next/dynamic";
 import { useQuery } from "@tanstack/react-query";
 import { AlertOctagon, AlertTriangle, Loader2 } from "lucide-react";
 import { AspectRatio } from "@/components/ui/aspect-ratio";

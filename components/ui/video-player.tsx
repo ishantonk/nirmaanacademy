@@ -20,13 +20,13 @@ export default function VideoPlayer({
     const [isReady, setIsReady] = useState(false);
     const [playing, setPlaying] = useState(false);
 
-    const handleEnded = () => {
-        setPlaying(false);
-        // Optionally seek back to start
-        if (playerRef.current) {
-            playerRef.current.seekTo(0);
-        }
-    };
+    // const handleEnded = () => {
+    //     setPlaying(false);
+    //     // Optionally seek back to start
+    //     if (playerRef.current) {
+    //         playerRef.current.seekTo(0);
+    //     }
+    // };
 
     return (
         <div className="relative w-full h-full">

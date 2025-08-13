@@ -64,6 +64,9 @@ model VerificationToken {
 model Category {
   id          String   @id @default(cuid())
   name        String   @unique
+  subCategories Category[] @relation("CategorySubcategories")
+  parentCategory Category? @relation("CategorySubcategories", fields: [parentCategoryId], references: [id])
+  parentCategoryId String?
   description String?
   slug        String   @unique
   createdAt   DateTime @default(now())
