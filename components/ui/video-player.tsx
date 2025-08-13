@@ -18,7 +18,7 @@ export default function VideoPlayer({
     // Using a ref to control the ReactPlayer instance
     const playerRef = useRef<ReactPlayer>(null);
     const [isReady, setIsReady] = useState(false);
-    const [playing, setPlaying] = useState(false);
+    // const [playing, setPlaying] = useState(false);
 
     // const handleEnded = () => {
     //     setPlaying(false);
@@ -41,7 +41,7 @@ export default function VideoPlayer({
             <ReactPlayer
                 ref={playerRef}
                 url={videoUrl}
-                playing={playing}
+                // playing={playing}
                 controls={controls} // Hide default YouTube controls
                 autoPlay={autoPlay}
                 width="100%"
