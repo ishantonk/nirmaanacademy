@@ -18,6 +18,7 @@ import { AdminGalleryEdit } from "@/components/admin/overview/gallery/admin-gall
 import { fetchAdminGallerySlides } from "@/lib/services/api";
 import { GalleryItemType } from "@/lib/types";
 import { humanize } from "@/lib/utils";
+import VideoPlayer from "@/components/ui/video-player";
 
 export function AdminGalleryCarousel() {
     // Fetch gallery slides from API
@@ -150,12 +151,6 @@ function EditButton({ slide }: { slide: GalleryItemType }) {
 
 // Handles rendering and loading state of video slides
 function VideoSlide({ slide }: { slide: GalleryItemType }) {
-    // Lazy-load ReactPlayer for client-side rendering
-    const ReactPlayer = dynamic(() => import("react-player/lazy"), {
-        ssr: false,
-    });
-    const [isVideoReady, setIsVideoReady] = useState(false);
-
     if (slide.type === "IMAGE") return null;
 
     const validVideoURL =
@@ -178,31 +173,7 @@ function VideoSlide({ slide }: { slide: GalleryItemType }) {
             {/* Accessible video title */}
             <span className="sr-only hidden">{slide.title}</span>
 
-            {/* Loading spinner until video is ready */}
-            {!isVideoReady && (
-                <div className="flex flex-row justify-center items-center w-full h-full gap-2 bg-muted text-muted-foreground rounded-md">
-                    <Loader2 className="w-6 h-6 animate-spin" />
-                    <span className="text-sm">Loading video...</span>
-                </div>
-            )}
-
-            {/* Render video player */}
-            <ReactPlayer
-                url={validVideoURL}
-                width="100%"
-                height="100%"
-                controls
-                playing={false}
-                onReady={() => setIsVideoReady(true)}
-                config={{
-                    file: {
-                        attributes: {
-                            controlsList: "nodownload",
-                            disablePictureInPicture: true,
-                        },
-                    },
-                }}
-            />
+            <VideoPlayer videoUrl={validVideoURL} controls={false} />
         </>
     );
 }

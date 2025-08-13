@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import dynamic from "next/dynamic";
 import { useQuery } from "@tanstack/react-query";
 import Autoplay from "embla-carousel-autoplay";
 import {
@@ -15,13 +14,9 @@ import {
 } from "@/components/ui/carousel";
 import { fetchGallerySlides } from "@/lib/services/api";
 import { GalleryItemType } from "@/lib/types";
-import { Loader2 } from "lucide-react";
-
-// dynamic import so SSR doesn't try to render it
-const ReactPlayer = dynamic(() => import("react-player/lazy"), { ssr: false });
+import VideoPlayer from "../ui/video-player";
 
 export function HeroCarousel() {
-    const [isReady, setIsReady] = useState(false);
     const {
         data: slides,
         isLoading,
@@ -81,34 +76,13 @@ export function HeroCarousel() {
                                     slides.videoUrl &&
                                     slides.videoUrl !== "" ? (
                                         <>
-                                            {!isReady && (
-                                                <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
-                                                    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                                                    <p className="text-sm text-muted-foreground">
-                                                        Loading video...
-                                                    </p>
-                                                </div>
-                                            )}
                                             <div className="sr-only hidden">
                                                 {slides.title}
                                             </div>
-                                            <ReactPlayer
-                                                url={slides.videoUrl}
-                                                width="100%"
-                                                height="100%"
-                                                controls
-                                                playing={false}
-                                                onReady={() => setIsReady(true)}
-                                                config={{
-                                                    file: {
-                                                        attributes: {
-                                                            controlsList:
-                                                                "nodownload",
-                                                            disablePictureInPicture:
-                                                                true,
-                                                        },
-                                                    },
-                                                }}
+                                            <VideoPlayer 
+                                                videoUrl={slides.videoUrl}
+                                                autoPlay={false}
+                                                controls={true}
                                             />
                                         </>
                                     ) : (

@@ -18,6 +18,7 @@ import { getAuthSession } from "@/lib/auth";
 import { notFound } from "next/navigation";
 import { fetchCourseBySlug } from "@/lib/services/api";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import VideoPlayer from "@/components/ui/video-player";
 
 export default async function CoursePage({
     params,
@@ -262,6 +263,9 @@ export default async function CoursePage({
                                     <TabsTrigger value="content-info">
                                         Content Info
                                     </TabsTrigger>
+                                    <TabsTrigger value="demo">
+                                        Demo Video
+                                    </TabsTrigger>
                                 </TabsList>
                                 <TabsContent value="description">
                                     {/* Course Description */}
@@ -287,6 +291,25 @@ export default async function CoursePage({
                                             course.courseMaterialLanguage
                                         }
                                     />
+                                </TabsContent>
+                                <TabsContent value="demo">
+                                    <div className="space-y-4 flex flex-col">
+                                        <h2 className="text-2xl font-bold">
+                                            Demo Video
+                                        </h2>
+                                        {/* Demo Video Section */}
+                                        {course.demoVideoUrl && (
+                                            <div className="aspect-video w-full overflow-hidden rounded-lg p-2">
+                                                <VideoPlayer
+                                                    videoUrl={
+                                                        course.demoVideoUrl
+                                                    }
+                                                    controls
+                                                    autoPlay={false}
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
                                 </TabsContent>
                             </Tabs>
 

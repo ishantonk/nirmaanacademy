@@ -17,17 +17,16 @@ export default function SectionHeading({
     buttonLink?: buttonLinkType;
 }) {
     return (
-        <div className="relative overflow-hidden rounded-xl p-4 mb-6">
-            {/* Animated Background Gradient */}
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400 opacity-60"></div>
-            <div className="absolute inset-0 bg-gradient-to-tl from-cyan-400 via-blue-500 to-indigo-600 opacity-40 animate-pulse"></div>
-
-            {/* Glassmorphism overlay */}
-            <div className="absolute inset-0 backdrop-blur-sm bg-white/10 border border-white/20"></div>
-
+        <div className="relative">
             {/* Content */}
-            <div className="relative flex items-center justify-between">
-                <div className="flex-1">
+            <div className="flex items-center justify-between">
+                <div className="relative  inline-flex flex-col overflow-hidden rounded-lg p-2 mb-6">
+                    {/* Animated Background Gradient */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400 opacity-60"></div>
+                    <div className="absolute inset-0 bg-gradient-to-tl from-cyan-400 via-blue-500 to-indigo-600 opacity-40 animate-pulse"></div>
+
+                    {/* Glassmorphism overlay */}
+                    <div className="absolute inset-0 backdrop-blur-sm bg-white/10 border border-white/20"></div>
                     <h2 className="text-2xl lg:text-3xl font-black bg-gradient-to-r from-white via-yellow-200 to-pink-200 bg-clip-text text-transparent drop-shadow-lg leading-tight">
                         {title}
                     </h2>
@@ -36,6 +35,9 @@ export default function SectionHeading({
                             {description}
                         </p>
                     )}
+                    {/* Decorative elements */}
+                    <div className="absolute top-4 right-4 w-20 h-20 bg-white/10 rounded-full blur-xl"></div>
+                    <div className="absolute bottom-4 left-4 w-16 h-16 bg-pink-300/20 rounded-full blur-lg"></div>
                 </div>
                 {buttonLink && (
                     <div className="ml-4">
@@ -70,10 +72,6 @@ export default function SectionHeading({
                     </div>
                 )}
             </div>
-
-            {/* Decorative elements */}
-            <div className="absolute top-4 right-4 w-20 h-20 bg-white/10 rounded-full blur-xl"></div>
-            <div className="absolute bottom-4 left-4 w-16 h-16 bg-pink-300/20 rounded-full blur-lg"></div>
         </div>
     );
 }

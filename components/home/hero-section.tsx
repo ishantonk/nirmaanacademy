@@ -35,21 +35,21 @@ export function HeroSection() {
             </div>
 
             {/* Content */}
-            <div className="relative z-10 h-full grid grid-cols-2 lg:grid-cols-4 items-center justify-center">
+            <div className="relative z-10 h-full grid grid-cols-2 lg:grid-cols-4 items-center justify-center max-w-7xl mx-auto gap-4">
                 {isDesktop && (
-                    <div className="hidden md:flex col-span-1 p-4 items-center justify-center">
+                    <div className="hidden md:flex col-span-1 items-center justify-center">
                         <NoticeCard />
                     </div>
                 )}
-                <div className="col-span-2 p-4 flex items-center justify-center">
+                <div className="col-span-2 flex items-center justify-center">
                     <HeroCarousel />
                 </div>
                 {isMobile && (
-                    <div className="flex md:hidden col-span-2 w-full p-4 items-center justify-center">
+                    <div className="flex md:hidden col-span-2 w-full items-center justify-center">
                         <NoticeCard />
                     </div>
                 )}
-                <div className="col-span-2 lg:col-span-1 p-4 flex items-center justify-center">
+                <div className="col-span-2 lg:col-span-1 flex items-center justify-center">
                     <CategoriesTagCard />
                 </div>
             </div>

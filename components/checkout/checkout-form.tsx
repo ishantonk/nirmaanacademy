@@ -256,15 +256,27 @@ export function CheckoutForm(props: CheckoutFormProps) {
                     />
 
                     {/* Submit Button */}
-                    <Button
-                        type="submit"
-                        className="w-full"
-                        disabled={isLoading}
-                    >
-                        {isLoading
-                            ? "Processing..."
-                            : `Pay ${formatPrice(amount)}`}
-                    </Button>
+                    {session ? (
+                        <Button
+                            type="submit"
+                            className="w-full"
+                            disabled={isLoading || !razorpayLoaded}
+                        >
+                            {isLoading
+                                ? "Processing..."
+                                : `Pay ${formatPrice(amount)}`}
+                        </Button>
+                    ) : (
+                        <Button
+                            type="button"
+                            className="w-full"
+                            onClick={() =>
+                                router.push("/login?redirect=/checkout")
+                            }
+                        >
+                            Login to Checkout
+                        </Button>
+                    )}
                 </form>
             </Form>
         </div>

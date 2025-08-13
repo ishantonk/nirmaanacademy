@@ -45,7 +45,7 @@ export const config = {
         "/register",
         "/blog/create",
         "/admin/:path*",
-        "/checkout/:path*",
+        // "/checkout/:path*",
         "/dashboard/:path*",
     ],
 };
